@@ -1,5 +1,7 @@
 module Main where
 import Data.Csv
+import Src.Schemas.Passageiros
 
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = do
+    
