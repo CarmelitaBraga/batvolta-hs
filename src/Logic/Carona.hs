@@ -1,22 +1,9 @@
-module Logic.Carona where
+module Src.Logic.Carona() where
 
 import Data.Time.Calendar (Day)
 import Data.Time.LocalTime (TimeOfDay)
 import Logic.Passageiro (Passageiro)
 import Logic.Motorista (Motorista)
-
-data carona = carona {
-    id :: Int,
-    hora :: TimeOfDay,
-    data :: Day,
-    origem :: String,
-    destino :: String,
-    motorista :: Motorista,
-    passageiros :: [passageiro],
-    valor :: Double,
-    avaliacaoMotorista :: Int,
-    avaliacoesPassageiros :: [Int]
-} deriving (Show)
 
 -- informações sobre a carona
 infoCarona::Carona->String
@@ -41,3 +28,5 @@ infoCarona Carona{..} =
 -- display todas as caronas com base no origem/destino, horario/dia, motoristas
 
 -- criar carona (motorista)
+-- criarCarona :: TimeOfDay -> Day -> String -> String -> Motorista -> Double -> IO String
+-- criarCarona hora data origem destino motorista valor = do
