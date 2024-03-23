@@ -1,8 +1,7 @@
 module Main where
 import Data.Csv
-import Src.Schemas.Passageiros
+import Src.Schemas.Passageiros as P
 
-main :: IO ()
+main :: IO (Maybe Passageiro)
 main = do
-     cadastraPassageiro  "Jão" "111.111.222-66" "jão@gmail.com" "9999-9999" "12345-678" "senha123"
-    
+     P.cadastraPassageiro "Caique" "107.672.774-30" "iquecc5@gmail.com" "(82) 99690-0011" "58428-830" "123456"
