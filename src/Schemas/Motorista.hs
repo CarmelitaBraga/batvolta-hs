@@ -1,9 +1,10 @@
-module Src.Schemas.Motorista (
+module Motorista (
     Motorista(..),
     cadastraMotorista,
     getBy,
     insereMotorista,
-    checkIsEmpty
+    checkIsEmpty,
+    removerMotorista
 ) where
 
 import Data.Csv
@@ -27,7 +28,7 @@ data Motorista = Motorista{
     telefone :: String,
     senha :: String,
     cnh :: String
-}
+} deriving(Show)
 
 instance ToRecord Motorista where
     toRecord (Motorista cpf cep nome email telefone senha cnh) = record 
@@ -59,20 +60,23 @@ cadastraMotorista :: String -> String -> String -> String -> String -> String ->
 cadastraMotorista cpf cep nome email telefone senha cnh = do
     motoristaCpfExist <- getBy "cpf" cpf
     case motoristaCpfExist of
-        Just _ -> do
+        Just motorista -> do
             putStrLn "Já existe um motorista cadastrado com esse CPF"
+            print(motorista)
             return Nothing
         Nothing -> do
             motoristaEmailExist <- getBy "email" email
             case motoristaEmailExist of
-                Just _ -> do
+                Just motorista -> do
                     putStrLn "Já existe um motorista cadastrado com esse Email"
+                    print(motorista)
                     return Nothing
                 Nothing -> do
                     motoristaCnhExist <- getBy "cnh" cnh
                     case motoristaCnhExist of
-                        Just _ -> do
+                        Just motorista -> do
                             putStrLn "Já existe um motorista cadastrado com essa CNH"
+                            print(motorista)
                             return Nothing
                         Nothing -> do
                             let novoMotorista = Motorista cpf cep nome email telefone senha cnh
@@ -141,3 +145,36 @@ checkIsEmpty path = do
     isEmpty <- withFile path ReadMode $ \handle -> do
         hIsEOF handle
     return isEmpty
+
+
+removerMotorista :: String -> String -> IO (Maybe Motorista)
+removerMotorista coluna atributo = do
+    motoristas <- carregarMotoristas csvPath
+    let motoristasFiltrados = filter (\motorista -> getField motorista /= atributo) motoristas
+    if length motoristasFiltrados /= length motoristas
+        then do
+            escreverMotoristas motoristasFiltrados
+            putStrLn "Motorista removido com sucesso."
+            return (Just (head motoristasFiltrados)) -- Retornamos Just com qualquer um dos motoristas remanescentes
+        else do
+            putStrLn "Nenhum motorista encontrado com o atributo fornecido."
+            return Nothing
+    where
+        getField motorista =
+            case coluna of
+                "cpf" -> cpf motorista
+                "cep" -> cep motorista
+                "nome" -> nome motorista
+                "email" -> email motorista
+                "telefone" -> telefone motorista
+                "senha" -> senha motorista
+                "cnh" -> cnh motorista
+                _ -> ""
+        escreverMotoristas :: [Motorista] -> IO ()
+        escreverMotoristas motoristas = do
+            let csvData = encode motoristas
+            withFile csvPath WriteMode $ \handle -> do
+                BL.hPutStr handle csvData
+
+
+
