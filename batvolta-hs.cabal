@@ -19,11 +19,17 @@ extra-source-files:  CHANGELOG.md, README.md
 
 executable batvolta-hs
   main-is:             Main.hs
-  -- other-modules:
+  other-modules:
+      Src.Schemas.Passageiros
   -- other-extensions:
   build-depends:       
-    base >=4.13 && <4.14,
+    base >=4.13 && <4.18,
+    text >= 1.2 && < 1.3,
+    csv >= 0.1 && < 0.2,
     cassava,
-    vector
+    directory,
+    vector,
+    filepath >= 1.4 && < 1.5,
+    bytestring >= 0.11 && < 0.12
   -- hs-source-dirs:
   default-language:    Haskell2010

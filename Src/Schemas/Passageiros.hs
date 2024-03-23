@@ -1,4 +1,4 @@
-module Schemas.Passageiro (
+module Src.Schemas.Passageiros (
     Passageiro(..)
     , getPassageiroByCpf
     , cadastraPassageiro
@@ -34,7 +34,7 @@ module Schemas.Passageiro (
         , telefone :: String
         , cep :: String
         , senha :: String
-        } deriving (Show, Generic)
+        } deriving (Show)
 
     instance FromRecord Passageiro
     instance ToRecord Passageiro
@@ -63,8 +63,8 @@ module Schemas.Passageiro (
 
     getPassageiroByCpf :: String -> IO (Maybe Passageiro)
     getPassageiroByCpf cpfBuscado = do
-        usuarios <- carregarUsuarios
-        let passageiroEncontrado = filter (\passageiro -> getCpf passageiro == cpfBuscado) passageiros
+        passageiros <- carregarPassageiros
+        let passageiroEncontrado = filter (\passageiro -> cpf passageiro == cpfBuscado) passageiros
         return $ case passageiroEncontrado of
             [passageiro] -> Just passageiro
             _ -> Nothing
@@ -72,7 +72,7 @@ module Schemas.Passageiro (
     getPassageiroByEmail :: String -> IO (Maybe Passageiro)
     getPassageiroByEmail emailBuscado = do
         passageiros <- carregarPassageiros
-        let passageiroEncontrado = filter (\passageiro -> getEmail passageiro == emailBuscado) passageiros
+        let passageiroEncontrado = filter (\passageiro -> email passageiro == emailBuscado) passageiros
         return $ case passageiroEncontrado of
             [passageiro] -> Just passageiro
             _ -> Nothing
@@ -82,13 +82,13 @@ module Schemas.Passageiro (
         passageiroCpf <- getPassageiroByCpf cpf
         passageiroEmail <- getPassageiroByEmail email
         case passageiroCpf of
-            Just _ -> True
+            Just _ -> return True
             Nothing -> case passageiroEmail of
-                Just _ -> True
-                Nothing -> False
+                Just _ -> return True
+                Nothing -> return False
     
     confereSenha :: Passageiro -> String -> Bool
-    confereSenha passageiro senha = senha == getSenha passageiro
+    confereSenha passageiro senhaPassada = senhaPassada == senha passageiro
 
     -- Remove passando o cpf como parametro
     removePassageiroByCpf :: String -> [Passageiro] -> [Passageiro]
@@ -116,10 +116,10 @@ module Schemas.Passageiro (
     -- Lê o arquivo CSV
     getPassageiroCSV :: FilePath -> IO (Either String CSV)
     getPassageiroCSV path = do
-        arquivo <- readFile path
+        file <- readFile path
         let csv = parseCSV path file -- definir o parseCSV
         case csv of 
-            Left err -> return (Left $ "Não foi possível ler o arquivo CSV: " ++ err)
+            Left err -> return (Left $ "Não foi possível ler o arquivo CSV: " ++ show err)
             Right csv -> return (Right csv)
     
     passageiroObjToCSV :: Passageiro -> String
@@ -147,7 +147,7 @@ module Schemas.Passageiro (
 
     -- Edita o passageiro no arquivo CSV
     -- Busca por cpf e permite edição de cep, telefone e senha
-    editPassageiroCSV :: FilePath -> String -> String -> String -> String -> IO (Either String ())
+    {- editPassageiroCSV :: FilePath -> String -> String -> String -> String -> IO (Either String ())
     editPassageiroCSV path cpf cep telefone senha = do
         maybePassageiro <- getPassageiroByCpf cpf
         case maybePassageiro of
@@ -157,25 +157,20 @@ module Schemas.Passageiro (
                 let novoCSV = "matricula,nome,cpf,email,telefone,cep,senha" ++ passageiroListToCSV (passageiroAtualizado:passageiros)
                 writeFile path novoCSV
                 return (Right ())
-            Nothing -> return (Left "Passageiro não encontrado")
+            Nothing -> return (Left "Passageiro não encontrado") -}
                
         
 
-    removePassageiroCSV :: FilePath -> String -> IO (Either String ())
+    {- removePassageiroCSV :: FilePath -> String -> IO (Either String ())
     removePassageiroCSV path cpf = do
         csv <- getPassageiroCSV path
         case csv of
             Left err -> return (Left err)
-            Right csvFile = do
+            Right csvFile -> do
                 let passageiros = recordToPassageiro csvFile
                 let passageirosAtualizados = removePassageiroByCpf cpf passageiros
                 let novoCSV = "matricula,nome,cpf,email,telefone,cep,senha" ++ passageiroListToCSV passageirosAtualizados
+                B.writeFile -}
     
     getCpf :: Passageiro -> String
     getCpf passageiro = cpf passageiro
-
-main :: IO ()
-main = do
-    let passageiroTeste = Passageiro "Jão" "111.111.222-66" "jão@gmail.com" "9999-9999" "12345-678" "senha123"
-
-    cadastraPassageiro  "Jão" "111.111.222-66" "jão@gmail.com" "9999-9999" "12345-678" "senha123"
