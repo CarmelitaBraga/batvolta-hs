@@ -8,8 +8,6 @@ import Data.Time.Calendar (Day)
 import Data.Time.LocalTime (TimeOfDay)
 import System.IO (openFile, readFile, hClose, IOMode(AppendMode))
 import qualified Data.ByteString.Lazy as BL
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
 
 data Carona = Carona {
     cid :: Int,
@@ -23,20 +21,6 @@ data Carona = Carona {
     avaliacaoMotorista :: Int,
     avaliacoesPassageiros :: [Int]
 } deriving (Show)
-
--- instance ToRecord Carona where
---     toRecord c = record [
---         toField (cid c),
---         toField (hora c),
---         toField (date c),
---         toField (origem c),
---         toField (destino c),
---         toField (motorista c),
---         toField (passageiros c),
---         toField (valor c),
---         toField (avaliacaoMotorista c),
---         toField (avaliacoesPassageiros c)
---     ]
 
 instance ToField TimeOfDay where
     toField time = toField $ formatTime defaultTimeLocale "%H:%M:%S" time
