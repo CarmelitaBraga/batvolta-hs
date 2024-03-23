@@ -1,9 +1,9 @@
 
 module Main where
-import qualified Motorista as SM
 
+import Src.Schemas.Motorista(Motorista, cadastraMotorista, getBy)
 
-main :: IO ()
-main = putStrLn "Hello, Haskell!"
-
-getByCpf :: String -> IO (Maybe SM.Motorista)
+main :: IO (Maybe Motorista)
+main = do
+    cadastraMotorista "Teste" "Teste" "Nomek" "Email" "Telefone" "Senha" "CNH"
+    getBy "cpf" "cpf"
