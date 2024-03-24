@@ -1,9 +1,18 @@
 
 module Main where
 
-import Src.Schemas.Motorista(Motorista, cadastraMotorista, getBy)
+import Src.Schemas.Motorista(Motorista, cadastraMotorista, getBy, removerMotorista, atualizarMotorista)
 
 main :: IO (Maybe Motorista)
 main = do
-    cadastraMotorista "Teste" "Teste" "Nomek" "Email" "Telefone" "Senha" "CNH"
-    getBy "cpf" "cpf"
+    cadastraMotorista "ian" "afdskj" "a" "h" "a" "a" "l"
+    -- getBy "cpf" "cpf"
+    -- removerMotorista "cpf" "b"
+    -- atualizarMotorista "cpf" "a" "57"
+
+
+
+
+    
+
+    
