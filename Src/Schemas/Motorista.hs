@@ -148,8 +148,8 @@ checkIsEmpty path = do
     return isEmpty
 
 
-removerMotorista :: String -> String -> IO (Maybe Motorista)
-removerMotorista coluna atributo = do
+removerMotorista :: String -> IO (Maybe Motorista)
+removerMotorista  atributo = do
     motoristas <- carregarMotoristas csvPath
     let motoristasFiltrados = filter (\motorista -> getField motorista /= atributo) motoristas
     if length motoristasFiltrados /= length motoristas
@@ -158,19 +158,12 @@ removerMotorista coluna atributo = do
             putStrLn "Motorista removido com sucesso."
             return (Just (head motoristasFiltrados)) -- Retornamos Just com qualquer um dos motoristas remanescentes
         else do
-            putStrLn "Nenhum motorista encontrado com o atributo fornecido."
+            putStrLn "Nenhum motorista atrelado a esse cpf foi encontrado."
             return Nothing
     where
-        getField motorista =
-            case coluna of
-                "cpf" -> cpf motorista
-                "cep" -> cep motorista
-                "nome" -> nome motorista
-                "email" -> email motorista
-                "telefone" -> telefone motorista
-                "senha" -> senha motorista
-                "cnh" -> cnh motorista
-                _ -> ""
+        -- Função auxiliar para obter o valor da coluna cpf, cpf não precisa ser passado como String 
+        -- para ser interpretado como coluna
+        getField motorista = cpf motorista
 
 
 escreverMotoristas :: [Motorista] -> IO ()
@@ -182,7 +175,7 @@ escreverMotoristas motoristas = do
 
 
 
---TA FALTANDO IMPEDIR QUE VALORES IGUAIS SEJAM INSERIDOS
+
 
 atualizarMotorista :: String -> String -> String -> IO (Maybe Motorista)
 atualizarMotorista coluna atributo novoValor = do
