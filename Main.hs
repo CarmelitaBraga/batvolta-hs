@@ -5,10 +5,10 @@ import Src.Schemas.Motorista(Motorista, cadastraMotorista, getBy, removerMotoris
 
 main :: IO (Maybe Motorista)
 main = do
-    cadastraMotorista "ian" "afdskj" "a" "h" "a" "a" "l"
+    -- cadastraMotorista "ian" "afdskj" "a" "h" "a" "a" "l"
     -- getBy "cpf" "cpf"
-    -- removerMotorista "cpf" "b"
-    -- atualizarMotorista "cpf" "a" "57"
+    -- removerMotorista "cpf" "56"
+    atualizarMotorista "cpf" "a" "57"
 
 
 

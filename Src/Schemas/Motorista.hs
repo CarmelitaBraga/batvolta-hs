@@ -209,11 +209,11 @@ atualizarMotorista coluna atributo novoValor = do
                 _ -> ""
         atualizarCampo motorista =
             case coluna of
-                "cpf" -> motorista { cpf = novoValor } -- CPF NAO PODE SER ATUALIZADO 
+                -- CPF NAO PODE SER ATUALIZADO 
                 "cep" -> motorista { cep = novoValor }
-                "nome" -> motorista { nome = novoValor }
-                "email" -> motorista { email = novoValor }  -- EMAIL NAO PODE SER IGUAL
+                -- Nome NAO PODE SER ATUALIZADO
+                -- EMAIL NAO PODE SER ATUALIZADO
                 "telefone" -> motorista { telefone = novoValor }
                 "senha" -> motorista { senha = novoValor }
-                "cnh" -> motorista { cnh = novoValor } -- CNH NAO PODE SER IGUAL
+                -- CNH NAO PODE SER ATUALIZADO
                 _ -> motorista
