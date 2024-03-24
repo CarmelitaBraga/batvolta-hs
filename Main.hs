@@ -20,5 +20,7 @@ main = do
     -- Extrai o horário atual do ZonedTime
     let timeOfDay = localTimeOfDay (zonedTimeToLocalTime zonedTime)
 
-    -- CARONA.criarCarona timeOfDay today "Casa de Luana" "Casa de Everton" "André" 19.99
+    let caronaIds = [2]
+    caronas <- CARONA.getCaronaById caronaIds
     CARONA.apagarCarona 1
+    CARONA.criarCarona timeOfDay today "Casa de Luana" "Casa de Everton" "André" 19.99
