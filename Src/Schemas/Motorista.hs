@@ -32,7 +32,7 @@ data Motorista = Motorista{
 } deriving(Show, Eq)
 
 instance ToRecord Motorista where
-    toRecord (Motorista cpf cep nome email telefone senha cnh) = record 
+    toRecord (Motorista cpf cep nome email telefone senha cnh) = record
         [ toField cpf
         , toField cep
         , toField nome
@@ -63,31 +63,31 @@ cadastraMotorista cpf cep nome email telefone senha cnh = do
     case motoristaCpfExist of
         Just motorista -> do
             putStrLn "Já existe um motorista cadastrado com esse CPF"
-            print(motorista)
+            print motorista
             return Nothing
         Nothing -> do
             motoristaEmailExist <- getBy "email" email
             case motoristaEmailExist of
                 Just motorista -> do
                     putStrLn "Já existe um motorista cadastrado com esse Email"
-                    print(motorista)
+                    print motorista
                     return Nothing
                 Nothing -> do
                     motoristaCnhExist <- getBy "cnh" cnh
                     case motoristaCnhExist of
                         Just motorista -> do
                             putStrLn "Já existe um motorista cadastrado com essa CNH"
-                            print(motorista)
+                            print motorista
                             return Nothing
                         Nothing -> do
                             let novoMotorista = Motorista cpf cep nome email telefone senha cnh
-                            insereMotorista novoMotorista 
+                            insereMotorista novoMotorista
                             putStrLn "Motorista cadastrado com sucesso!"
                             return (Just novoMotorista)
 
 
 
-                            
+
 
 --Função para inserir motorista no banco de dados
 insereMotorista :: Motorista -> IO ()
@@ -120,16 +120,15 @@ carregarMotoristas path = do
                 return $ V.toList motoristas
 
 -- Função para buscar valor desejado em uma coluna específica
-getBy :: String -> String -> IO (Maybe Motorista) 
+getBy :: String -> String -> IO (Maybe Motorista)
 getBy coluna atributoDesejado = do
     motoristas <- carregarMotoristas csvPath
     let usuarioEncontrado = filter (\u -> getField u == atributoDesejado) motoristas
     case usuarioEncontrado of
         [u] -> return (Just u)
         _ -> do
-            putStrLn "A"
-            return Nothing            
-    where 
+            return Nothing
+    where
         getField motorista =
             case coluna of
                 "cpf" -> cpf motorista
@@ -143,9 +142,8 @@ getBy coluna atributoDesejado = do
 
 checkIsEmpty :: FilePath -> IO Bool
 checkIsEmpty path = do
-    isEmpty <- withFile path ReadMode $ \handle -> do
+    withFile path ReadMode $ \handle -> do
         hIsEOF handle
-    return isEmpty
 
 
 removerMotorista :: String -> IO (Maybe Motorista)
@@ -178,7 +176,7 @@ escreverMotoristas motoristas = do
 
 
 atualizarMotorista :: String -> String -> String -> IO (Maybe Motorista)
-atualizarMotorista coluna atributo novoValor = do
+atualizarMotorista atributo coluna novoValor = do
     motoristas <- carregarMotoristas csvPath
     let motoristasAtualizados = map (\motorista -> if getField motorista == atributo then atualizarCampo motorista else motorista) motoristas
     if motoristasAtualizados /= motoristas
@@ -187,19 +185,10 @@ atualizarMotorista coluna atributo novoValor = do
             putStrLn "Motorista atualizado com sucesso."
             return (Just (head motoristasAtualizados)) -- Retornamos Just com o motorista atualizado
         else do
-            putStrLn "Nenhum motorista encontrado com o atributo fornecido."
+            putStrLn "Nenhum motorista encontrado com o atributo fornecido, ou o valor passado é o mesmo que o atual."
             return Nothing
     where
-        getField motorista =
-            case coluna of
-                "cpf" -> cpf motorista
-                "cep" -> cep motorista
-                "nome" -> nome motorista
-                "email" -> email motorista
-                "telefone" -> telefone motorista
-                "senha" -> senha motorista
-                "cnh" -> cnh motorista
-                _ -> ""
+        getField motorista = cpf motorista
         atualizarCampo motorista =
             case coluna of
                 -- CPF NAO PODE SER ATUALIZADO 
