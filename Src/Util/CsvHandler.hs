@@ -2,12 +2,6 @@ module Src.Util.CsvHandler where
 
 import Src.Util.Utils (splitBy)
 
-append :: (Show t) => [t] -> FilePath -> IO ()
-append values pathToFile = do
-  appendFile pathToFile csvContent
-  where
-    csvContent = unlines $ map show values
-
 get :: (String -> t) -> String -> IO [t]
 get parser filePath = do
   csvData <- readFile filePath
@@ -16,14 +10,20 @@ get parser filePath = do
   let dataList = map parser lines
   return dataList
 
-write :: (Show t) => [t] -> FilePath -> IO ()
-write values pathToFile = do
+append :: (t -> String) -> [t] -> FilePath -> IO ()
+append formatter values pathToFile = do
+  appendFile pathToFile csvContent
+  where
+    csvContent = unlines $ map formatter values
+
+write :: (t -> String) -> [t] -> FilePath -> IO ()
+write formatter values pathToFile = do
   writeFile pathToFile csvContent
   where
-    csvContent = unlines $ map show values
+    csvContent = unlines $ map formatter values
 
-delete :: (Show t, Eq t) => (t -> Bool) -> (String -> t) -> FilePath -> IO ()
-delete predicate parser pathToFile = do
+delete :: (Show t, Eq t) => (t -> Bool) -> (String -> t) -> (t -> String) -> FilePath -> IO ()
+delete predicate parser formatter pathToFile = do
   dataList <- get parser pathToFile
   let updatedDataList = filter (not . predicate) dataList
-  write updatedDataList pathToFile
+  write formatter updatedDataList pathToFile

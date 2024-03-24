@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, apagarCarona
+    criarCarona, apagarCarona, getCaronaById
 ) where
 
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeOrError)
@@ -12,19 +12,10 @@ import qualified Data.ByteString.Lazy as BL
 
 import Data.List.Split (splitOn)
 import Data.Maybe (fromMaybe)
+import Text.Read (reads, readMaybe)
+import Data.List (isPrefixOf)
 
-data Carona = Carona {
-    cid :: Int,
-    hora :: TimeOfDay,
-    date :: Day,
-    origem :: String,
-    destino :: String,
-    motorista :: String, -- Motorista,
-    passageiros :: [String], -- [Passageiro],
-    valor :: Double,
-    avaliacaoMotorista :: Int,
-    avaliacoesPassageiros :: [Int]
-} deriving (Show, Eq)
+import  Src.Model.Carona as Carona
 
 instance ToField TimeOfDay where
     toField time = toField $ formatTime defaultTimeLocale "%H:%M:%S" time
@@ -78,35 +69,69 @@ getCaronasList = Csv.get parseCarona "./database/Caronas.csv"
 
 
 apagarCarona :: Int -> IO ()
-apagarCarona cidToDelete = do
-    putStrLn "here"
-    deleteCaronaById cidToDelete
-    putStrLn "here"
-
+apagarCarona cidToDelete = deleteCaronaById cidToDelete
 
 deleteCaronaById :: Int -> IO ()
 deleteCaronaById cidToDelete = do
     let csvPath = "./database/Caronas.csv"
-    delete (\c -> cid c == cidToDelete) parseCarona csvPath
+    delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
     putStrLn "Carona deletada com sucesso!"
 
+-- csvLine :: (Show t) => t -> String
+-- csvLine c = intercalate "," . map show . (caronaToList c)
 
+-- Parse a line from CSV into a Carona
 parseCarona :: String -> Carona
 parseCarona line = case splitOn "," line of
     [cidStr, horaStr, dateStr, origem, destino, motorista, passageirosStr, valorStr, avaliacaoMotoristaStr, avaliacoesPassageirosStr] ->
         Carona {
-            cid = readInt cidStr,
-            hora = parseTimeOrError True defaultTimeLocale "%H:%M:%S" horaStr,
+            cid = read cidStr,
+            hora = parseTimeOrError True defaultTimeLocale "%H:%M" horaStr,
             date = parseTimeOrError True defaultTimeLocale "%Y-%m-%d" dateStr,
             origem = origem,
             destino = destino,
             motorista = motorista,
             passageiros = splitOn ";" passageirosStr,
-            valor = readDouble valorStr,
-            avaliacaoMotorista = readInt avaliacaoMotoristaStr,
-            avaliacoesPassageiros = map readInt (splitOn ";" avaliacoesPassageirosStr)
+            valor = read valorStr,
+            avaliacaoMotorista = read avaliacaoMotoristaStr,
+            avaliacoesPassageiros = map read (splitOn ";" avaliacoesPassageirosStr)
         }
     _ -> error "Invalid line format for Carona"
+
+-----------------------------------------------------------
+-- parseCarona :: String -> Carona
+-- parseCarona line = case splitOn "," line of
+--     [cidStr, horaStr, dateStr, origem, destino, motorista, passageirosStr, valorStr, avaliacaoMotoristaStr, avaliacoesPassageirosStr] ->
+--         let
+--             parseCid = case reads cidStr of
+--                 [(cidValue, "")] -> cidValue
+--                 _ -> error "Couldn't parse CID"
+--             parsePassageiros = if null passageirosStr then [] else splitOn ";" passageirosStr
+--             parseValor = readDouble valorStr
+--             parseAvaliacaoMotorista = readInt avaliacaoMotoristaStr
+--             parseAvaliacoesPassageiros = map readInt (splitOn ";" avaliacoesPassageirosStr)
+--         in
+--             Carona {
+--                 cid = parseCid,
+--                 hora = parseTimeOrError True defaultTimeLocale "%H:%M:%S" horaStr,
+--                 date = parseTimeOrError True defaultTimeLocale "%Y-%m-%d" dateStr,
+--                 origem = origem,
+--                 destino = destino,
+--                 motorista = motorista,
+--                 passageiros = parsePassageiros,
+--                 valor = parseValor,
+--                 avaliacaoMotorista = parseAvaliacaoMotorista,
+--                 avaliacoesPassageiros = parseAvaliacoesPassageiros
+--             }
+--     _ -> error "Invalid line format for Carona"
+--------------------
+
+getCaronaById :: [Int] -> IO [Carona]
+getCaronaById targets = do
+  caronasList <- Csv.get strToCarona "./database/Caronas.csv"
+  let result = filter (\u -> cid u `elem` targets) caronasList
+  return result
+
 
 -- Helper function to safely parse Double from String
 readDouble :: String -> Double
