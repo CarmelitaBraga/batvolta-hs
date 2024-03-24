@@ -24,6 +24,7 @@ executable batvolta-hs
     Src.Util.CsvHandler
     Src.Schema.CaronaSchema
     Src.Util.Utils
+    Src.Model.Carona
   -- other-extensions:
   build-depends:       
     base >=4.13 && <4.18,
