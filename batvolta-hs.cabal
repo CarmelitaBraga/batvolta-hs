@@ -21,7 +21,9 @@ executable batvolta-hs
   main-is:             Main.hs
   other-modules:
     -- Src.Schema.Database
+    Src.Util.CsvHandler
     Src.Schema.CaronaSchema
+    Src.Util.Utils
   -- other-extensions:
   build-depends:       
     base >=4.13 && <4.18,
@@ -30,6 +32,7 @@ executable batvolta-hs
     bytestring >= 0.11 && < 0.12,
     time >= 1.12,
     csv >= 0.1 && < 0.2,
-    text >= 2.0
+    text >= 2.0,
+    split >= 0.2.3.4
   -- hs-source-dirs:
   default-language:    Haskell2010

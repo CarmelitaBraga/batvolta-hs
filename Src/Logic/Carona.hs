@@ -24,6 +24,7 @@ infoCarona Carona{..} =
 
 -- aceitar carona
 
+-- alterar carona: adição/remoção de passageiros, status, 
 
 -- display todas as caronas com base no origem/destino, horario/dia, motoristas
 
