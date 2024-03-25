@@ -21,6 +21,9 @@ data Carona = Carona
   }
   deriving (Show, Eq)
 
+instance Read Carona where
+  readsPrec _ str = [(strToCarona str, "")]
+
 -- Function to convert a Carona to a string
 caronaToStr :: Carona -> String
 caronaToStr (Carona c h d o dest m ps v am aps) =

@@ -22,5 +22,9 @@ main = do
 
     let caronaIds = [2]
     caronas <- CARONA.getCaronaById caronaIds
+    mapM_ print caronas  -- Print the retrieved Carona objects
     CARONA.apagarCarona 1
-    CARONA.criarCarona timeOfDay today "Casa de Luana" "Casa de Everton" "André" 19.99
+    -- CARONA.criarCarona timeOfDay today "Casa de Luana" "Casa de Everton" "André" 19.99
+    
+    cs <- CARONA.getAllCaronas
+    print cs

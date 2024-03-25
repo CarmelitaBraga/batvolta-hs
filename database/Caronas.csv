@@ -1,4 +1,4 @@
 0,12:30:00,2024-03-25,Home,Work,John,Daniel;Emma;Sophia,25.50,4,3;5;4
-1,08:00:00,2024-03-26,Work,Home,Alice,Eu,15.75,5,5
+1,08:00:00,2024-03-26,Work,Home,Alice,"",15.75,5,-1
 2,17:45:00,2024-03-27,Gym,Home,Mary,Eu,10.00,4,3
-3,14:15:00,2024-03-28,School,Library,David,Lily;Ethan;Olivia,20.00,3,4;5;55;55;5
+3,14:15:00,2024-03-28,School,Library,David,Lily;Ethan;Olivia,20.00,3,4;5;5;5
