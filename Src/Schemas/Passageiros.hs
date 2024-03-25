@@ -59,7 +59,7 @@ module Src.Schemas.Passageiros (
     
 
     csvFilePath :: FilePath
-    csvFilePath = "./Database/Passageiro.csv"
+    csvFilePath = "./Database/Passageiros.csv"
 
     cadastraPassageiro :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
     cadastraPassageiro nome cpf email telefone cep senha = do
@@ -162,7 +162,7 @@ module Src.Schemas.Passageiros (
     -- Salva o passageiro no arquivo CSV
     savePassageiroCSV :: Passageiro -> IO ()
     savePassageiroCSV  passageiro = do
-        let fileName = "./Database/Passageiro.csv"
+        let fileName = csvFilePath
         withFile fileName AppendMode $ \arq -> do
             B.hPutStr arq $ encode [passageiro]
 
