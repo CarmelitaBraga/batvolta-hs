@@ -2,7 +2,7 @@
 module Main where
 
 import Src.Schemas.Motorista(Motorista, cadastraMotorista, getBy, removerMotorista, atualizarMotorista)
-import Src.Controller.CRUD_Motorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista)
+import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista)
 
 main :: IO (Maybe Motorista)
 main = do
@@ -13,7 +13,7 @@ main = do
     -- atualizarMotorista "cpfh" "57" "96"
 
     -- CRUD
-    -- realizarCadastroMotorista "ian" "f" "f" "f" "f" "f" "f"
+    realizarCadastroMotorista "ian" "f" "f" "f" "f" "f" "f"
     -- visualizarInfoCadastroMotorista "cpf" "ian"
     -- cancelarCadastroMotorista "ian"
     -- atualizarCadastroMotorista "ian" "cep" "50501"

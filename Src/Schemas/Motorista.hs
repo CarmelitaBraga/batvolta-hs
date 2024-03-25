@@ -8,6 +8,7 @@ module Src.Schemas.Motorista (
     atualizarMotorista
 ) where
 
+
 import Data.Csv
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Char8 as B8
@@ -16,6 +17,7 @@ import GHC.IO.Handle (hClose)
 import Control.Monad (MonadPlus(mzero))
 import qualified Data.Vector as V
 import Control.Monad (liftM3)
+
 
 csvPath :: FilePath
 csvPath = "./database/motorista.csv"
@@ -31,6 +33,7 @@ data Motorista = Motorista{
     cnh :: String
 } deriving(Show, Eq)
 
+
 instance ToRecord Motorista where
     toRecord (Motorista cpf cep nome email telefone senha cnh) = record
         [ toField cpf
@@ -41,6 +44,7 @@ instance ToRecord Motorista where
         , toField senha
         , toField cnh
         ]
+
 
 instance FromRecord Motorista where
     parseRecord v
@@ -55,38 +59,33 @@ instance FromRecord Motorista where
         | otherwise = mzero
 
 
-
-
 cadastraMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
 cadastraMotorista cpf cep nome email telefone senha cnh = do
     motoristaCpfExist <- getBy "cpf" cpf
     case motoristaCpfExist of
         Just motorista -> do
             putStrLn "Já existe um motorista cadastrado com esse CPF"
-            print motorista
+            print motorista --- AQUI IANN
             return Nothing
         Nothing -> do
             motoristaEmailExist <- getBy "email" email
             case motoristaEmailExist of
                 Just motorista -> do
                     putStrLn "Já existe um motorista cadastrado com esse Email"
-                    print motorista
+                    print motorista -- AQUI TMB
                     return Nothing
                 Nothing -> do
                     motoristaCnhExist <- getBy "cnh" cnh
                     case motoristaCnhExist of
                         Just motorista -> do
                             putStrLn "Já existe um motorista cadastrado com essa CNH"
-                            print motorista
+                            print motorista -- AQUI TMB
                             return Nothing
                         Nothing -> do
                             let novoMotorista = Motorista cpf cep nome email telefone senha cnh
                             insereMotorista novoMotorista
                             putStrLn "Motorista cadastrado com sucesso!"
                             return (Just novoMotorista)
-
-
-
 
 
 --Função para inserir motorista no banco de dados
@@ -107,6 +106,7 @@ insereMotorista motorista = do
                 BL.hPutStr handle csvData
                 putStrLn "Motorista inserido com sucesso"
 
+
 --Carrega o banco de dados de motorista
 carregarMotoristas :: FilePath -> IO [Motorista]
 carregarMotoristas path = do
@@ -118,6 +118,7 @@ carregarMotoristas path = do
                 return []
             Right motoristas -> do
                 return $ V.toList motoristas
+
 
 -- Função para buscar valor desejado em uma coluna específica
 getBy :: String -> String -> IO (Maybe Motorista)
@@ -139,6 +140,7 @@ getBy coluna atributoDesejado = do
                 "senha" -> senha motorista
                 "cnh" -> cnh motorista
                 _ -> ""
+
 
 checkIsEmpty :: FilePath -> IO Bool
 checkIsEmpty path = do
@@ -171,10 +173,6 @@ escreverMotoristas motoristas = do
         BL.hPutStr handle csvData
 
 
-
-
-
-
 atualizarMotorista :: String -> String -> String -> IO (Maybe Motorista)
 atualizarMotorista atributo coluna novoValor = do
     motoristas <- carregarMotoristas csvPath
@@ -185,7 +183,7 @@ atualizarMotorista atributo coluna novoValor = do
             putStrLn "Motorista atualizado com sucesso."
             return (Just (head motoristasAtualizados)) -- Retornamos Just com o motorista atualizado
         else do
-            putStrLn "Nenhum motorista encontrado com o atributo fornecido, ou o valor passado é o mesmo que o atual."
+            putStrLn "Nenhum motorista encontrado com o cpf fornecido, ou o valor passado é o mesmo que o atual."
             return Nothing
     where
         getField motorista = cpf motorista
@@ -199,3 +197,7 @@ atualizarMotorista atributo coluna novoValor = do
                 "senha" -> motorista { senha = novoValor }
                 -- CNH NAO PODE SER ATUALIZADO
                 _ -> motorista
+
+
+{- confereSenha :: Motorista -> String -> Bool
+    confereSenha motorista senhaPassada = senhaPassada == senha motorista -}
