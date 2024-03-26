@@ -1,13 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
-module Src.Schemas.Passageiros (
+module Src.Schemas.SchemaPassageiro (
     Passageiro(..)
     , getPassageiroByCpf
     , cadastraPassageiro
     , confereSenha
-    , getCpf
     , removePassageiroByCpf
-    , savePassageiroCSV
     , editPassageiroCSV) where
 
     import Text.CSV
@@ -132,13 +130,13 @@ module Src.Schemas.Passageiros (
 
     -- Busca por cpf e permite edição de cep, telefone e senha
     editPassageiroCSV :: String -> String -> String -> String -> IO (Maybe Passageiro)
-    editPassageiroCSV cpfBuscado cep telefone senha = do
+    editPassageiroCSV cpfBuscado telefone cep senha = do
         passageiros <- carregarPassageiros
         let passageirosFiltrados = filter (\passageiro -> getCpf passageiro == cpfBuscado) passageiros
         if not (null passageirosFiltrados)
             then do
                 let passageiro = head passageirosFiltrados
-                let passageiroEditado = passageiro { cep = cep, telefone = telefone, senha = senha }
+                let passageiroEditado = passageiro {  telefone = telefone, cep = cep, senha = senha }
                 let passageirosAtualizados = map (\passageiro -> if getCpf passageiro == cpfBuscado then passageiroEditado else passageiro) passageiros
                 escreverPassageiros passageirosAtualizados
                 putStrLn "Passageiro editado com sucesso!"
