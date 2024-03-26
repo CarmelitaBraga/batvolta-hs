@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Src.Logic.Carona(infoCarona) where
+module Src.Logic.Carona(infoCarona, infoCaronaByDestino) where
 
 import Src.Schema.CaronaSchema
 import Src.Model.Carona
@@ -23,7 +23,11 @@ infoCarona caronaId = do
             ", Rate do Motorista: " ++ show avaliacaoMotorista ++
             ", Rate dos Passageiros: [" ++ intercalate ", " (map show avaliacoesPassageiros) ++ "]"
 
-
+infoCaronaByDestino :: String -> IO [String]
+infoCaronaByDestino dest = do
+    caronas <- getAllCaronas
+    let selectedCaronas = filter (\c -> destino c == dest) caronas
+    mapM infoCarona (map cid selectedCaronas)
 
 -- infoCaronaByDestino :: String -> [Carona] -> [String]
 -- infoCaronaByDestino destino caronas = map infoCarona $ filter ((== destino) . destino) caronas

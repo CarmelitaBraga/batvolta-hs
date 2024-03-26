@@ -1,39 +1,41 @@
-module Src.Controller.ControllerCarona where
+module Src.Controller.ControllerCarona (mostrarCaronasPorDestino) where
 
-    import Src.Logic.CaronaLogic
+import Src.Logic.Carona
 
-criarCaronaMotorista::String->(Maybe Carona)
-criarCaronaMotorista = 
+mostrarCaronasPorDestino :: String -> IO String
+mostrarCaronasPorDestino destino = do
+    caronas <- infoCaronaByDestino destino
+    return $ unlines caronas
 
-solicitarCaronaPassageiro::
-solicitarCaronaPassageiro = 
+-- criarCaronaMotorista::String->(Maybe Carona)
+-- criarCaronaMotorista = 
 
-responderSolicitacaoCarona::
-responderSolicitacaoCarona = 
+-- solicitarCaronaPassageiro::
+-- solicitarCaronaPassageiro = 
 
-deletarCaronaMotorista::
-deletarCaronaMotorista =
+-- responderSolicitacaoCarona::
+-- responderSolicitacaoCarona = 
 
-cancelarCaronaPassageiro::
-cancelarCaronaPassageiro = 
+-- deletarCaronaMotorista::
+-- deletarCaronaMotorista =
 
-atualizarStatusCarona::
-atualizarStatusCarona =
+-- cancelarCaronaPassageiro::
+-- cancelarCaronaPassageiro = 
 
-mostrarCaronasPorDestino::
-mostrarCaronasPorDestino =
+-- atualizarStatusCarona::
+-- atualizarStatusCarona =
 
-mostrarCaronasPassageiro::
-mostrarCaronasPassageiro =
+-- mostrarCaronasPassageiro::
+-- mostrarCaronasPassageiro =
 
-mostrarCaronasMotorista::
-mostrarCaronasMotorista =
+-- mostrarCaronasMotorista::
+-- mostrarCaronasMotorista =
 
-mostrarCaronaPorId::
-mostrarCaronaPorId =
+-- mostrarCaronaPorId::
+-- mostrarCaronaPorId =
 
-avaliarMotoristaCarona::
-avaliarMotoristaCarona =
+-- avaliarMotoristaCarona::
+-- avaliarMotoristaCarona =
 
-avaliarPassageiroCarona::
-avaliarPassageiroCarona =
+-- avaliarPassageiroCarona::
+-- avaliarPassageiroCarona =

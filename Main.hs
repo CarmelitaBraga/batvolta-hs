@@ -7,6 +7,7 @@ import Src.Schema.CaronaSchema as CARONA
 import Src.Logic.Carona as C
 import Data.Time.LocalTime
 import Src.Model.Carona
+import Src.Controller.ControllerCarona
 
 main :: IO ()
 main = do
@@ -25,7 +26,7 @@ main = do
     -- let caronaIds = [2]
     -- caronas <- CARONA.getCaronaById caronaIds
     -- mapM_ print caronas  -- Print the retrieved Carona objects
-    CARONA.deleteCaronaById 1
+    -- CARONA.deleteCaronaById 1
     -- CARONA.criarCarona timeOfDay today "Casa de Luana" "Casa de Everton" "André" 19.99
     
     cs <- CARONA.getAllCaronas
@@ -34,5 +35,8 @@ main = do
     aaaa <- C.infoCarona 0
     print aaaa
 
-    -- dest <- selectCaronaByDestino "Home"
-    -- print dest
+    dest <- infoCaronaByDestino "Home"
+    print dest
+
+    caronas <- mostrarCaronasPorDestino "Home"
+    putStrLn caronas
