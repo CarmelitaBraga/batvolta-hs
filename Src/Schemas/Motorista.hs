@@ -65,21 +65,18 @@ cadastraMotorista cpf cep nome email telefone senha cnh = do
     case motoristaCpfExist of
         Just motorista -> do
             putStrLn "Já existe um motorista cadastrado com esse CPF"
-            print motorista --- AQUI IANN
             return Nothing
         Nothing -> do
             motoristaEmailExist <- getBy "email" email
             case motoristaEmailExist of
                 Just motorista -> do
                     putStrLn "Já existe um motorista cadastrado com esse Email"
-                    print motorista -- AQUI TMB
                     return Nothing
                 Nothing -> do
                     motoristaCnhExist <- getBy "cnh" cnh
                     case motoristaCnhExist of
                         Just motorista -> do
                             putStrLn "Já existe um motorista cadastrado com essa CNH"
-                            print motorista -- AQUI TMB
                             return Nothing
                         Nothing -> do
                             let novoMotorista = Motorista cpf cep nome email telefone senha cnh
@@ -190,11 +187,11 @@ atualizarMotorista atributo coluna novoValor = do
         atualizarCampo motorista =
             case coluna of
                 -- CPF NAO PODE SER ATUALIZADO 
-                "cep" -> motorista { cep = novoValor }
+                "Cep" -> motorista { cep = novoValor }
                 -- Nome NAO PODE SER ATUALIZADO
                 -- EMAIL NAO PODE SER ATUALIZADO
-                "telefone" -> motorista { telefone = novoValor }
-                "senha" -> motorista { senha = novoValor }
+                "Telefone" -> motorista { telefone = novoValor }
+                "Senha" -> motorista { senha = novoValor }
                 -- CNH NAO PODE SER ATUALIZADO
                 _ -> motorista
 

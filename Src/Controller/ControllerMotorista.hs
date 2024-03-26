@@ -1,5 +1,6 @@
 module Src.Controller.ControllerMotorista where
 
+import Src.Schemas.Motorista(Motorista)
 import Src.Logic.MotoristaLogic (cadastrarLogicMotorista,atualizarLogicMotorista,removerLogicMotorista,buscarLogicMotorista)
 
 

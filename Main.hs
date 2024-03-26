@@ -12,9 +12,9 @@ main = do
     -- removerMotorista "afdskj"
     -- atualizarMotorista "cpfh" "57" "96"
 
-    -- CRUD
-    realizarCadastroMotorista "ian" "f" "f" "f" "f" "f" "f"
-    -- visualizarInfoCadastroMotorista "cpf" "ian"
-    -- cancelarCadastroMotorista "ian"
-    -- atualizarCadastroMotorista "ian" "cep" "50501"
+    -- CRUDddaa1
+    -- realizarCadastroMotorista "11120945612" "f122" "f122" "usuario@example.com" "123231321" "123123" "123"
+    -- visualizarInfoCadastroMotorista "11120945612"
+    -- cancelarCadastroMotorista "ian1"
+    atualizarCadastroMotorista "11120945612" "Telefone" "teste2"
 
