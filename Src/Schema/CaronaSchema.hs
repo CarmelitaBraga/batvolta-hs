@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, apagarCarona, getCaronaById, getAllCaronas
+    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino
 ) where
 
 import Data.Time.Calendar (Day)
@@ -12,6 +12,7 @@ import Data.List.Split (splitOn)
 import Src.Util.CsvHandler as Csv
 import Src.Model.Carona as Carona
 import GHC.IO (unsafePerformIO)
+import Debug.Trace (traceShow)
 
 instance ToField TimeOfDay where
     toField time = toField $ formatTime defaultTimeLocale "%H:%M:%S" time
@@ -24,6 +25,9 @@ type CounterState = Int
 
 counterState :: CounterState
 counterState = 0
+
+csvPath::String
+csvPath = "./database/Caronas.csv"
 
 -- Função para incrementar o contador de IDs de carona
 incrementCounter :: CounterState -> IO CounterState
@@ -70,22 +74,29 @@ criarCarona hora date origem destino motorista valor = do
     putStrLn "Carona criada com sucesso!"
 
 getAllCaronas :: IO [Carona]
-getAllCaronas = Csv.get strToCarona "./database/Caronas.csv"
+getAllCaronas = Csv.get strToCarona csvPath
 
 getCaronaById :: [Int] -> IO [Carona]
 getCaronaById targets = do
-  caronasList <- Csv.get strToCarona "./database/Caronas.csv"
+  caronasList <- Csv.get strToCarona csvPath
   let result = filter (\u -> cid u `elem` targets) caronasList
   return result
 
-apagarCarona :: Int -> IO ()
-apagarCarona cidToDelete = deleteCaronaById cidToDelete
-
 deleteCaronaById :: Int -> IO ()
 deleteCaronaById cidToDelete = do
-    let csvPath = "./database/Caronas.csv"
-    delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
-    putStrLn "Carona deletada com sucesso!"
+    caronas <- getCaronaById [cidToDelete]
+    if null caronas
+        then putStrLn "Carona inexistente!" 
+    else do
+        delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
+        putStrLn "Carona deletada com sucesso!"
+
+selectCaronaByDestino::String->IO [Carona]
+selectCaronaByDestino dest = do
+    allCaronas <- get parseCarona csvPath
+    let result = filter (\x -> destino x == dest) allCaronas
+    traceShow result $ return ()
+    return result
 
 -- Parse a line from CSV into a Carona
 parseCarona :: String -> Carona
@@ -93,7 +104,7 @@ parseCarona line = case splitOn "," line of
     [cidStr, horaStr, dateStr, origem, destino, motorista, passageirosStr, valorStr, avaliacaoMotoristaStr, avaliacoesPassageirosStr] ->
         Carona {
             cid = read cidStr,
-            hora = parseTimeOrError True defaultTimeLocale "%H:%M" horaStr,
+            hora = parseTimeOrError True defaultTimeLocale "%H:%M:%S" horaStr,
             date = parseTimeOrError True defaultTimeLocale "%Y-%m-%d" dateStr,
             origem = origem,
             destino = destino,
@@ -107,13 +118,7 @@ parseCarona line = case splitOn "," line of
 
 writeArquivoCarona :: Carona -> IO ()
 writeArquivoCarona carona = do
-    let fileName = "./database/Caronas.csv"
-    arq <- openFile fileName AppendMode
+    arq <- openFile csvPath AppendMode
     BL.hPutStr arq $ encode [carona]
     hClose arq
 
--- Criar o arquivo CSV da Carona (O Main iniciaria todos os arquivos CSV ao invés de estarem criados já)
--- criarArquivoCSV :: String
--- criarArquivoCSV = do
---     -- Cabeçalho como um ByteString
---     let header = B8.pack "Data,Hora,Disponibilidade,Responsavel,ListaEspera\n"
