@@ -6,6 +6,7 @@ import Src.Schema.CaronaSchema
 import Src.Model.Carona
 
 import Data.List (find)
+import Data.List (intercalate)
 
 infoCarona:: Int -> IO String
 infoCarona caronaId = do
@@ -14,13 +15,14 @@ infoCarona caronaId = do
     case maybeCarona of
         Nothing -> return "Carona not found"
         Just Carona{..} -> return $
-            "Origem: " ++ origem ++ ", " ++
-            "Destino: " ++ destino ++ ", " ++
-            "Motorista: " ++ show motorista ++ ", " ++
-            "Passageiros: " ++ show passageiros ++ ", " ++
-            "Valor: " ++ show valor ++ ", " ++
-            "Rate do Motorista: " ++ show avaliacaoMotorista ++ ", " ++
-            "Rate dos Passageiros: " ++ show avaliacoesPassageiros
+            "Origem: " ++ origem ++
+            ", Destino: " ++ destino ++
+            ", Motorista: " ++ motorista ++
+            ", Passageiros: [" ++ intercalate ", " passageiros ++ "]" ++
+            ", Valor: " ++ show valor ++
+            ", Rate do Motorista: " ++ show avaliacaoMotorista ++
+            ", Rate dos Passageiros: [" ++ intercalate ", " (map show avaliacoesPassageiros) ++ "]"
+
 
 
 -- infoCaronaByDestino :: String -> [Carona] -> [String]
