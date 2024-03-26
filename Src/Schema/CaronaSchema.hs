@@ -11,12 +11,32 @@ import qualified Data.ByteString.Lazy as BL
 import Data.List.Split (splitOn)
 import Src.Util.CsvHandler as Csv
 import Src.Model.Carona as Carona
+import GHC.IO (unsafePerformIO)
 
 instance ToField TimeOfDay where
     toField time = toField $ formatTime defaultTimeLocale "%H:%M:%S" time
 
 instance ToField Day where
     toField day = toField $ formatTime defaultTimeLocale "%Y-%m-%d" day
+
+-- Definição do estado do contador para IDs de carona
+type CounterState = Int
+
+counterState :: CounterState
+counterState = 0
+
+-- Função para incrementar o contador de IDs de carona
+incrementCounter :: CounterState -> IO CounterState
+incrementCounter currentState = do
+    allCaronas <- getAllCaronas
+    let nextId = findNextId currentState allCaronas
+    return nextId
+
+findNextId :: CounterState -> [Carona] -> CounterState
+findNextId currentId caronasList =
+    if any (\u -> cid u == currentId) caronasList
+        then findNextId (currentId + 1) caronasList
+        else currentId
 
 instance ToRecord Carona where
     toRecord entry = record
@@ -35,7 +55,7 @@ instance ToRecord Carona where
 criarCarona :: TimeOfDay -> Day -> String -> String -> String -> Double -> IO ()
 criarCarona hora date origem destino motorista valor = do
     let carona = Carona {
-        cid = 0,
+        cid = counterState,
         hora = hora,
         date = date,
         origem = origem,
