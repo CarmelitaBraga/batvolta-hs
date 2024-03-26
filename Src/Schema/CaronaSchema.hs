@@ -58,8 +58,9 @@ instance ToRecord Carona where
 
 criarCarona :: TimeOfDay -> Day -> String -> String -> String -> Double -> IO ()
 criarCarona hora date origem destino motorista valor = do
+    nextId <- incrementCounter counterState
     let carona = Carona {
-        cid = counterState,
+        cid = nextId,
         hora = hora,
         date = date,
         origem = origem,
