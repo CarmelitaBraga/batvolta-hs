@@ -4,7 +4,9 @@ import Data.Csv
 import Data.Time
 import Data.Time.Calendar 
 import Src.Schema.CaronaSchema as CARONA
+import Src.Logic.Carona as C
 import Data.Time.LocalTime
+import Src.Model.Carona
 
 main :: IO ()
 main = do
@@ -20,11 +22,17 @@ main = do
     -- Extrai o horário atual do ZonedTime
     let timeOfDay = localTimeOfDay (zonedTimeToLocalTime zonedTime)
 
-    let caronaIds = [2]
-    caronas <- CARONA.getCaronaById caronaIds
-    mapM_ print caronas  -- Print the retrieved Carona objects
-    CARONA.apagarCarona 1
+    -- let caronaIds = [2]
+    -- caronas <- CARONA.getCaronaById caronaIds
+    -- mapM_ print caronas  -- Print the retrieved Carona objects
+    CARONA.deleteCaronaById 1
     -- CARONA.criarCarona timeOfDay today "Casa de Luana" "Casa de Everton" "André" 19.99
     
     cs <- CARONA.getAllCaronas
     print cs
+
+    aaaa <- C.infoCarona 0
+    print aaaa
+
+    -- dest <- selectCaronaByDestino "Home"
+    -- print dest

@@ -1,21 +1,40 @@
-module Src.Logic.Carona() where
+{-# LANGUAGE RecordWildCards #-}
 
-import Data.Time.Calendar (Day)
-import Data.Time.LocalTime (TimeOfDay)
-import Logic.Passageiro (Passageiro)
-import Logic.Motorista (Motorista)
+module Src.Logic.Carona(infoCarona) where
 
--- informações sobre a carona
-infoCarona::Carona->String
-infoCarona Carona{..} = 
-    "Origem: " ++ origem ++
-    "\nDestino: " ++ destino ++
-    "\nMotorista: " ++ show motorista ++
-    "\nPassageiros: " ++ show passageiros ++
-    "\nValor: " ++ show valor ++
-    "\nAvaliação do Motorista: " ++ show avaliacaoMotorista ++
-    "\nAvaliações dos Passageiros: " ++ show avaliacoesPassageiros
-    
+import Src.Schema.CaronaSchema
+import Src.Model.Carona
+
+import Data.List (find)
+
+infoCarona:: Int -> IO String
+infoCarona caronaId = do
+    caronas <- getAllCaronas
+    let maybeCarona = find (\c -> caronaId == cid c) caronas
+    case maybeCarona of
+        Nothing -> return "Carona not found"
+        Just Carona{..} -> return $
+            "Origem: " ++ origem ++ ", " ++
+            "Destino: " ++ destino ++ ", " ++
+            "Motorista: " ++ show motorista ++ ", " ++
+            "Passageiros: " ++ show passageiros ++ ", " ++
+            "Valor: " ++ show valor ++ ", " ++
+            "Rate do Motorista: " ++ show avaliacaoMotorista ++ ", " ++
+            "Rate dos Passageiros: " ++ show avaliacoesPassageiros
+
+
+-- infoCaronaByDestino :: String -> [Carona] -> [String]
+-- infoCaronaByDestino destino caronas = map infoCarona $ filter ((== destino) . destino) caronas
+--     where
+--         infoCarona Carona{..} = 
+--             "Origem: " ++ origem ++
+--             "\nDestino: " ++ destino ++
+--             "\nMotorista: " ++ show motorista ++
+--             "\nPassageiros: " ++ show passageiros ++
+--             "\nValor: " ++ show valor ++
+--             "\nAvaliação do Motorista: " ++ show avaliacaoMotorista ++
+--             "\nAvaliações dos Passageiros: " ++ show avaliacoesPassageiros
+
 -- cancelar carona
     -- motorista
     -- passageiros

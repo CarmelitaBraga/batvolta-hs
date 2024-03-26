@@ -21,10 +21,11 @@ executable batvolta-hs
   main-is:             Main.hs
   other-modules:
     -- Src.Schema.Database
-    Src.Util.CsvHandler
-    Src.Schema.CaronaSchema
     Src.Util.Utils
     Src.Model.Carona
+    Src.Logic.Carona
+    Src.Util.CsvHandler
+    Src.Schema.CaronaSchema
   -- other-extensions:
   build-depends:       
     base >=4.13 && <4.18,
