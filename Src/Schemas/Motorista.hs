@@ -32,7 +32,7 @@ data Motorista = Motorista{
     telefone :: String,
     senha :: String,
     cnh :: String
-} deriving(Show, Eq)
+} deriving(Eq)
 
 
 instance ToRecord Motorista where
@@ -59,6 +59,18 @@ instance FromRecord Motorista where
             <*> v .! 6
         | otherwise = mzero
 
+
+--Funciona como ToString d
+instance Show Motorista where
+    show (Motorista cpf cep nome email telefone senha cnh) =
+        "Motorista { CPF: " ++ cpf ++
+        ", CEP: " ++ cep ++
+        ", Nome: " ++ nome ++
+        ", E-mail: " ++ email ++
+        ", Telefone: " ++ telefone ++
+        ", CNH: " ++ cnh ++
+        " }"
+        
 
 cadastraMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
 cadastraMotorista cpf cep nome email telefone senha cnh = do

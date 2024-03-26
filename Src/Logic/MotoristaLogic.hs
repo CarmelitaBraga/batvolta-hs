@@ -53,7 +53,6 @@ buscarMotoristaLogic cpf
         return Nothing
     | otherwise = do
         resultado <- getBy "cpf" cpf
-        print resultado  -- Imprime o valor retornado pela função getBy
         return Nothing
 
 realizarLoginMotoristaLogic :: String -> String -> IO (Maybe Motorista)
