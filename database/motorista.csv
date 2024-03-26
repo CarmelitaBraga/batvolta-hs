@@ -1,2 +1,3 @@
 cpf,cep,nome,email,telefone,senha,cnh
-11120945612,f122,f122,usuario@example.com,f,123123,123
+11120945612,,f122,usuario@example.com,f,123123,123
+11111111111,14,ian,ian@gmail.com,70,890000,08

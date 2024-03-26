@@ -17,7 +17,6 @@ inputInt prompt = do
     str <- inputString prompt
     return (read str)
 
-
 -- Implementação dos menus
 menuPrincipal :: IO (Maybe Motorista)
 menuPrincipal = do
@@ -73,17 +72,23 @@ menuCadastrarMotorista = do
 menuCancelarCadastro :: IO (Maybe Motorista)
 menuCancelarCadastro = do
     putStrLn "\nCancelar Cadastro de Motorista"
-    cpf <- inputString "Digite o CPF do motorista a ser cancelado: "
-    resultado <- cancelarCadastroMotorista cpf
+    cpf <- inputString "Digite seu CPF: "
+    senha <- inputString "Digite sua senha:"
+    resultado <- cancelarCadastroMotorista cpf senha
     case resultado of
-        Just motorista -> putStrLn "Cadastro de motorista cancelado com sucesso!"
-        Nothing -> putStrLn "Erro ao cancelar cadastro de motorista."
-    menuPrincipal
+        Just motorista -> do 
+            putStrLn "Cadastro de motorista cancelado com sucesso!"
+            menuPrincipal        
+        Nothing -> do
+            putStrLn "Erro ao cancelar cadastro de motorista."
+            menuOpcoesMotorista
+    
 
 menuAtualizarCadastro :: IO (Maybe Motorista)
 menuAtualizarCadastro = do
     putStrLn "\nAtualizar Cadastro de Motorista"
-    cpf <- inputString "Digite o CPF do motorista: "
+    cpf <- inputString "Digite seu CPF: "
+    senha <- inputString "Digite sua senha:"
     putStrLn "Selecione o atributo a ser atualizado:"
     putStrLn "1 - Telefone"
     putStrLn "2 - Cep"
@@ -91,9 +96,9 @@ menuAtualizarCadastro = do
     opcao <- inputString "Opção: "
     novoValor <- inputString "Digite o novo valor: "
     resultado <- case opcao of
-        "1" -> atualizarCadastroMotorista cpf "Telefone" novoValor
-        "2" -> atualizarCadastroMotorista cpf "Cep" novoValor
-        "3" -> atualizarCadastroMotorista cpf "Senha" novoValor
+        "1" -> atualizarCadastroMotorista cpf senha "Telefone" novoValor
+        "2" -> atualizarCadastroMotorista cpf senha "Cep" novoValor
+        "3" -> atualizarCadastroMotorista cpf senha "Senha" novoValor
         _   -> return Nothing
     case resultado of
         Just motorista -> putStrLn "Cadastro de motorista atualizado com sucesso!"
@@ -106,11 +111,12 @@ menuVisualizarInfo = do
     cpf <- inputString "Digite o CPF do motorista: "
     resultado <- visualizarInfoCadastroMotorista cpf
     case resultado of
-        Just resultado -> do
+        Just motorista -> do
             putStrLn "Informações do motorista:"
-            putStrLn $ show resultado
+            putStrLn $ show motorista
         Nothing -> putStrLn "Motorista não encontrado."
     menuOpcoesMotorista
+
 
 menuRealizarLogin :: IO (Maybe Motorista)
 menuRealizarLogin = do
@@ -125,5 +131,3 @@ menuRealizarLogin = do
         Nothing -> do 
             putStrLn "E-mail ou senha inválidos."
             menuPrincipal
-
-

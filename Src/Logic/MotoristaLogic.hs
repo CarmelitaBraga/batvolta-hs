@@ -31,21 +31,49 @@ cadastrarMotoristaLogic cpf cep nome email telefone senha cnh
 
 
 
-atualizarMotoristaLogic :: String -> String -> String -> IO (Maybe Motorista)
-atualizarMotoristaLogic cpf coluna novoValor
+atualizarMotoristaLogic :: String -> String -> String -> String -> IO (Maybe Motorista)
+atualizarMotoristaLogic cpf senhaNecessaria coluna novoAtributo
     | validarCPF cpf = do
         putStrLn "CPF não atende aos requisitos"
         return Nothing
     | coluna `notElem` ["Telefone", "Cep", "Senha"] = do
         putStrLn "Escolha um atributo valido para atualizar"
         return Nothing
-    | otherwise = atualizarMotorista cpf coluna novoValor
+    | otherwise = do 
+        resultado <- getBy "cpf" cpf
+        case resultado of
+            Just motorista -> if confereSenha motorista senhaNecessaria
+                                then do
+                                    atualizarMotorista cpf coluna novoAtributo
+                                    return (Just motorista)
+                                else do
+                                    putStrLn "Senha incorreta"
+                                    return Nothing
+            Nothing -> do
+                putStrLn "Motorista não encontrado"
+                return Nothing
+        
 
-removerMotoristaLogic :: String -> IO (Maybe Motorista)
-removerMotoristaLogic cpf
-    | cpf == "" = return Nothing
-    | otherwise = removerMotorista cpf
+removerMotoristaLogic :: String -> String -> IO (Maybe Motorista)
+removerMotoristaLogic cpf senhaNecessaria
+    | validarCPF cpf = do
+        putStrLn "CPF não atende aos requisitos"
+        return Nothing
+    | otherwise = do
+        resultado <- getBy "cpf" cpf
+        case resultado of
+            Just motorista -> if confereSenha motorista senhaNecessaria
+                                then do
+                                    removerMotorista cpf
+                                    return (Just motorista)
+                                else do
+                                    putStrLn "Senha incorreta"
+                                    return Nothing
+            Nothing -> do
+                putStrLn "Motorista não encontrado"
+                return Nothing
 
+                
 buscarMotoristaLogic :: String -> IO (Maybe Motorista)
 buscarMotoristaLogic cpf
     | validarCPF cpf = do
@@ -53,7 +81,7 @@ buscarMotoristaLogic cpf
         return Nothing
     | otherwise = do
         resultado <- getBy "cpf" cpf
-        return Nothing
+        return resultado
 
 realizarLoginMotoristaLogic :: String -> String -> IO (Maybe Motorista)
 realizarLoginMotoristaLogic email senha = do
@@ -73,3 +101,6 @@ realizarLoginMotoristaLogic email senha = do
             Nothing -> do
                 putStrLn "Email não encontrado"
                 return Nothing
+
+
+-- Pedir senha pra atualizar e remover usuario

@@ -14,7 +14,7 @@ main = do
 
     -- Controller
     --realizarCadastroMotorista "11120945612" "f122" "f122" "usuario@example.com" "123231321" "123123" "123"
-    -- visualizarInfoCadastroMotorista "11120945612"
+    -- visualizarInfoCadastroMotorista "11111111111"
     -- cancelarCadastroMotorista "ian1"
     -- atualizarCadastroMotorista "11111111111" "Cep" "Kf"
     -- realizarLoginMotorista "iangmai.com" "13"
