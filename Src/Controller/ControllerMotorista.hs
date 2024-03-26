@@ -1,23 +1,21 @@
 module Src.Controller.ControllerMotorista where
 
 import Src.Schemas.Motorista(Motorista)
-import Src.Logic.MotoristaLogic (cadastrarLogicMotorista,atualizarLogicMotorista,removerLogicMotorista,buscarLogicMotorista)
+import Src.Logic.MotoristaLogic (cadastrarMotoristaLogic,atualizarMotoristaLogic,removerMotoristaLogic,buscarMotoristaLogic,realizarLoginMotoristaLogic)
 
 
 realizarCadastroMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
-realizarCadastroMotorista cpf cep nome email telefone senha cnh = cadastrarLogicMotorista cpf cep nome email telefone senha cnh
+realizarCadastroMotorista cpf cep nome email telefone senha cnh = cadastrarMotoristaLogic cpf cep nome email telefone senha cnh
 
 cancelarCadastroMotorista :: String -> IO (Maybe Motorista)
-cancelarCadastroMotorista cpf = removerLogicMotorista cpf
+cancelarCadastroMotorista cpf = removerMotoristaLogic cpf
 
 atualizarCadastroMotorista :: String -> String -> String -> IO (Maybe Motorista)
-atualizarCadastroMotorista cpf atributo novoValor = atualizarLogicMotorista cpf atributo novoValor
+atualizarCadastroMotorista cpf atributo novoValor = atualizarMotoristaLogic cpf atributo novoValor
 
 visualizarInfoCadastroMotorista :: String -> IO (Maybe Motorista)
-visualizarInfoCadastroMotorista cpf = buscarLogicMotorista cpf
+visualizarInfoCadastroMotorista cpf = buscarMotoristaLogic cpf
 
-
-
---Login motorista
-
+realizarLoginMotorista :: String -> String -> IO (Maybe Motorista)
+realizarLoginMotorista email senha = realizarLoginMotoristaLogic email senha
 

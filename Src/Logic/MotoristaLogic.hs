@@ -1,11 +1,11 @@
 module Src.Logic.MotoristaLogic where
 
-import Src.Schemas.Motorista (Motorista, cadastraMotorista, getBy, removerMotorista, atualizarMotorista)
+import Src.Schemas.Motorista (Motorista, cadastraMotorista, getBy, removerMotorista, atualizarMotorista, confereSenha)
 import Control.Monad (when)
 import Src.Util.Util(validarCPF, nullOrEmpty,validarEmail)
 
-cadastrarLogicMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
-cadastrarLogicMotorista cpf cep nome email telefone senha cnh
+cadastrarMotoristaLogic :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
+cadastrarMotoristaLogic cpf cep nome email telefone senha cnh
     | validarCPF cpf = do
         putStrLn "CPF não atende aos requisitos"
         return Nothing
@@ -31,8 +31,8 @@ cadastrarLogicMotorista cpf cep nome email telefone senha cnh
 
 
 
-atualizarLogicMotorista :: String -> String -> String -> IO (Maybe Motorista)
-atualizarLogicMotorista cpf coluna novoValor
+atualizarMotoristaLogic :: String -> String -> String -> IO (Maybe Motorista)
+atualizarMotoristaLogic cpf coluna novoValor
     | validarCPF cpf = do
         putStrLn "CPF não atende aos requisitos"
         return Nothing
@@ -41,13 +41,13 @@ atualizarLogicMotorista cpf coluna novoValor
         return Nothing
     | otherwise = atualizarMotorista cpf coluna novoValor
 
-removerLogicMotorista :: String -> IO (Maybe Motorista)
-removerLogicMotorista cpf
+removerMotoristaLogic :: String -> IO (Maybe Motorista)
+removerMotoristaLogic cpf
     | cpf == "" = return Nothing
     | otherwise = removerMotorista cpf
 
-buscarLogicMotorista :: String -> IO (Maybe Motorista)
-buscarLogicMotorista cpf
+buscarMotoristaLogic :: String -> IO (Maybe Motorista)
+buscarMotoristaLogic cpf
     | validarCPF cpf = do
         putStrLn "CPF não atende aos requisitos"
         return Nothing
@@ -55,3 +55,22 @@ buscarLogicMotorista cpf
         resultado <- getBy "cpf" cpf
         print resultado  -- Imprime o valor retornado pela função getBy
         return Nothing
+
+realizarLoginMotoristaLogic :: String -> String -> IO (Maybe Motorista)
+realizarLoginMotoristaLogic email senha = do
+    if validarEmail email then do 
+        putStrLn "Email não atende aos requisitos"
+        return Nothing
+    else do
+        resultado <- getBy "email" email
+        case resultado of
+            Just motorista -> do
+                if confereSenha motorista senha then do
+                    putStrLn "Login efetuado com sucesso!"
+                    return resultado 
+                else do
+                    putStrLn "Senha incorreta"
+                    return Nothing
+            Nothing -> do
+                putStrLn "Email não encontrado"
+                return Nothing

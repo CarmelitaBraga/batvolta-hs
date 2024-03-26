@@ -5,7 +5,8 @@ module Src.Schemas.Motorista (
     insereMotorista,
     checkIsEmpty,
     removerMotorista,
-    atualizarMotorista
+    atualizarMotorista,
+    confereSenha
 ) where
 
 
@@ -196,5 +197,5 @@ atualizarMotorista atributo coluna novoValor = do
                 _ -> motorista
 
 
-{- confereSenha :: Motorista -> String -> Bool
-    confereSenha motorista senhaPassada = senhaPassada == senha motorista -}
+confereSenha :: Motorista -> String -> Bool
+confereSenha motorista senhaPassada = senhaPassada == senha motorista
