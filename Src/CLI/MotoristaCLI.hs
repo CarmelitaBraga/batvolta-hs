@@ -2,7 +2,7 @@ module Src.CLI.MotoristaCLI where
 
 import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista, realizarLoginMotorista)
 import System.IO
-import Src.Schemas.Motorista(Motorista)
+import Src.Model.MotoristaModel(Motorista)
 
 -- Funções auxiliares para interação com o usuário
 
@@ -108,8 +108,9 @@ menuAtualizarCadastro = do
 menuVisualizarInfo :: IO (Maybe Motorista)
 menuVisualizarInfo = do
     putStrLn "\nVisualizar Informações de Motorista"
-    cpf <- inputString "Digite o CPF do motorista: "
-    resultado <- visualizarInfoCadastroMotorista cpf
+    cpf <- inputString "Digite o seu CPF: "
+    senha <- inputString "Digite a sua Senha:"
+    resultado <- visualizarInfoCadastroMotorista cpf senha
     case resultado of
         Just motorista -> do
             putStrLn "Informações do motorista:"
@@ -129,5 +130,4 @@ menuRealizarLogin = do
             putStrLn "Login bem-sucedido!"
             menuOpcoesMotorista
         Nothing -> do 
-            putStrLn "E-mail ou senha inválidos."
             menuPrincipal

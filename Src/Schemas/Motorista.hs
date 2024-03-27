@@ -1,21 +1,30 @@
 module Src.Schemas.Motorista (
-    Motorista(..),
     cadastraMotorista,
     getBy,
     insereMotorista,
     checkIsEmpty,
     removerMotorista,
     atualizarMotorista,
-    confereSenha
 ) where
 
 
+
 import Data.Csv
+    ( (.!),
+      record,
+      decode,
+      encode,
+      FromRecord(..),
+      ToField(toField),
+      ToRecord(..),
+      HasHeader(NoHeader) )
+
+import Src.Model.MotoristaModel (Motorista(..), confereSenha)
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Char8 as B8
 import System.IO
+    ( hIsEOF, withFile, IOMode(WriteMode, AppendMode, ReadMode) )
 import GHC.IO.Handle (hClose)
-import Control.Monad (MonadPlus(mzero))
 import qualified Data.Vector as V
 import Control.Monad (liftM3)
 
@@ -23,54 +32,6 @@ import Control.Monad (liftM3)
 csvPath :: FilePath
 csvPath = "./database/motorista.csv"
 
-
-data Motorista = Motorista{
-    cpf :: String,
-    cep :: String,
-    nome :: String,
-    email :: String,
-    telefone :: String,
-    senha :: String,
-    cnh :: String
-} deriving(Eq)
-
-
-instance ToRecord Motorista where
-    toRecord (Motorista cpf cep nome email telefone senha cnh) = record
-        [ toField cpf
-        , toField cep
-        , toField nome
-        , toField email
-        , toField telefone
-        , toField senha
-        , toField cnh
-        ]
-
-
-instance FromRecord Motorista where
-    parseRecord v
-        | length v == 7 = Motorista
-            <$> v .! 0
-            <*> v .! 1
-            <*> v .! 2
-            <*> v .! 3
-            <*> v .! 4
-            <*> v .! 5
-            <*> v .! 6
-        | otherwise = mzero
-
-
---Funciona como ToString d
-instance Show Motorista where
-    show (Motorista cpf cep nome email telefone senha cnh) =
-        "Motorista { CPF: " ++ cpf ++
-        ", CEP: " ++ cep ++
-        ", Nome: " ++ nome ++
-        ", E-mail: " ++ email ++
-        ", Telefone: " ++ telefone ++
-        ", CNH: " ++ cnh ++
-        " }"
-        
 
 cadastraMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
 cadastraMotorista cpf cep nome email telefone senha cnh = do
@@ -94,7 +55,6 @@ cadastraMotorista cpf cep nome email telefone senha cnh = do
                         Nothing -> do
                             let novoMotorista = Motorista cpf cep nome email telefone senha cnh
                             insereMotorista novoMotorista
-                            putStrLn "Motorista cadastrado com sucesso!"
                             return (Just novoMotorista)
 
 
@@ -109,12 +69,10 @@ insereMotorista motorista = do
                 final = BL.fromStrict header <> csvData
             withFile csvPath WriteMode $ \handle -> do
                 BL.hPutStr handle final
-                putStrLn "Motorista e cabeçalho inseridos com sucesso"
         else do
             let csvData = encode [motorista]
             withFile csvPath AppendMode $ \handle -> do
                 BL.hPutStr handle csvData
-                putStrLn "Motorista inserido com sucesso"
 
 
 --Carrega o banco de dados de motorista
@@ -190,7 +148,6 @@ atualizarMotorista atributo coluna novoValor = do
     if motoristasAtualizados /= motoristas
         then do
             escreverMotoristas motoristasAtualizados
-            putStrLn "Motorista atualizado com sucesso."
             return (Just (head motoristasAtualizados)) -- Retornamos Just com o motorista atualizado
         else do
             putStrLn "Nenhum motorista encontrado com o cpf fornecido, ou o valor passado é o mesmo que o atual."

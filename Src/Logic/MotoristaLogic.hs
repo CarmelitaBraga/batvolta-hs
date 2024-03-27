@@ -1,6 +1,7 @@
 module Src.Logic.MotoristaLogic where
 
-import Src.Schemas.Motorista (Motorista, cadastraMotorista, getBy, removerMotorista, atualizarMotorista, confereSenha)
+import Src.Model.MotoristaModel (Motorista, confereSenha)
+import Src.Schemas.Motorista (cadastraMotorista, getBy, removerMotorista, atualizarMotorista)
 import Control.Monad (when)
 import Src.Util.Util(validarCPF, nullOrEmpty,validarEmail)
 
@@ -74,14 +75,23 @@ removerMotoristaLogic cpf senhaNecessaria
                 return Nothing
 
                 
-buscarMotoristaLogic :: String -> IO (Maybe Motorista)
-buscarMotoristaLogic cpf
+buscarMotoristaLogic :: String -> String -> IO (Maybe Motorista)
+buscarMotoristaLogic cpf senhaNecessaria
     | validarCPF cpf = do
         putStrLn "CPF não atende aos requisitos"
         return Nothing
     | otherwise = do
         resultado <- getBy "cpf" cpf
-        return resultado
+        case resultado of
+            Just motorista -> if confereSenha motorista senhaNecessaria
+                                then do
+                                    return (Just motorista)
+                                else do
+                                    putStrLn "Senha incorreta"
+                                    return Nothing
+            Nothing -> do
+                putStrLn "Motorista não encontrado"
+                return Nothing
 
 realizarLoginMotoristaLogic :: String -> String -> IO (Maybe Motorista)
 realizarLoginMotoristaLogic email senha = do
@@ -93,7 +103,6 @@ realizarLoginMotoristaLogic email senha = do
         case resultado of
             Just motorista -> do
                 if confereSenha motorista senha then do
-                    putStrLn "Login efetuado com sucesso!"
                     return resultado 
                 else do
                     putStrLn "Senha incorreta"
@@ -101,6 +110,3 @@ realizarLoginMotoristaLogic email senha = do
             Nothing -> do
                 putStrLn "Email não encontrado"
                 return Nothing
-
-
--- Pedir senha pra atualizar e remover usuario
