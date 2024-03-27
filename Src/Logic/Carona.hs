@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Src.Logic.Carona(infoCarona, infoCaronaByDestino, infoCaronaById, infoCaronaByPassageiro, infoCaronaByMotorista) where
+module Src.Logic.Carona(infoCarona, infoCaronaByDestino, infoCaronaById, infoCaronaByPassageiro, infoCaronaByMotorista, deletarCaronaPorId) where
 
 import Src.Schema.CaronaSchema
 import Src.Model.Carona
@@ -43,6 +43,9 @@ infoCaronaByPassageiro::String->IO [String]
 infoCaronaByPassageiro pId = do
     selectedCaronas <- getCaronaByColumn "passageiros" pId
     mapM infoCarona (map cid selectedCaronas)
+
+deletarCaronaPorId::String->IO String
+deletarCaronaPorId id = deleteCaronaById (read id)
 
 -- cancelar carona
     -- motorista

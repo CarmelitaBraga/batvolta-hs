@@ -92,14 +92,23 @@ getCaronaByColumn att value = do
                           else filter (\c -> getCaronaAttribute c att == value) caronas
     return selectedCaronas
 
-deleteCaronaById :: Int -> IO ()
+-- deleteCaronaById :: Int -> IO ()
+-- deleteCaronaById cidToDelete = do
+--     caronas <- getCaronaById [cidToDelete]
+--     if null caronas
+--         then putStrLn "Carona inexistente!" 
+--     else do
+--         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
+--         putStrLn "Carona deletada com sucesso!"
+
+deleteCaronaById :: Int->IO String
 deleteCaronaById cidToDelete = do
     caronas <- getCaronaById [cidToDelete]
     if null caronas
-        then putStrLn "Carona inexistente!" 
+        then return "Carona inexistente!" 
     else do
         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
-        putStrLn "Carona deletada com sucesso!"
+        return "Carona deletada com sucesso!"
 
 selectCaronaByDestino::String->IO [Carona]
 selectCaronaByDestino dest = do
