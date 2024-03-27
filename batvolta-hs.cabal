@@ -21,11 +21,17 @@ executable batvolta-hs
   main-is:             Main.hs
   other-modules:
       Src.Schemas.Motorista
+      Src.Model.MotoristaModel
+      Src.CLI.MotoristaCLI
+      Src.Logic.MotoristaLogic 
+      Src.Controller.ControllerMotorista
+      Src.Schemas.Notificacao
   -- other-extensions:
   build-depends:
-      base >=4.13 && <4.18
+      base >=4.13 && <5
       , cassava
       , vector
       , bytestring
+      , text >= 1.2.4.0
   -- hs-source-dirs:
   default-language:    Haskell2010

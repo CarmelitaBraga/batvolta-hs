@@ -8,7 +8,6 @@ module Src.Schemas.Motorista (
 ) where
 
 
-
 import Data.Csv
     ( (.!),
       record,

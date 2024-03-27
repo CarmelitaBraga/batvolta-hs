@@ -44,6 +44,17 @@
   (major1) == 0 && (major2) == 5 && (minor) <= 3)
 #endif /* MIN_VERSION_cassava */
 
+/* package text-1.2.4.0 */
+#ifndef VERSION_text
+#define VERSION_text "1.2.4.0"
+#endif /* VERSION_text */
+#ifndef MIN_VERSION_text
+#define MIN_VERSION_text(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 4)
+#endif /* MIN_VERSION_text */
+
 /* package vector-0.12.1.2 */
 #ifndef VERSION_vector
 #define VERSION_vector "0.12.1.2"

@@ -3,7 +3,8 @@ module Main where
 
 import Src.Model.MotoristaModel(Motorista)
 import Src.CLI.MotoristaCLI(menuPrincipal)
-main :: IO (Maybe Motorista)
+import Src.Schemas.Notificacao(Notificacao(..), insereNotificacao)
+main :: IO ()
 main = do
     --SCHEMAS
     -- cadastraMotorista "G" "afdskj" "a" "h" "a" "a" "l"
@@ -13,11 +14,14 @@ main = do
 
 
     -- Controller
-    --realizarCadastroMotorista "11120945612" "f122" "f122" "usuario@example.com" "123231321" "123123" "123"
+    -- realizarCadastroMotorista "11120945612" "f122" "f122" "usuario@example.com" "123231321" "123123" "123"
     -- visualizarInfoCadastroMotorista "11111111111"
     -- cancelarCadastroMotorista "ian1"
     -- atualizarCadastroMotorista "11111111111" "Cep" "Kf"
     -- realizarLoginMotorista "iangmai.com" "13"
+    let notificacao = Notificacao "teste2" "teste1"
+    insereNotificacao notificacao
 
+    -- menuPrincipal
 
-    menuPrincipal
+    
