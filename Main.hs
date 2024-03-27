@@ -26,8 +26,8 @@ main = do
     -- let caronaIds = [2]
     -- caronas <- CARONA.getCaronaById caronaIds
     -- mapM_ print caronas  -- Print the retrieved Carona objects
-    -- CARONA.deleteCaronaById 1
-    -- CARONA.criarCarona timeOfDay today "Casa de Luana" "Casa de Everton" "André" 19.99
+    CARONA.deleteCaronaById 5
+    CARONA.criarCarona timeOfDay today "Luana" "Everton" "André" [""] 19.99 5 [-1]
     
     -- cs <- CARONA.getAllCaronas
     -- print cs
@@ -35,20 +35,20 @@ main = do
     -- aaaa <- C.infoCarona 0
     -- print aaaa
 
-    dest <- infoCaronaByDestino "Home"
-    print dest
+    -- dest <- infoCaronaByDestino "Home"
+    -- print dest
 
-    caronas <- mostrarCaronasPorDestino "Home"
-    putStrLn caronas
+    -- caronas <- mostrarCaronasPorDestino "Home"
+    -- putStrLn caronas
 
-    caronaPorId <- mostrarCaronaPorId "3"
-    putStrLn caronaPorId
+    -- caronaPorId <- mostrarCaronaPorId "3"
+    -- putStrLn caronaPorId
 
-    caronasPassageiro <- mostrarCaronasPassageiro "Emma"
-    putStrLn caronasPassageiro
+    -- caronasPassageiro <- mostrarCaronasPassageiro "Emma"
+    -- putStrLn caronasPassageiro
 
-    caronasMotorista <- mostrarCaronasMotorista "André"
-    putStrLn caronasMotorista
+    -- caronasMotorista <- mostrarCaronasMotorista "André"
+    -- putStrLn caronasMotorista
 
-    deletada <- deletarCaronaMotorista "0"
-    putStrLn deletada
+    -- deletada <- deletarCaronaMotorista "0"
+    -- putStrLn deletada

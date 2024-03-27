@@ -57,24 +57,6 @@ instance ToRecord Carona where
         , toField ("" :: String)  -- Lista de avaliações de passageiros vazia
         ]
 
-criarCarona :: TimeOfDay -> Day -> String -> String -> String -> Double -> IO ()
-criarCarona hora date origem destino motorista valor = do
-    nextId <- incrementCounter counterState
-    let carona = Carona {
-        cid = nextId,
-        hora = hora,
-        date = date,
-        origem = origem,
-        destino = destino,
-        motorista = motorista,
-        passageiros = [],
-        valor = valor,
-        avaliacaoMotorista = -1,
-        avaliacoesPassageiros = [-1]
-    }
-    writeArquivoCarona carona
-    putStrLn "Carona criada com sucesso!"
-
 getAllCaronas :: IO [Carona]
 getAllCaronas = Csv.get strToCarona csvPath
 
@@ -92,23 +74,23 @@ getCaronaByColumn att value = do
                           else filter (\c -> getCaronaAttribute c att == value) caronas
     return selectedCaronas
 
--- deleteCaronaById :: Int -> IO ()
--- deleteCaronaById cidToDelete = do
---     caronas <- getCaronaById [cidToDelete]
---     if null caronas
---         then putStrLn "Carona inexistente!" 
---     else do
---         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
---         putStrLn "Carona deletada com sucesso!"
-
-deleteCaronaById :: Int->IO String
+deleteCaronaById :: Int -> IO ()
 deleteCaronaById cidToDelete = do
     caronas <- getCaronaById [cidToDelete]
     if null caronas
-        then return "Carona inexistente!" 
+        then putStrLn "Carona inexistente!" 
     else do
         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
-        return "Carona deletada com sucesso!"
+        putStrLn "Carona deletada com sucesso!"
+
+-- deleteCaronaById :: Int ->String
+-- deleteCaronaById cidToDelete = do
+--     caronas <- getCaronaById [cidToDelete]
+--     if null caronas
+--         then return "Carona inexistente!" 
+--     else do
+--         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
+--         return "Carona deletada com sucesso!"
 
 selectCaronaByDestino::String->IO [Carona]
 selectCaronaByDestino dest = do
@@ -135,9 +117,34 @@ parseCarona line = case splitOn "," line of
         }
     _ -> error "Invalid line format for Carona"
 
-writeArquivoCarona :: Carona -> IO ()
-writeArquivoCarona carona = do
-    arq <- openFile csvPath AppendMode
-    BL.hPutStr arq $ encode [carona]
-    hClose arq
+-- writeArquivoCarona :: Carona -> IO ()
+-- writeArquivoCarona carona = do
+--     arq <- openFile csvPath AppendMode
+--     BL.hPutStr arq $ encode [carona]
+--     hClose arq
+
+-- criarCarona :: TimeOfDay -> Day -> String -> String -> String -> Double -> IO ()
+-- criarCarona hora date origem destino motorista valor = do
+--     nextId <- incrementCounter counterState
+--     let carona = Carona {
+--         cid = nextId,
+--         hora = hora,
+--         date = date,
+--         origem = origem,
+--         destino = destino,
+--         motorista = motorista,
+--         passageiros = [],
+--         valor = valor,
+--         avaliacaoMotorista = -1,
+--         avaliacoesPassageiros = [-1]
+--     }
+--     writeArquivoCarona carona
+--     putStrLn "Carona criada com sucesso!"
+
+criarCarona :: TimeOfDay -> Day -> String -> String -> String -> [String] -> Double -> Int -> [Int] -> IO()
+criarCarona hora dt ori dest mot pss val avMot avPss = do
+    nextId <- incrementCounter counterState
+    let carona = Carona nextId hora dt ori dest mot pss val avMot avPss
+    append caronaToStr [carona] csvPath
+
 

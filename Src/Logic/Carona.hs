@@ -44,7 +44,7 @@ infoCaronaByPassageiro pId = do
     selectedCaronas <- getCaronaByColumn "passageiros" pId
     mapM infoCarona (map cid selectedCaronas)
 
-deletarCaronaPorId::String->IO String
+deletarCaronaPorId::String->IO ()
 deletarCaronaPorId id = deleteCaronaById (read id)
 
 -- cancelar carona

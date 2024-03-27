@@ -22,7 +22,7 @@ mostrarCaronaPorId cid = do
     carona <- infoCaronaById cid
     return $ unlines carona
 
-deletarCaronaMotorista::String->IO String
+deletarCaronaMotorista::String->IO ()
 deletarCaronaMotorista cid = deletarCaronaPorId cid
 
 -- criarCaronaMotorista::String->(Maybe Carona)
