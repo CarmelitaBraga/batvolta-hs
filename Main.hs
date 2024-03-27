@@ -36,6 +36,12 @@ main = do
     csp <- CARONA.addPassageiro (head caronas) "Caique"
     print csp
 
+    caronas <- getCaronaById [0]
+    csp <- CARONA.removerPassageiro (head caronas) "Caique"
+    print csp
+
+
+
     -- cs <- CARONA.getAllCaronas
     -- print cs
 

@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro
+    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro, removerPassageiro
 ) where
 
 import Data.Time.Calendar (Day)
@@ -124,8 +124,18 @@ updateCarona carona novaCarona = do
 addPassageiro :: Carona -> String -> IO Carona
 addPassageiro carona passageiro = do
     let novosPassageiros = case passageiros carona of
-                            [] -> [passageiro]
+                            [""] -> [passageiro]
                             _ -> passageiros carona ++ [passageiro]
+    
+        caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destino carona) (motorista carona) novosPassageiros (valor carona) (avaliacaoMotorista carona) (avaliacoesPassageiros carona)
+    
+    updateCarona carona caronaAtualizada
+    return caronaAtualizada
+
+removerPassageiro :: Carona -> String -> IO Carona
+removerPassageiro carona passageiro = do
+    let passageirosCarona = passageiros carona
+        novosPassageiros =  filter (\passageiroIterador -> passageiro /= passageiroIterador) passageirosCarona
     
         caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destino carona) (motorista carona) novosPassageiros (valor carona) (avaliacaoMotorista carona) (avaliacoesPassageiros carona)
     
