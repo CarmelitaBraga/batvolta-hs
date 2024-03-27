@@ -1,12 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Src.Logic.Carona(infoCarona, infoCaronaByDestino) where
+module Src.Logic.Carona(infoCarona, infoCaronaByDestino, infoCaronaById, infoCaronaByPassageiro, infoCaronaByMotorista) where
 
 import Src.Schema.CaronaSchema
 import Src.Model.Carona
 
 import Data.List (find)
 import Data.List (intercalate)
+import Debug.Trace (traceShow)
 
 infoCarona:: Int -> IO String
 infoCarona caronaId = do
@@ -23,23 +24,25 @@ infoCarona caronaId = do
             ", Rate do Motorista: " ++ show avaliacaoMotorista ++
             ", Rate dos Passageiros: [" ++ intercalate ", " (map show avaliacoesPassageiros) ++ "]"
 
-infoCaronaByDestino :: String -> IO [String]
+infoCaronaByDestino :: String->IO [String]
 infoCaronaByDestino dest = do
-    caronas <- getAllCaronas
-    let selectedCaronas = filter (\c -> destino c == dest) caronas
+    selectedCaronas <- getCaronaByColumn "destino" dest
     mapM infoCarona (map cid selectedCaronas)
 
--- infoCaronaByDestino :: String -> [Carona] -> [String]
--- infoCaronaByDestino destino caronas = map infoCarona $ filter ((== destino) . destino) caronas
---     where
---         infoCarona Carona{..} = 
---             "Origem: " ++ origem ++
---             "\nDestino: " ++ destino ++
---             "\nMotorista: " ++ show motorista ++
---             "\nPassageiros: " ++ show passageiros ++
---             "\nValor: " ++ show valor ++
---             "\nAvaliação do Motorista: " ++ show avaliacaoMotorista ++
---             "\nAvaliações dos Passageiros: " ++ show avaliacoesPassageiros
+infoCaronaByMotorista::String->IO [String]
+infoCaronaByMotorista mId = do
+    selectedCaronas <- getCaronaByColumn "motorista" mId
+    mapM infoCarona (map cid selectedCaronas)
+
+infoCaronaById::String->IO [String]
+infoCaronaById id = do
+    selectedCaronas <- getCaronaByColumn "cid" id
+    mapM infoCarona (map cid selectedCaronas)
+
+infoCaronaByPassageiro::String->IO [String]
+infoCaronaByPassageiro pId = do
+    selectedCaronas <- getCaronaByColumn "passageiros" pId
+    mapM infoCarona (map cid selectedCaronas)
 
 -- cancelar carona
     -- motorista

@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino
+    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn
 ) where
 
 import Data.Time.Calendar (Day)
@@ -13,6 +13,7 @@ import Src.Util.CsvHandler as Csv
 import Src.Model.Carona as Carona
 import GHC.IO (unsafePerformIO)
 import Debug.Trace (traceShow)
+import Src.Util.Utils (getCaronaAttribute)
 
 instance ToField TimeOfDay where
     toField time = toField $ formatTime defaultTimeLocale "%H:%M:%S" time
@@ -58,8 +59,9 @@ instance ToRecord Carona where
 
 criarCarona :: TimeOfDay -> Day -> String -> String -> String -> Double -> IO ()
 criarCarona hora date origem destino motorista valor = do
+    nextId <- incrementCounter counterState
     let carona = Carona {
-        cid = counterState,
+        cid = nextId,
         hora = hora,
         date = date,
         origem = origem,
@@ -81,6 +83,14 @@ getCaronaById targets = do
   caronasList <- Csv.get strToCarona csvPath
   let result = filter (\u -> cid u `elem` targets) caronasList
   return result
+
+getCaronaByColumn :: String -> String -> IO [Carona]
+getCaronaByColumn att value = do
+    caronas <- getAllCaronas
+    let selectedCaronas = if att == "passageiros"
+                          then filter (\c -> value `elem` (passageiros c)) caronas
+                          else filter (\c -> getCaronaAttribute c att == value) caronas
+    return selectedCaronas
 
 deleteCaronaById :: Int -> IO ()
 deleteCaronaById cidToDelete = do
