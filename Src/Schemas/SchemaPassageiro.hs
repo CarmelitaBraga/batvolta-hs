@@ -3,6 +3,7 @@
 module Src.Schemas.SchemaPassageiro (
     Passageiro(..)
     , getPassageiroByCpf
+    , getPassageiroByEmail
     , cadastraPassageiro
     , confereSenha
     , removePassageiroByCpf
@@ -14,12 +15,11 @@ module Src.Schemas.SchemaPassageiro (
     import GHC.Generics
     import System.IO(openFile, readFile, hClose, IOMode(ReadMode, WriteMode, AppendMode), withFile, hPutStr, hGetContents, hPutStrLn)
     import System.Directory
-    import GHC.IO.Handle (hClose)
+    import GHC.IO.Handle (hIsEOF)
     import qualified Data.Vector as V
     import Data.Csv (FromRecord(..), ToRecord(..), HasHeader(..), ToField, toRecord, decode, encode, record, toField, (.!))
     import Control.Monad (MonadPlus(mzero))
-    import GHC.Records (HasField(getField))
-
+    
 
     data Passageiro = Passageiro
         { nome :: String
@@ -28,7 +28,7 @@ module Src.Schemas.SchemaPassageiro (
         , telefone :: String
         , cep :: String
         , senha :: String
-        } deriving (Show, Generic)
+        } deriving (Show, Eq, Generic)
 
     instance ToRecord Passageiro where
         toRecord entry = record
@@ -124,26 +124,47 @@ module Src.Schemas.SchemaPassageiro (
     savePassageiroCSV :: Passageiro -> IO ()
     savePassageiroCSV  passageiro = do
         let fileName = csvFilePath
-        withFile fileName AppendMode $ \arq -> do
-            B.hPutStr arq $ encode [passageiro]
-            putStrLn "Passageiro inserido com sucesso!"
+        isEmpty <- checkIsEmpty
+        if isEmpty then do
+            let csvData = encode [passageiro]
+                header = BC.pack "nome,cpf,email,telefone,cep,senha\n"
+            withFile fileName WriteMode $ \arq -> do
+                B.hPutStr arq header
+                B.hPutStr arq csvData
+                putStrLn "Passageiro inserido com sucesso!"
+        else do
+            withFile fileName AppendMode $ \arq -> do
+                B.hPutStr arq $ encode [passageiro]
+                putStrLn "Passageiro inserido com sucesso!"
 
     -- Busca por cpf e permite edição de cep, telefone e senha
-    editPassageiroCSV :: String -> String -> String -> String -> IO (Maybe Passageiro)
-    editPassageiroCSV cpfBuscado telefone cep senha = do
+    editPassageiroCSV :: String ->  String -> String -> IO (Maybe Passageiro)
+    editPassageiroCSV cpfBuscado coluna novoValor = do
         passageiros <- carregarPassageiros
-        let passageirosFiltrados = filter (\passageiro -> getCpf passageiro == cpfBuscado) passageiros
-        if not (null passageirosFiltrados)
+        let passageirosAtualizados = map (\passageiro -> if getCpf passageiro == cpfBuscado then atualizarCampo passageiro else passageiro) passageiros
+        if passageirosAtualizados /= passageiros
             then do
-                let passageiro = head passageirosFiltrados
-                let passageiroEditado = passageiro {  telefone = telefone, cep = cep, senha = senha }
-                let passageirosAtualizados = map (\passageiro -> if getCpf passageiro == cpfBuscado then passageiroEditado else passageiro) passageiros
                 escreverPassageiros passageirosAtualizados
-                putStrLn "Passageiro editado com sucesso!"
-                return (Just passageiroEditado)
+                putStrLn "passageiro atualizado com sucesso."
+                return (Just (head passageirosAtualizados)) -- Retornamos Just com o passageiro atualizado
             else do
-                putStrLn "Passageiro não encontrado!"
+                putStrLn "Nenhum passageiro encontrado com o cpf fornecido, ou o valor passado é o mesmo que o atual."
                 return Nothing
+        where
+            atualizarCampo passageiro =
+                case coluna of
+                    -- Nome NAO PODE SER ATUALIZADO
+                    -- CPF NAO PODE SER ATUALIZADO 
+                    -- EMAIL NAO PODE SER ATUALIZADO
+                    "Telefone" -> passageiro { telefone = novoValor }
+                    "Cep" -> passageiro { cep = novoValor }
+                    "Senha" -> passageiro { senha = novoValor }
+                    _ -> passageiro
 
     getCpf :: Passageiro -> String
-    getCpf passageiro = cpf passageiro
+    getCpf = cpf
+
+    checkIsEmpty ::  IO Bool
+    checkIsEmpty = do
+        withFile csvFilePath ReadMode $ \handle -> do
+            hIsEOF handle

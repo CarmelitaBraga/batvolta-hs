@@ -1,19 +1,19 @@
 module Src.Controller.ControllerPassageiro where
 
-import Src.Schemas.SchemaPassageiro(Passageiro)
-import Src.Logic.LogicPassageiro(cadastrarPassageiroLogic, removePassageiroByCpfLogic, editPassageiroCSVLogic, getPassageiroByCpfLogic)
+    import Src.Schemas.SchemaPassageiro(Passageiro)
+    import Src.Logic.LogicPassageiro(cadastraPassageiroLogic, removePassageiroByCpfLogic, editPassageiroCSVLogic, getPassageiroByCpfLogic, realizarLoginPassageiroLogic)
 
-realizarCadastroPassageiro :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
-realizarCadastroPassageiro nome cpf email telefone cep senha  = cadastrarPassageiroLogic nome cpf email telefone cep senha
+    realizarCadastroPassageiro :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
+    realizarCadastroPassageiro = cadastraPassageiroLogic
 
-cancelarCadastroPassageiro :: String -> IO (Maybe Passageiro)
-cancelarCadastroPassageiro cpf = removePassageiroByCpfLogic cpf
+    cancelarCadastroPassageiro :: String -> String -> IO (Maybe Passageiro)
+    cancelarCadastroPassageiro = removePassageiroByCpfLogic
 
-atualizarCadastroPassageiro :: String -> String -> String -> String -> IO (Maybe Passageiro)
-atualizarCadastroPassageiro cpf telefone cep senha = editPassageiroCSVLogic cpf telefone cep senha
+    atualizarCadastroPassageiro :: String -> String -> String -> String -> IO (Maybe Passageiro)
+    atualizarCadastroPassageiro = editPassageiroCSVLogic
 
-visualizarInfoCadastroPassageiro :: String -> IO (Maybe Passageiro)
-visualizarInfoCadastroPassageiro cpf = buscarPassageiroLogic cpf
+    visualizarInfoCadastroPassageiro :: String -> String -> IO (Maybe Passageiro)
+    visualizarInfoCadastroPassageiro = getPassageiroByCpfLogic
 
-realizarLoginPassageiro :: String -> String -> IO (Maybe Passageiro)
-realizarLoginPassageiro email senha = realizarLoginPassageiroLogic email senha
+    realizarLoginPassageiro :: String -> String -> IO (Maybe Passageiro)
+    realizarLoginPassageiro = realizarLoginPassageiroLogic
