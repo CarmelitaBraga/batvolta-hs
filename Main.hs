@@ -8,6 +8,7 @@ import Src.Logic.Carona as C
 import Data.Time.LocalTime
 import Src.Model.Carona
 import Src.Controller.ControllerCarona
+import GHC.IO (unsafePerformIO)
 
 main :: IO ()
 main = do
@@ -26,9 +27,15 @@ main = do
     -- let caronaIds = [2]
     -- caronas <- CARONA.getCaronaById caronaIds
     -- mapM_ print caronas  -- Print the retrieved Carona objects
-    CARONA.deleteCaronaById 5
+    -- CARONA.deleteCaronaById 1
     CARONA.criarCarona timeOfDay today "Luana" "Everton" "André" [""] 19.99 5 [-1]
-    
+    caronas <- getCaronaById [0]
+    csp <- CARONA.addPassageiro (head caronas) "Carmelita"
+    -- print csp
+    caronas <- getCaronaById [0]
+    csp <- CARONA.addPassageiro (head caronas) "Caique"
+    print csp
+
     -- cs <- CARONA.getAllCaronas
     -- print cs
 

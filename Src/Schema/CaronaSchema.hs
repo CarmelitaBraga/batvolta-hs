@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn
+    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro
 ) where
 
 import Data.Time.Calendar (Day)
@@ -83,15 +83,6 @@ deleteCaronaById cidToDelete = do
         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
         putStrLn "Carona deletada com sucesso!"
 
--- deleteCaronaById :: Int ->String
--- deleteCaronaById cidToDelete = do
---     caronas <- getCaronaById [cidToDelete]
---     if null caronas
---         then return "Carona inexistente!" 
---     else do
---         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
---         return "Carona deletada com sucesso!"
-
 selectCaronaByDestino::String->IO [Carona]
 selectCaronaByDestino dest = do
     allCaronas <- get parseCarona csvPath
@@ -117,34 +108,27 @@ parseCarona line = case splitOn "," line of
         }
     _ -> error "Invalid line format for Carona"
 
--- writeArquivoCarona :: Carona -> IO ()
--- writeArquivoCarona carona = do
---     arq <- openFile csvPath AppendMode
---     BL.hPutStr arq $ encode [carona]
---     hClose arq
-
--- criarCarona :: TimeOfDay -> Day -> String -> String -> String -> Double -> IO ()
--- criarCarona hora date origem destino motorista valor = do
---     nextId <- incrementCounter counterState
---     let carona = Carona {
---         cid = nextId,
---         hora = hora,
---         date = date,
---         origem = origem,
---         destino = destino,
---         motorista = motorista,
---         passageiros = [],
---         valor = valor,
---         avaliacaoMotorista = -1,
---         avaliacoesPassageiros = [-1]
---     }
---     writeArquivoCarona carona
---     putStrLn "Carona criada com sucesso!"
-
 criarCarona :: TimeOfDay -> Day -> String -> String -> String -> [String] -> Double -> Int -> [Int] -> IO()
 criarCarona hora dt ori dest mot pss val avMot avPss = do
     nextId <- incrementCounter counterState
     let carona = Carona nextId hora dt ori dest mot pss val avMot avPss
     append caronaToStr [carona] csvPath
 
+updateCarona :: Carona -> Carona -> IO Carona
+updateCarona carona novaCarona = do
+  allCaronas <- getAllCaronas
+  let updatedAllCaronas = map (\u -> if cid u == cid carona then novaCarona else u) allCaronas
+  Csv.write caronaToStr updatedAllCaronas csvPath
+  return novaCarona
+
+addPassageiro :: Carona -> String -> IO Carona
+addPassageiro carona passageiro = do
+    let novosPassageiros = case passageiros carona of
+                            [] -> [passageiro]
+                            _ -> passageiros carona ++ [passageiro]
+    
+        caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destino carona) (motorista carona) novosPassageiros (valor carona) (avaliacaoMotorista carona) (avaliacoesPassageiros carona)
+    
+    updateCarona carona caronaAtualizada
+    return caronaAtualizada
 
