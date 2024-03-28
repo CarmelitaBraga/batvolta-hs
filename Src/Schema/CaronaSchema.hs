@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, getCaronaByColumn, addPassageiro, rmPassageiro
+    criarCarona, deleteCaronaById, getCaronaById, getCaronaByDestino, getAllCaronas, getCaronaByColumn, addPassageiro, rmPassageiro
 ) where
 
 import Data.Time.Calendar (Day)
@@ -61,7 +61,7 @@ instance ToRecord Carona where
         , toField (origem entry)
         , toField ("" :: String)
         , toField (motorista entry)
-        , toField ("" :: String)  -- Lista de passageiros vazia
+        , toField ("" :: String)
         , toField (status entry)
         , toField (numPassageirosMaximos entry)
         ]
@@ -78,9 +78,10 @@ getCaronaById targets = do
 getCaronaByColumn :: String -> String -> IO [Carona]
 getCaronaByColumn att value = do
     caronas <- getAllCaronas
-    let selectedCaronas = if att == "passageiros"
-                          then filter (\c -> value `elem` (passageiros c)) caronas
-                          else filter (\c -> getCaronaAttribute c att == value) caronas
+    let selectedCaronas
+            | att == "passageiros" = filter (\c -> value `elem` passageiros c) caronas
+            | att == "destinos" = filter (\c -> value `elem` destinos c) caronas
+            | otherwise = filter (\c -> getCaronaAttribute c att == value) caronas
     return selectedCaronas
 
 deleteCaronaById :: Int -> IO ()
@@ -91,13 +92,13 @@ deleteCaronaById cidToDelete = do
 -- Parse a line from CSV into a Carona
 parseCarona :: String -> Carona
 parseCarona line = case splitOn "," line of
-    [cidStr, horaStr, dateStr, origem, destinos, motorista, passageirosStr, valorStr, statusStr, numPassageirosMaximos] ->
+    [cidStr, horaStr, dateStr, origem, destinosStr, motorista, passageirosStr, valorStr, statusStr, numPassageirosMaximos] ->
         Carona {
             cid = read cidStr,
             hora = parseTimeOrError True defaultTimeLocale "%H:%M" horaStr,
             date = parseTimeOrError True defaultTimeLocale "%d/%m/%Y" dateStr,
             origem = origem,
-            destinos = splitOn ";" destinos,
+            destinos = splitOn ";" destinosStr,
             motorista = motorista,
             passageiros = splitOn ";" passageirosStr,
             valor = read valorStr,
@@ -140,3 +141,9 @@ rmPassageiro carona passageiro = do
     updateCarona carona caronaAtualizada
     return caronaAtualizada
 
+getCaronaByDestino::String->IO [Carona]
+getCaronaByDestino dest = do
+    allCaronas <- get parseCarona csvPath
+    let result = filter (\c -> dest `elem` destinos c) allCaronas
+    traceShow result $ return ()
+    return result

@@ -8,7 +8,9 @@ module Src.Logic.Carona(
     infoCaronaByMotorista, 
     deletarCaronaPorId, 
     adicionarPassageiro, 
-    removerPassageiro) where
+    removerPassageiro,
+    infoCaronaByDestino
+    ) where
 
 import Src.Schema.CaronaSchema
 import Src.Model.Carona
@@ -43,6 +45,11 @@ infoCaronaById id = do
     selectedCaronas <- getCaronaByColumn "cid" id
     mapM infoCarona (map cid selectedCaronas)
 
+infoCaronaByDestino :: String->IO [String]
+infoCaronaByDestino dest = do
+    selectedCaronas <- getCaronaByColumn "destinos" dest
+
+    mapM infoCarona (map cid selectedCaronas)
 infoCaronaByPassageiro::String->IO [String]
 infoCaronaByPassageiro pId = do
     selectedCaronas <- getCaronaByColumn "passageiros" pId
