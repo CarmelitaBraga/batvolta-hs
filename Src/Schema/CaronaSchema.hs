@@ -1,5 +1,12 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, getCaronaByDestino, getCaronaByColumn, addPassageiro, rmPassageiro, criarViagemPassageiro, getAllViagens, getViagemById, deleteViagemById, getViagemByColumn
+    criarCarona, 
+    deleteCaronaById, 
+    getCaronaById, 
+    getAllCaronas, 
+    getCaronaByDestino, 
+    getCaronaByColumn, 
+    addPassageiro, 
+    rmPassageiro
 ) where
 
 import Data.Time.Calendar (Day)
@@ -25,9 +32,6 @@ instance ToField Day where
 
 caronaCsvPath::String
 caronaCsvPath = "./database/Caronas.csv"
-
-viagemCsvPath::String
-viagemCsvPath = "./database/ViagemPassageiros.csv"
 
 -- Instância ToField para StatusCarona
 instance ToField StatusCarona where
@@ -144,57 +148,6 @@ rmPassageiro carona passageiro = do
     updateCarona carona caronaAtualizada
     return caronaAtualizada
 
----------------------------------------------------------- VIAGENS
-type CounterStateViagem = Int
-
-counterStateV :: CounterStateViagem
-counterStateV = 0
-
--- Função para incrementar o contador de IDs de carona
-incrementCounterV :: CounterStateViagem -> IO CounterStateViagem
-incrementCounterV currentState = do
-    allViagens <- getAllViagens
-    let nextId = findNextIdV currentState allViagens
-    return nextId
-
-findNextIdV :: CounterStateViagem -> [PassageiroViagem] -> CounterStateViagem
-findNextIdV currentId viagensList =
-    if any (\u -> pid u == currentId) viagensList
-        then findNextIdV (currentId + 1) viagensList
-        else currentId
-
-criarViagemPassageiro :: Int -> Bool -> String -> String -> Int -> String -> IO()
-criarViagemPassageiro c ack ori dest aval psId = do
-    nextId <- incrementCounterV counterState
-    let viagem = PassageiroViagem nextId c ack ori dest aval psId
-    append viagemToStr [viagem] viagemCsvPath
-
-getAllViagens::IO [PassageiroViagem]
-getAllViagens = Csv.get strToViagem viagemCsvPath
-
-getViagemById :: [Int] -> IO [PassageiroViagem]
-getViagemById targets = do
-  viagensList <- Csv.get strToViagem viagemCsvPath
-  let result = filter (\u -> pid u `elem` targets) viagensList
-  return result
-
-deleteViagemById :: Int -> IO ()
-deleteViagemById pidToDelete = do
-    viagens <- getViagemById [pidToDelete]
-    if null viagens
-        then putStrLn "Viagem inexistente!" 
-    else do
-        delete (\c -> pid c == pidToDelete) strToViagem viagemToStr viagemCsvPath
-        putStrLn "Viagem deletada com sucesso!"
-
-getViagemByColumn :: String -> String -> IO [PassageiroViagem]
-getViagemByColumn att value = do
-    viagens <- getAllViagens
-    let selectedViagens = filter (\c -> getViagemAttribute c att == value) viagens
-    return selectedViagens
-
--- atualizar avaliação motorista
--- getById, getAll, getByColumn
 getCaronaByDestino::String->IO [Carona]
 getCaronaByDestino dest = do
     allCaronas <- get parseCarona caronaCsvPath
