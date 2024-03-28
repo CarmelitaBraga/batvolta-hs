@@ -36,7 +36,7 @@ executable batvolta-hs
     bytestring >= 0.11 && < 0.12,
     time >= 1.12,
     csv >= 0.1 && < 0.2,
-    text >= 1.2 && < 1.3,
+    text,
     regex-posix >=0.95.2,
     split >= 0.2.3.4
   hs-source-dirs:

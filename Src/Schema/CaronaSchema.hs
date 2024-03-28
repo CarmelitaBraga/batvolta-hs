@@ -90,7 +90,7 @@ getCaronaByColumn att value = do
 deleteCaronaById :: Int -> IO ()
 deleteCaronaById cidToDelete = do
     caronas <- getCaronaById [cidToDelete]
-    delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
+    delete (\c -> cid c == cidToDelete) strToCarona caronaToStr caronaCsvPath
 
 -- Parse a line from CSV into a Carona
 parseCarona :: String -> Carona
@@ -114,7 +114,7 @@ criarCarona :: TimeOfDay -> Day -> String -> [String] -> String -> [String] -> D
 criarCarona hora dt ori dest mot pss val status numPss = do
     nextId <- incrementCounter counterState
     let carona = Carona nextId hora dt ori dest mot pss val status numPss
-    append caronaToStr [carona] csvPath
+    append caronaToStr [carona] caronaCsvPath
 
 updateCarona :: Carona -> Carona -> IO Carona
 updateCarona carona novaCarona = do
@@ -197,7 +197,7 @@ getViagemByColumn att value = do
 -- getById, getAll, getByColumn
 getCaronaByDestino::String->IO [Carona]
 getCaronaByDestino dest = do
-    allCaronas <- get parseCarona csvPath
+    allCaronas <- get parseCarona caronaCsvPath
     let result = filter (\c -> dest `elem` destinos c) allCaronas
     traceShow result $ return ()
     return result

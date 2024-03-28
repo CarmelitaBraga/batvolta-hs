@@ -3,7 +3,7 @@ module Main where
 import Data.Csv
 import Data.Time
 import Data.Time.Calendar 
--- import Src.Schema.CaronaSchema as CARONA
+import Src.Schema.CaronaSchema as CARONA
 import Src.Logic.Carona as C
 import Data.Time.LocalTime
 -- import Src.Model.Carona
