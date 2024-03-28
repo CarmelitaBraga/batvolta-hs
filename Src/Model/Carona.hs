@@ -60,20 +60,3 @@ strToCarona str =
           avaliacoesPassageiros = map read (splitOn ";" aps)
         }
     _ -> error "Invalid input format for Carona string"
-
-
--- csv header: cid,hora,date,origem,destino,motorista,passageiros,valor,avaliacaoMotorista,avaliacoesPassageiros
-
--- caronaToList :: Carona -> [String]
--- toList carona =
---   [ show (cid carona),
---     show (hora carona),
---     show (date carona),
---     origem carona,
---     destino carona,
---     motorista carona,
---     intercalate ";" (passageiros carona),
---     show (valor carona),
---     show (avaliacaoMotorista carona),
---     intercalate ";" (map show (avaliacoesPassageiros carona))
---   ]
