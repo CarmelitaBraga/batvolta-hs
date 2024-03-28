@@ -7,6 +7,10 @@ import Debug.Trace (traceShow)
 import Data.List (intercalate)
 import Numeric (showFFloat)
 
+-- Definição do Enum para o status da carona
+data StatusCarona = NaoIniciada | EmAndamento | Finalizada
+  deriving (Show, Eq, Read)
+
 data Carona = Carona
   { cid :: Int,
     hora :: TimeOfDay,
@@ -16,7 +20,7 @@ data Carona = Carona
     motorista :: String,
     passageiros :: [String],
     valor :: Double,
-    status :: String,
+    status :: StatusCarona,
     numPassageirosMaximos :: Int
   }
   deriving (Show, Eq)

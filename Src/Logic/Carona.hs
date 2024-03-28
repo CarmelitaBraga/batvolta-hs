@@ -30,7 +30,7 @@ infoCarona caronaId = do
             ", Motorista: " ++ motorista ++
             ", Passageiros: [" ++ intercalate ", " passageiros ++ "]" ++
             ", Valor: " ++ show valor ++
-            ", Status: " ++ status ++
+            ", Status: " ++ show status ++
             ", Número de passageiros máximos: " ++ show numPassageirosMaximos
 
 infoCaronaByMotorista::String->IO [String]
@@ -76,7 +76,7 @@ gerarCarona hora date origem destinos motorista valor numPassageirosMaximos = do
         if validarData date then
             putStrLn "Data fora do padrão requisitado!"
         else do
-            criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destinos motorista [] valor "Não Iniciada" numPassageirosMaximos
+            criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destinos motorista [] valor NaoIniciada numPassageirosMaximos
             putStrLn "Carona criada com sucesso!"
 
 -- alterar carona: adição/remoção de passageiros, status, 

@@ -23,6 +23,14 @@ instance ToField TimeOfDay where
 instance ToField Day where
     toField day = toField $ formatTime defaultTimeLocale "%d/%m/%Y" day
 
+-- Instância ToField para StatusCarona
+instance ToField StatusCarona where
+  toField status =
+    case status of
+      NaoIniciada -> toField ("NaoIniciada" :: String)
+      EmAndamento -> toField ("EmAndamento" :: String)
+      Finalizada -> toField ("Finalizada" :: String)
+            
 -- Definição do estado do contador para IDs de carona
 type CounterState = Int
 
@@ -93,12 +101,12 @@ parseCarona line = case splitOn "," line of
             motorista = motorista,
             passageiros = splitOn ";" passageirosStr,
             valor = read valorStr,
-            status = statusStr,
+            status = read statusStr,
             numPassageirosMaximos = read numPassageirosMaximos
         }
     _ -> error "Invalid line format for Carona"
-    
-criarCarona :: TimeOfDay -> Day -> String -> [String] -> String -> [String] -> Double -> String -> Int -> IO ()
+
+criarCarona :: TimeOfDay -> Day -> String -> [String] -> String -> [String] -> Double -> StatusCarona -> Int -> IO ()
 criarCarona hora dt ori dest mot pss val status numPss = do
     nextId <- incrementCounter counterState
     let carona = Carona nextId hora dt ori dest mot pss val status numPss
