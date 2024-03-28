@@ -13,9 +13,9 @@ import Control.Monad (MonadPlus(mzero))
 import qualified Data.Vector as V
 
 data Notificacao = Notificacao{
-    motorista :: String
+    idNotificacao :: Int
+    ,carona :: Int
     , conteudo :: String
-    ,idNotificacao :: Int
 } deriving(Show)
 
 instance FromRecord Notificacao where
@@ -27,11 +27,12 @@ instance FromRecord Notificacao where
         | otherwise = mzero
 
 instance ToRecord Notificacao where
-    toRecord (Notificacao id motorista conteudo) = record
+    toRecord (Notificacao idNotificacao carona conteudo) = record
         [
-            toField  conteudo
-            , toField motorista
-            , toField id
+            toField idNotificacao
+            ,toField  carona
+            , toField conteudo
+            
         ]
 
 type CounterState = Int 
@@ -48,6 +49,7 @@ incrementCounter currentState = do
     let nextId = findNextId currentState allNotificacoes
     return nextId
 
+
 findNextId :: CounterState -> [Notificacao] -> CounterState
 findNextId currentId listaNotificacoes =
     if any (\u -> idNotificacao u == currentId) listaNotificacoes
@@ -56,23 +58,27 @@ findNextId currentId listaNotificacoes =
 
 
 
-insereNotificacao :: Notificacao -> IO ()
-insereNotificacao notificacao = do
+insereNotificacao :: Int -> String -> IO (Maybe Notificacao)
+insereNotificacao idCarona conteudoCriar = do
     isEmpty <- checkIsEmpty csvPath
     if isEmpty
         then do
-            let csvData = encode [notificacao]
-                nextId = 0
-                header = B8.pack "idNotificacao,motorista,conteudo\n"
+            let nextId = 0
+                notificacao = Notificacao nextId idCarona conteudoCriar 
+                csvData = encode [notificacao]
+                header = B8.pack "idNotificacao,idCarona,conteudo\n"
                 final = BL.fromStrict header <> csvData
             withFile csvPath WriteMode $ \handle -> do
                 BL.hPutStr handle final
+            return notificacao
        else do
             nextId <- incrementCounter counterState
-            let csvData = encode [notificacao]
+            let notificacao = Notificacao nextId idCarona conteudoCriar
+                csvData = encode [notificacao]
             withFile csvPath AppendMode $ \handle -> do
                 BL.hPutStr handle csvData
-
+            return notificacao
+    return Nothing
 
 checkIsEmpty :: FilePath -> IO Bool
 checkIsEmpty path = do
@@ -84,9 +90,11 @@ carregarNotificacoes :: FilePath -> IO [Notificacao]
 carregarNotificacoes path = do
     withFile path ReadMode $ \handle -> do
         csvData <- BL.hGetContents handle
-        case decode NoHeader csvData of
+        case decode HasHeader csvData of
             Left err -> do
                 putStrLn $ "error: " ++ err
                 return []
             Right notificacao -> do
                 return $ V.toList notificacao
+
+
