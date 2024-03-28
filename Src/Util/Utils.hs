@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 module Src.Util.Utils (getCaronaAttribute, splitBy, validarData, validarHorario, stringToTimeOfDay, stringToDay) where
 
 import Src.Model.Carona
@@ -24,6 +25,12 @@ validarData :: String -> Bool
 validarData date = not (date =~ "^(0[1-9]|[12][0-9]|3[01])/(0[13578]|1[02])/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$" 
                 || date =~ "^(0[1-9]|[12][0-9]|30)/(0[469]|11)/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$" 
                 || date =~ "^(0[1-9]|1[0-9]|2[0-7])/02/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$") :: Bool
+=======
+module Src.Util.Utils (getCaronaAttribute, splitBy, getViagemAttribute) where
+
+import Src.Model.Carona
+import Src.Model.PassageiroViagem
+>>>>>>> Stashed changes
 
 wordsWhen :: (Char -> Bool) -> String -> [String]
 wordsWhen p s = case dropWhile p s of
@@ -47,4 +54,15 @@ getCaronaAttribute carona attr
     | attr == "valor" = show (valor carona)
     | attr == "avaliacaoMotorista" = show (avaliacaoMotorista carona)
     | attr == "avaliacoesPassageiros" = unwords (map show (avaliacoesPassageiros carona))
+    | otherwise = error "Invalid attribute"
+
+getViagemAttribute :: PassageiroViagem -> String -> String
+getViagemAttribute viagem attr
+    | attr == "pid" = show (pid viagem)
+    | attr == "cid" = show (cId viagem)
+    | attr == "aceita" = show (aceita viagem)
+    | attr == "origem" = orige viagem
+    | attr == "destino" = desti viagem
+    | attr == "avaliacao" = show (avaliacaoMtrst viagem)
+    | attr == "passageiroId" = passageiroId viagem
     | otherwise = error "Invalid attribute"
