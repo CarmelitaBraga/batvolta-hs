@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro, rmPassageiro
+    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro, rmPassageiro, criarViagemPassageiro, getAllViagens, getViagemById, deleteViagemById, getViagemByColumn
 ) where
 
 import Data.Time.Calendar (Day)
@@ -11,11 +11,11 @@ import Data.Time
 import qualified Data.ByteString.Lazy as BL
 import Data.List.Split (splitOn)
 import Src.Util.CsvHandler as Csv
-import Src.Model.Carona as Carona
 import GHC.IO (unsafePerformIO)
 import Debug.Trace (traceShow)
-import Src.Util.Utils (getCaronaAttribute)
-import Src.Model.Carona (Carona)
+import Src.Util.Utils (getCaronaAttribute, getViagemAttribute)
+import Src.Model.Carona
+import Src.Model.PassageiroViagem
 
 instance ToField TimeOfDay where
     toField time = toField $ formatTime defaultTimeLocale "%H:%M" time
@@ -23,14 +23,17 @@ instance ToField TimeOfDay where
 instance ToField Day where
     toField day = toField $ formatTime defaultTimeLocale "%d/%m/%Y" day
 
+caronaCsvPath::String
+caronaCsvPath = "./database/Caronas.csv"
+
+viagemCsvPath::String
+viagemCsvPath = "./database/ViagemPassageiros.csv"
+
 -- Definição do estado do contador para IDs de carona
 type CounterState = Int
 
 counterState :: CounterState
 counterState = 0
-
-csvPath::String
-csvPath = "./database/Caronas.csv"
 
 -- Função para incrementar o contador de IDs de carona
 incrementCounter :: CounterState -> IO CounterState
@@ -60,11 +63,11 @@ instance ToRecord Carona where
         ]
 
 getAllCaronas :: IO [Carona]
-getAllCaronas = Csv.get strToCarona csvPath
+getAllCaronas = Csv.get strToCarona caronaCsvPath
 
 getCaronaById :: [Int] -> IO [Carona]
 getCaronaById targets = do
-  caronasList <- Csv.get strToCarona csvPath
+  caronasList <- Csv.get strToCarona caronaCsvPath
   let result = filter (\u -> cid u `elem` targets) caronasList
   return result
 
@@ -82,12 +85,12 @@ deleteCaronaById cidToDelete = do
     if null caronas
         then return "Carona inexistente!" 
     else do
-        delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
+        delete (\c -> cid c == cidToDelete) strToCarona caronaToStr caronaCsvPath
         return "Carona deletada com sucesso!"
 
 selectCaronaByDestino::String->IO [Carona]
 selectCaronaByDestino dest = do
-    allCaronas <- get parseCarona csvPath
+    allCaronas <- get parseCarona caronaCsvPath
     let result = filter (\x -> destino x == dest) allCaronas
     traceShow result $ return ()
     return result
@@ -114,13 +117,13 @@ criarCarona :: TimeOfDay -> Day -> String -> String -> String -> [String] -> Dou
 criarCarona hora dt ori dest mot pss val avMot avPss = do
     nextId <- incrementCounter counterState
     let carona = Carona nextId hora dt ori dest mot pss val avMot avPss
-    append caronaToStr [carona] csvPath
+    append caronaToStr [carona] caronaCsvPath
 
 updateCarona :: Carona -> Carona -> IO Carona
 updateCarona carona novaCarona = do
   allCaronas <- getAllCaronas
   let updatedAllCaronas = map (\u -> if cid u == cid carona then novaCarona else u) allCaronas
-  Csv.write caronaToStr updatedAllCaronas csvPath
+  Csv.write caronaToStr updatedAllCaronas caronaCsvPath
   return novaCarona
 
 addPassageiro :: Carona -> String -> IO Carona
@@ -144,3 +147,54 @@ rmPassageiro carona passageiro = do
     updateCarona carona caronaAtualizada
     return caronaAtualizada
 
+---------------------------------------------------------- VIAGENS
+type CounterStateViagem = Int
+
+counterStateV :: CounterStateViagem
+counterStateV = 0
+
+-- Função para incrementar o contador de IDs de carona
+incrementCounterV :: CounterStateViagem -> IO CounterStateViagem
+incrementCounterV currentState = do
+    allViagens <- getAllViagens
+    let nextId = findNextIdV currentState allViagens
+    return nextId
+
+findNextIdV :: CounterStateViagem -> [PassageiroViagem] -> CounterStateViagem
+findNextIdV currentId viagensList =
+    if any (\u -> pid u == currentId) viagensList
+        then findNextIdV (currentId + 1) viagensList
+        else currentId
+
+criarViagemPassageiro :: Int -> Bool -> String -> String -> Int -> String -> IO()
+criarViagemPassageiro c ack ori dest aval psId = do
+    nextId <- incrementCounterV counterState
+    let viagem = PassageiroViagem nextId c ack ori dest aval psId
+    append viagemToStr [viagem] viagemCsvPath
+
+getAllViagens::IO [PassageiroViagem]
+getAllViagens = Csv.get strToViagem viagemCsvPath
+
+getViagemById :: [Int] -> IO [PassageiroViagem]
+getViagemById targets = do
+  viagensList <- Csv.get strToViagem viagemCsvPath
+  let result = filter (\u -> pid u `elem` targets) viagensList
+  return result
+
+deleteViagemById :: Int -> IO ()
+deleteViagemById pidToDelete = do
+    viagens <- getViagemById [pidToDelete]
+    if null viagens
+        then putStrLn "Viagem inexistente!" 
+    else do
+        delete (\c -> pid c == pidToDelete) strToViagem viagemToStr viagemCsvPath
+        putStrLn "Viagem deletada com sucesso!"
+
+getViagemByColumn :: String -> String -> IO [PassageiroViagem]
+getViagemByColumn att value = do
+    viagens <- getAllViagens
+    let selectedViagens = filter (\c -> getViagemAttribute c att == value) viagens
+    return selectedViagens
+
+-- atualizar avaliação motorista
+-- getById, getAll, getByColumn
