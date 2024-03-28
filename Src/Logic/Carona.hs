@@ -3,7 +3,6 @@
 module Src.Logic.Carona(
     gerarCarona,
     infoCarona, 
-    infoCaronaByDestino,
     infoCaronaById, 
     infoCaronaByPassageiro, 
     infoCaronaByMotorista, 
@@ -27,17 +26,12 @@ infoCarona caronaId = do
         Nothing -> return "Carona not found"
         Just Carona{..} -> return $
             "Origem: " ++ origem ++
-            ", Destino: " ++ destino ++
+            ", Destinos: [" ++ intercalate ", " destinos ++ "]" ++
             ", Motorista: " ++ motorista ++
             ", Passageiros: [" ++ intercalate ", " passageiros ++ "]" ++
             ", Valor: " ++ show valor ++
-            ", Rate do Motorista: " ++ show avaliacaoMotorista ++
-            ", Rate dos Passageiros: [" ++ intercalate ", " (map show avaliacoesPassageiros) ++ "]"
-
-infoCaronaByDestino :: String->IO [String]
-infoCaronaByDestino dest = do
-    selectedCaronas <- getCaronaByColumn "destino" dest
-    mapM infoCarona (map cid selectedCaronas)
+            ", Status: " ++ status ++
+            ", Número de passageiros máximos: " ++ show numPassageirosMaximos
 
 infoCaronaByMotorista::String->IO [String]
 infoCaronaByMotorista mId = do
@@ -54,8 +48,14 @@ infoCaronaByPassageiro pId = do
     selectedCaronas <- getCaronaByColumn "passageiros" pId
     mapM infoCarona (map cid selectedCaronas)
 
-deletarCaronaPorId::String->IO ()
-deletarCaronaPorId id = deleteCaronaById (read id)
+deletarCaronaPorId::Int -> IO ()
+deletarCaronaPorId caronaId = do
+    maybeCarona <- getCaronaById [caronaId]
+    if null maybeCarona then
+        putStrLn "Essa carona não existe!"
+    else do
+        deleteCaronaById caronaId
+        putStrLn "Carona deletada com sucesso!"
 
 -- cancelar carona
     -- motorista
@@ -68,15 +68,15 @@ deletarCaronaPorId id = deleteCaronaById (read id)
 -- display todas as caronas com base no origem/destino, horario/dia, motoristas
 
 -- criar carona (motorista)
-gerarCarona :: String -> String -> String -> String -> String -> Double -> IO ()
-gerarCarona hora date origem destino motorista valor = do
+gerarCarona :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
+gerarCarona hora date origem destinos motorista valor numPassageirosMaximos = do
     if validarHorario hora then
         putStrLn "Horário fora do padrão requisitado!"
     else do 
         if validarData date then
             putStrLn "Data fora do padrão requisitado!"
         else do
-            criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destino motorista [] valor 0 [0]
+            criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destinos motorista [] valor "Não Iniciada" numPassageirosMaximos
             putStrLn "Carona criada com sucesso!"
 
 -- alterar carona: adição/remoção de passageiros, status, 

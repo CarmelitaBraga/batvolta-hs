@@ -12,12 +12,12 @@ data Carona = Carona
     hora :: TimeOfDay,
     date :: Day,
     origem :: String,
-    destino :: String,
+    destinos :: [String],
     motorista :: String,
     passageiros :: [String],
     valor :: Double,
-    avaliacaoMotorista :: Int,
-    avaliacoesPassageiros :: [Int]
+    status :: String,
+    numPassageirosMaximos :: Int
   }
   deriving (Show, Eq)
 
@@ -26,17 +26,17 @@ instance Read Carona where
 
 -- Function to convert a Carona to a string
 caronaToStr :: Carona -> String
-caronaToStr (Carona c h d o dest m ps v am aps) =
+caronaToStr (Carona c h d o dest m ps v st numps) =
   show c ++ "," ++
   show h ++ "," ++
   show d ++ "," ++
   o ++ "," ++
-  dest ++ "," ++
+  intercalate ";" dest ++ "," ++
   m ++ "," ++
   intercalate ";" ps ++ "," ++
   formatDecimal v ++ "," ++
-  show am ++ "," ++
-  intercalate ";" (map show aps)
+  show st ++ "," ++
+  show numps ++ ","
   where
     formatDecimal :: Double -> String
     formatDecimal x = showFFloat (Just 2) x ""
@@ -46,17 +46,17 @@ strToCarona str =
   let parts = splitOn "," (filter (\c -> c /= '\r' && c /= '\\') str) in
   -- traceShow parts $
   case parts of
-    [c, h, d, o, dest, m, ps, v, am, aps] ->
+    [c, h, d, o, dest, m, ps, v, st, numps] ->
       Carona
         { cid = read c,
           hora = read h,
           date = read d,
           origem = o,
-          destino = dest,
+          destinos = splitOn ";" dest,
           motorista = m,
           passageiros = splitOn ";" ps,
           valor = read v,
-          avaliacaoMotorista = read am,
-          avaliacoesPassageiros = map read (splitOn ";" aps)
+          status = read st,
+          numPassageirosMaximos = read numps
         }
     _ -> error "Invalid input format for Carona string"

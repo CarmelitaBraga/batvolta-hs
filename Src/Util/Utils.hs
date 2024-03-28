@@ -41,10 +41,10 @@ getCaronaAttribute carona attr
     | attr == "hora" = show (hora carona)
     | attr == "date" = show (date carona)
     | attr == "origem" = origem carona
-    | attr == "destino" = destino carona
+    | attr == "destinos" = unwords (destinos carona)
     | attr == "motorista" = motorista carona
     | attr == "passageiros" = unwords (passageiros carona)
     | attr == "valor" = show (valor carona)
-    | attr == "avaliacaoMotorista" = show (avaliacaoMotorista carona)
-    | attr == "avaliacoesPassageiros" = unwords (map show (avaliacoesPassageiros carona))
+    | attr == "status" = show (status carona)
+    | attr == "numPassageirosMaximos" = show (numPassageirosMaximos carona)
     | otherwise = error "Invalid attribute"

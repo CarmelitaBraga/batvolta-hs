@@ -1,11 +1,6 @@
-module Src.Controller.ControllerCarona (mostrarCaronasPorDestino, mostrarCaronaPorId, mostrarCaronasPassageiro, mostrarCaronasMotorista, deletarCaronaMotorista) where
+module Src.Controller.ControllerCarona (mostrarCaronaPorId, mostrarCaronasPassageiro, mostrarCaronasMotorista, deletarCaronaMotorista) where
 
 import Src.Logic.Carona
-
-mostrarCaronasPorDestino :: String -> IO String
-mostrarCaronasPorDestino destino = do
-    caronas <- infoCaronaByDestino destino
-    return $ unlines caronas
 
 mostrarCaronasPassageiro::String -> IO String
 mostrarCaronasPassageiro pId = do
@@ -22,7 +17,7 @@ mostrarCaronaPorId cid = do
     carona <- infoCaronaById cid
     return $ unlines carona
 
-deletarCaronaMotorista::String->IO ()
+deletarCaronaMotorista::Int->IO ()
 deletarCaronaMotorista cid = deletarCaronaPorId cid
 
 -- criarCaronaMotorista::String->(Maybe Carona)
