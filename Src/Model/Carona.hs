@@ -46,9 +46,8 @@ caronaToStr (Carona c h d o dest m ps v st numps) =
     formatDecimal x = showFFloat (Just 2) x ""
 
 strToCarona :: String -> Carona
-strToCarona str =
-  let parts = splitOn "," (filter (\c -> c /= '\r' && c /= '\\') str) in
-  -- traceShow parts $
+strToCarona str =  
+  let parts = splitOn "," (init str) in
   case parts of
     [c, h, d, o, dest, m, ps, v, st, numps] ->
       Carona
