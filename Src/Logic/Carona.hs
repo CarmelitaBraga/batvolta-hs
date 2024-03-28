@@ -7,8 +7,9 @@ module Src.Logic.Carona(
     infoCaronaById, 
     infoCaronaByPassageiro, 
     infoCaronaByMotorista, 
-    deletarCaronaPorId
-    ) where
+    deletarCaronaPorId, 
+    adicionarPassageiro, 
+    removerPassageiro) where
 
 import Src.Schema.CaronaSchema
 import Src.Model.Carona
@@ -77,3 +78,25 @@ gerarCarona hora date origem destino motorista valor = do
         else do
             criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destino motorista [] valor 0 [0]
             putStrLn "Carona criada com sucesso!"
+
+-- alterar carona: adição/remoção de passageiros, status, 
+adicionarPassageiro :: Int -> String -> IO String
+adicionarPassageiro caronaId passageiro = do
+    maybeCarona <- getCaronaById [caronaId]
+    if null maybeCarona then
+        return "Essa carona não existe!"
+    else do
+        carona <- addPassageiro (head maybeCarona) passageiro
+        return (unsafePerformIO (infoCarona caronaId))
+
+removerPassageiro :: Int -> String -> IO String
+removerPassageiro caronaId passageiro = do
+    maybeCarona <- getCaronaById [caronaId]
+    if null maybeCarona then
+        return "Essa carona não existe!"
+    else do
+        carona <- rmPassageiro (head maybeCarona) passageiro
+        if carona == head maybeCarona then
+            return "Esse passageiro não está nessa carona!"
+        else do
+            return (unsafePerformIO (infoCarona caronaId))
