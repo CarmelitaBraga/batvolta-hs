@@ -1,6 +1,7 @@
 module Src.Util.Util where
 
 import Data.Char (isDigit, digitToInt, intToDigit, isAlphaNum)
+import Text.Regex.Posix
 
 validarCPF :: String -> Bool
 validarCPF cpf
@@ -13,9 +14,7 @@ nullOrEmpty str = null (dropWhile (== ' ') str)
 
 -- Função para validar um email sem usar expressões regulares
 validarEmail :: String -> Bool
-validarEmail email =
-    let parts = splitOn '@' email
-    in length parts /= 2 || not (all isAlphaNum (head parts)) || '.' `notElem` (last parts)
+validarEmail email = not (email =~ "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
 
 -- Função auxiliar para dividir uma string em partes com base em um caractere
 splitOn :: Eq a => a -> [a] -> [[a]]
