@@ -1,12 +1,13 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro, removerPassageiro
+    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro, rmPassageiro
 ) where
 
 import Data.Time.Calendar (Day)
 import Data.Time.LocalTime (TimeOfDay)
-import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeOrError)
+import Data.Time.Format
 import Data.Csv (ToRecord, ToField, toRecord, record, toField, encode)
 import System.IO (openFile, readFile, hClose, IOMode(AppendMode))
+import Data.Time
 import qualified Data.ByteString.Lazy as BL
 import Data.List.Split (splitOn)
 import Src.Util.CsvHandler as Csv
@@ -14,12 +15,13 @@ import Src.Model.Carona as Carona
 import GHC.IO (unsafePerformIO)
 import Debug.Trace (traceShow)
 import Src.Util.Utils (getCaronaAttribute)
+import Src.Model.Carona (Carona)
 
 instance ToField TimeOfDay where
-    toField time = toField $ formatTime defaultTimeLocale "%H:%M:%S" time
+    toField time = toField $ formatTime defaultTimeLocale "%H:%M" time
 
 instance ToField Day where
-    toField day = toField $ formatTime defaultTimeLocale "%Y-%m-%d" day
+    toField day = toField $ formatTime defaultTimeLocale "%d/%m/%Y" day
 
 -- Definição do estado do contador para IDs de carona
 type CounterState = Int
@@ -74,14 +76,14 @@ getCaronaByColumn att value = do
                           else filter (\c -> getCaronaAttribute c att == value) caronas
     return selectedCaronas
 
-deleteCaronaById :: Int -> IO ()
+deleteCaronaById :: Int -> IO String
 deleteCaronaById cidToDelete = do
     caronas <- getCaronaById [cidToDelete]
     if null caronas
-        then putStrLn "Carona inexistente!" 
+        then return "Carona inexistente!" 
     else do
         delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
-        putStrLn "Carona deletada com sucesso!"
+        return "Carona deletada com sucesso!"
 
 selectCaronaByDestino::String->IO [Carona]
 selectCaronaByDestino dest = do
@@ -96,8 +98,8 @@ parseCarona line = case splitOn "," line of
     [cidStr, horaStr, dateStr, origem, destino, motorista, passageirosStr, valorStr, avaliacaoMotoristaStr, avaliacoesPassageirosStr] ->
         Carona {
             cid = read cidStr,
-            hora = parseTimeOrError True defaultTimeLocale "%H:%M:%S" horaStr,
-            date = parseTimeOrError True defaultTimeLocale "%Y-%m-%d" dateStr,
+            hora = parseTimeOrError True defaultTimeLocale "%H:%M" horaStr,
+            date = parseTimeOrError True defaultTimeLocale "%d/%m/%Y" dateStr,
             origem = origem,
             destino = destino,
             motorista = motorista,
@@ -108,7 +110,7 @@ parseCarona line = case splitOn "," line of
         }
     _ -> error "Invalid line format for Carona"
 
-criarCarona :: TimeOfDay -> Day -> String -> String -> String -> [String] -> Double -> Int -> [Int] -> IO()
+criarCarona :: TimeOfDay -> Day -> String -> String -> String -> [String] -> Double -> Int -> [Int] -> IO () ()
 criarCarona hora dt ori dest mot pss val avMot avPss = do
     nextId <- incrementCounter counterState
     let carona = Carona nextId hora dt ori dest mot pss val avMot avPss
@@ -132,10 +134,10 @@ addPassageiro carona passageiro = do
     updateCarona carona caronaAtualizada
     return caronaAtualizada
 
-removerPassageiro :: Carona -> String -> IO Carona
-removerPassageiro carona passageiro = do
+rmPassageiro :: Carona -> String -> IO Carona
+rmPassageiro carona passageiro = do
     let passageirosCarona = passageiros carona
-        novosPassageiros =  filter (\passageiroIterador -> passageiro /= passageiroIterador) passageirosCarona
+        novosPassageiros =  filter (/= passageiro) passageirosCarona
     
         caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destino carona) (motorista carona) novosPassageiros (valor carona) (avaliacaoMotorista carona) (avaliacoesPassageiros carona)
     
