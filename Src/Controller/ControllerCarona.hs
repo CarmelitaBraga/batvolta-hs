@@ -1,6 +1,6 @@
 module Src.Controller.ControllerCarona (mostrarCaronaPorId, mostrarCaronasPassageiro, mostrarCaronasMotorista, deletarCaronaMotorista) where
 
-import Src.Logic.Carona
+import Src.Logic.CaronaLogic
 
 mostrarCaronasPassageiro::String -> IO String
 mostrarCaronasPassageiro pId = do
@@ -19,6 +19,10 @@ mostrarCaronaPorId cid = do
 
 deletarCaronaMotorista::Int->IO ()
 deletarCaronaMotorista cid = deletarCaronaPorId cid
+
+-- mostrarCaronasOrigemDestino::String->String->IO String
+-- mostrarCaronasOrigemDestino origem destino =
+--     filtrarCaronaOriDest
 
 -- criarCaronaMotorista::String->(Maybe Carona)
 -- criarCaronaMotorista = 

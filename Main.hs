@@ -4,7 +4,8 @@ import Data.Csv
 import Data.Time
 import Data.Time.Calendar 
 import Src.Schema.CaronaSchema as CARONA
-import Src.Logic.Carona as C
+import Src.Logic.CaronaLogic as C
+import Src.Schema.PassageiroViagemSchema as V
 import Data.Time.LocalTime
 -- import Src.Model.Carona
 -- import Src.Controller.ControllerCarona
@@ -41,7 +42,7 @@ main = do
     -- csp <- CARONA.removerPassageiro (head caronas) "Caique"
     -- print csp
 
-    gerarCarona "09:00" "02/03/2025" "Campina Grande" ["Joao Pessoa"] "091802112" 123.55 3
+    -- C.gerarCarona "09:00" "02/03/2025" "Campina Grande" ["Joao Pessoa"] "091802112" 123.55 3
 
     -- a <- adicionarPassageiro 99 "Caique"
     -- print a
@@ -49,20 +50,22 @@ main = do
     -- a <- removerPassageiro 0 "Caique"
     -- putStrLn a
 
-    CARONA.criarViagemPassageiro 0 False "Campina" "Gramado" 5 "55533399974"
+    V.criarViagemPassageiro 0 False "Campina" "Gramado" 5 "55533399974"
 
 
-    vs <- CARONA.getAllViagens
+    vs <- V.getAllViagens
     print vs
 
-    v <- CARONA.getViagemById [1]
+    v <- V.getViagemById [1]
     print v
 
-    CARONA.deleteViagemById 15
+    V.deleteViagemById 15
 
-    v0 <- CARONA.getViagemByColumn "pid" "0"
+    v0 <- V.getViagemByColumn "pid" "0"
     print v0
 
+    up <- V.updateSolicitacaoViagem 0 "false"
+    print up
 
     -- a <- removerPassageiro 99 "Caique"
     -- putStrLn a
