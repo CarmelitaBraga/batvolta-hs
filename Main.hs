@@ -2,17 +2,12 @@ module Main where
 
 import Src.Model.MotoristaModel(Motorista)
 import Src.CLI.MotoristaCLI(menuPrincipal)
-import Src.Schemas.Notificacao(insereNotificacao)
+import Src.Schemas.Notificacao(insereNotificacao,getBy)
 import Src.Model.NotificacaoModel(Notificacao)
 
 main :: IO (Maybe Motorista)
 main = do
 
-          CLI.menuPrincipalPassageiro
-          {- C.realizarCadastroPassageiro "Caique" "10767287426" "caique.campelo@ccc.ufcg.edu.br" "(83) 99690-0011" "58428-830" "123456"
-          C.realizarCadastroPassageiro "Filipe" "11111111111" "testaaaa@gmail.com" "telefone aqui" "cep aqui" "senha aqui"
-          C.atualizarCadastroPassageiro "11111111111" "Telefone" "9999999999"
-          C.cancelarCadastroPassageiro "10767287426" -}
     --SCHEMAS
     -- cadastraMotorista "G" "afdskj" "a" "h" "a" "a" "l"
     -- getBy "cpf" "ian"
@@ -26,7 +21,8 @@ main = do
     -- cancelarCadastroMotorista "ian1"
     -- atualizarCadastroMotorista "11111111111" "Cep" "Kf"
     -- realizarLoginMotorista "iangmai.com" "13"
-    -- insereNotificacao 1 "Ian solicitou entrar na sua carona do dia 21, até o caja"
-
-    menuPrincipal
+    -- insereNotificacao "testeMotorista" "testePassageiro" 1 "Ian solicitou entrar na sua carona do dia 21, até o caja"
+    -- notificacoes <- getBy "testeMotorista"  -- Substitua "testeMotorista" pelo atributo desejado
+    --mapM_ print notificacoes
+      menuPrincipal
 

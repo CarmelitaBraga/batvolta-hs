@@ -2,16 +2,14 @@ module Src.Schemas.Notificacao where
 
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Char8 as B8
-import qualified Data.Text.IO as TIO
-import qualified Data.Text as T
-import Data.Text (Text)
-import Data.Text.Encoding (encodeUtf8)
+import Data.List
 import System.IO
     ( hIsEOF, withFile, IOMode(WriteMode, AppendMode, ReadMode) )
 import Data.Csv
 import Control.Monad (MonadPlus(mzero))
 import qualified Data.Vector as V
 import Src.Model.NotificacaoModel(Notificacao(..))
+import Src.Model.MotoristaModel (Motorista(cpf))
 
 type CounterState = Int 
 
@@ -36,22 +34,22 @@ findNextId currentId listaNotificacoes =
 
 
 
-insereNotificacao :: Int -> String -> IO (Maybe Notificacao)
-insereNotificacao idCarona conteudoCriar = do
+insereNotificacao :: String -> String -> Int -> String -> IO (Maybe Notificacao)
+insereNotificacao idMotorista idPassageiro idCarona conteudoCriar = do
     isEmpty <- checkIsEmpty csvPath
     if isEmpty
         then do
             let nextId = 0
-                notificacao = Notificacao nextId idCarona conteudoCriar 
+                notificacao = Notificacao nextId idMotorista idPassageiro idCarona conteudoCriar 
                 csvData = encode [notificacao]
-                header = B8.pack "idNotificacao,idCarona,conteudo\n"
+                header = B8.pack "idNotificacao,idMotorista,idPassageiro,idCarona,conteudo\n"
                 final = BL.fromStrict header <> csvData
             withFile csvPath WriteMode $ \handle -> do
                 BL.hPutStr handle final
             return notificacao
        else do
             nextId <- incrementCounter counterState
-            let notificacao = Notificacao nextId idCarona conteudoCriar
+            let notificacao = Notificacao nextId idMotorista idPassageiro idCarona conteudoCriar
                 csvData = encode [notificacao]
             withFile csvPath AppendMode $ \handle -> do
                 BL.hPutStr handle csvData
@@ -75,4 +73,10 @@ carregarNotificacoes path = do
             Right notificacao -> do
                 return $ V.toList notificacao
 
+getBy :: String -> IO [Notificacao]
+getBy atributoDesejado = do
+    notificacoes <- carregarNotificacoes csvPath
+    let notificacoesEncontradas = filter (\n -> idMotorista n == atributoDesejado) notificacoes
+        notificacoesOrdenadas = sortBy (\n1 n2 -> compare (idNotificacao n2) (idNotificacao n1)) notificacoesEncontradas
+    return notificacoesOrdenadas
 
