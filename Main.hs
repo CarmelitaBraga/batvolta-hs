@@ -19,9 +19,12 @@ main = do
     -- cancelarCadastroMotorista "ian1"
     -- atualizarCadastroMotorista "11111111111" "Cep" "Kf"
     -- realizarLoginMotorista "iangmai.com" "13"
-    let notificacao = Notificacao "teste2" "teste1"
+    let notificacao = Notificacao  "teste2" "teste1"
     insereNotificacao notificacao
 
-    -- menuPrincipal
+    -- menuPrincipa
+
+    
+    
 
     

@@ -10,28 +10,50 @@ import System.IO
     ( hIsEOF, withFile, IOMode(WriteMode, AppendMode, ReadMode) )
 import Data.Csv
 import Control.Monad (MonadPlus(mzero))
+import qualified Data.Vector as V
 
 data Notificacao = Notificacao{
     motorista :: String
     , conteudo :: String
+    ,idNotificacao :: Int
 } deriving(Show)
 
 instance FromRecord Notificacao where
     parseRecord v
-        | length v == 2 = Notificacao
+        | length v == 3 = Notificacao
             <$> v .! 0
             <*> v .! 1
+            <*> v .! 2
         | otherwise = mzero
 
 instance ToRecord Notificacao where
-    toRecord (Notificacao conteudo) = record
+    toRecord (Notificacao id motorista conteudo) = record
         [
-            toField motorista
-            , toField conteudo
+            toField  conteudo
+            , toField motorista
+            , toField id
         ]
 
+type CounterState = Int 
+
 csvPath :: FilePath
-csvPath = "./database/notificacao.csv"
+csvPath = "./database/notificacaoMotorista.csv"
+
+counterState :: CounterState
+counterState = 0
+
+incrementCounter :: CounterState -> IO CounterState
+incrementCounter currentState = do
+    allNotificacoes <- carregarNotificacoes csvPath
+    let nextId = findNextId currentState allNotificacoes
+    return nextId
+
+findNextId :: CounterState -> [Notificacao] -> CounterState
+findNextId currentId listaNotificacoes =
+    if any (\u -> idNotificacao u == currentId) listaNotificacoes
+        then findNextId (currentId + 1) listaNotificacoes
+        else currentId
+
 
 
 insereNotificacao :: Notificacao -> IO ()
@@ -40,18 +62,16 @@ insereNotificacao notificacao = do
     if isEmpty
         then do
             let csvData = encode [notificacao]
-                header = "cpf_carona,cpf_motorista,conteudo\n"
-                final = header ++ T.unpack csvData
-            TIO.writeFile csvPath final
-            putStrLn "Notificação inserida com sucesso"
-        else do
+                nextId = 0
+                header = B8.pack "idNotificacao,motorista,conteudo\n"
+                final = BL.fromStrict header <> csvData
+            withFile csvPath WriteMode $ \handle -> do
+                BL.hPutStr handle final
+       else do
+            nextId <- incrementCounter counterState
             let csvData = encode [notificacao]
-            currentData <- TIO.readFile csvPath
-            let (headerLine : existingContent) = T.lines currentData
-                newData = T.unlines (headerLine : T.unpack csvData : existingContent)
-            TIO.writeFile csvPath newData
-            putStrLn "Notificação inserida com sucesso"
-
+            withFile csvPath AppendMode $ \handle -> do
+                BL.hPutStr handle csvData
 
 
 checkIsEmpty :: FilePath -> IO Bool
@@ -59,3 +79,14 @@ checkIsEmpty path = do
     withFile path ReadMode $ \handle -> do
         hIsEOF handle
 
+
+carregarNotificacoes :: FilePath -> IO [Notificacao]
+carregarNotificacoes path = do
+    withFile path ReadMode $ \handle -> do
+        csvData <- BL.hGetContents handle
+        case decode NoHeader csvData of
+            Left err -> do
+                putStrLn $ "error: " ++ err
+                return []
+            Right notificacao -> do
+                return $ V.toList notificacao
