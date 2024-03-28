@@ -2,7 +2,8 @@ module Src.Model.MotoristaModel(
     Motorista(..),
     confereSenha,
     toRecord,
-    parseRecord
+    parseRecord,
+    getCpf
 ) where
 
 import Control.Monad (MonadPlus(mzero))
@@ -57,3 +58,7 @@ instance Show Motorista where
 
 confereSenha :: Motorista -> String -> Bool
 confereSenha motorista senhaPassada = senhaPassada == senha motorista
+
+getCpf :: Maybe Motorista -> String
+getCpf Nothing = "Motorista não encontrado"
+getCpf (Just motorista) = cpf motorista
