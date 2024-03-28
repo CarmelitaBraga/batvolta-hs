@@ -2,14 +2,10 @@ module Src.CLI.MotoristaCLI where
 
 import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista, realizarLoginMotorista)
 import System.IO
-import Src.Model.MotoristaModel(Motorista, getCpf)
-import Data.IORef
-import Control.Monad
-import Data.Maybe (fromMaybe)
--- Motorista Logado
-type MotoristaRef = IORef (Maybe Motorista)
+import Src.Model.MotoristaModel(Motorista)
 
 -- Funções auxiliares para interação com o usuário
+
 inputString :: String -> IO String
 inputString prompt = do
     putStr prompt
@@ -31,9 +27,7 @@ menuPrincipal = do
     opcao <- getLine
     case opcao of
         "1" -> menuCadastrarMotorista
-        "2" -> do
-            motoristaRef <- newIORef Nothing
-            menuRealizarLogin motoristaRef
+        "2" -> menuRealizarLogin
         "0" -> do
             putStrLn "Saindo..."
             return Nothing
@@ -41,22 +35,22 @@ menuPrincipal = do
             putStrLn "Opção inválida!"
             menuPrincipal
 
-menuOpcoesMotorista :: MotoristaRef -> IO (Maybe Motorista)
-menuOpcoesMotorista motoristaRef = do
+menuOpcoesMotorista :: IO (Maybe Motorista)
+menuOpcoesMotorista = do
     putStrLn "\nOpções do Motorista:"
     putStrLn "1 - Atualizar Cadastro"
     putStrLn "2 - Cancelar Cadastro"
     putStrLn "3 - Visualizar Informações"
-    putStrLn "0 - Sair"
+    putStrLn "0 - Voltar Menu Principal"
     opcao <- getLine
     case opcao of
-        "1" -> menuAtualizarCadastro motoristaRef
-        "2" -> menuCancelarCadastro motoristaRef
-        "3" -> menuVisualizarInfo motoristaRef
+        "1" -> menuAtualizarCadastro
+        "2" -> menuCancelarCadastro
+        "3" -> menuVisualizarInfo
         "0" -> menuPrincipal
         _   -> do
             putStrLn "Opção inválida!"
-            menuOpcoesMotorista motoristaRef
+            menuOpcoesMotorista
 
 
 menuCadastrarMotorista :: IO (Maybe Motorista)
@@ -75,11 +69,10 @@ menuCadastrarMotorista = do
         Nothing -> putStrLn "Erro ao cadastrar motorista."
     menuPrincipal
 
-menuCancelarCadastro :: MotoristaRef -> IO (Maybe Motorista)
-menuCancelarCadastro motoristaRef = do
+menuCancelarCadastro :: IO (Maybe Motorista)
+menuCancelarCadastro = do
     putStrLn "\nCancelar Cadastro de Motorista"
-    motoristaMaybe <- readIORef motoristaRef
-    let cpf = getCpf motoristaMaybe
+    cpf <- inputString "Digite seu CPF: "
     senha <- inputString "Digite sua senha:"
     resultado <- cancelarCadastroMotorista cpf senha
     case resultado of
@@ -88,14 +81,13 @@ menuCancelarCadastro motoristaRef = do
             menuPrincipal        
         Nothing -> do
             putStrLn "Erro ao cancelar cadastro de motorista."
-            menuOpcoesMotorista motoristaRef
+            menuOpcoesMotorista
     
 
-menuAtualizarCadastro ::MotoristaRef -> IO (Maybe Motorista)
-menuAtualizarCadastro motoristaRef = do
+menuAtualizarCadastro :: IO (Maybe Motorista)
+menuAtualizarCadastro = do
     putStrLn "\nAtualizar Cadastro de Motorista"
-    motoristaMaybe <- readIORef motoristaRef
-    let cpf = getCpf motoristaMaybe
+    cpf <- inputString "Digite seu CPF: "
     senha <- inputString "Digite sua senha:"
     putStrLn "Selecione o atributo a ser atualizado:"
     putStrLn "1 - Telefone"
@@ -111,18 +103,24 @@ menuAtualizarCadastro motoristaRef = do
     case resultado of
         Just motorista -> putStrLn "Cadastro de motorista atualizado com sucesso!"
         Nothing -> putStrLn "Erro ao atualizar cadastro de motorista."
-    menuOpcoesMotorista motoristaRef
+    menuOpcoesMotorista
 
-menuVisualizarInfo :: MotoristaRef -> IO (Maybe Motorista)
-menuVisualizarInfo motoristaRef = do
-    putStrLn "\nInformações do motorista:"
-    motoristaMaybe <- readIORef motoristaRef
-    print motoristaMaybe
-    menuOpcoesMotorista motoristaRef
+menuVisualizarInfo :: IO (Maybe Motorista)
+menuVisualizarInfo = do
+    putStrLn "\nVisualizar Informações de Motorista"
+    cpf <- inputString "Digite o seu CPF: "
+    senha <- inputString "Digite a sua Senha:"
+    resultado <- visualizarInfoCadastroMotorista cpf senha
+    case resultado of
+        Just motorista -> do
+            putStrLn "Informações do motorista:"
+            putStrLn $ show motorista
+        Nothing -> putStrLn "Motorista não encontrado."
+    menuOpcoesMotorista
 
 
-menuRealizarLogin :: MotoristaRef -> IO (Maybe Motorista)
-menuRealizarLogin motoristaRef = do
+menuRealizarLogin :: IO (Maybe Motorista)
+menuRealizarLogin = do
     putStrLn "\nRealizar Login de Motorista"
     email <- inputString "Digite o e-mail: "
     senha <- inputString "Digite a senha: "
@@ -130,7 +128,6 @@ menuRealizarLogin motoristaRef = do
     case resultado of
         Just motorista -> do
             putStrLn "Login bem-sucedido!"
-            writeIORef motoristaRef resultado
-            menuOpcoesMotorista motoristaRef
+            menuOpcoesMotorista
         Nothing -> do 
             menuPrincipal

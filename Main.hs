@@ -2,10 +2,8 @@ module Main where
 
 import Src.Model.MotoristaModel(Motorista)
 import Src.CLI.MotoristaCLI(menuPrincipal)
-import Src.Schemas.Notificacao(insereNotificacao)
-import Src.Model.NotificacaoModel(Notificacao)
-
-main :: IO (Maybe Motorista)
+import Src.Schemas.Notificacao(Notificacao(..), insereNotificacao)
+main :: IO ()
 main = do
 
           CLI.menuPrincipalPassageiro
@@ -26,7 +24,8 @@ main = do
     -- cancelarCadastroMotorista "ian1"
     -- atualizarCadastroMotorista "11111111111" "Cep" "Kf"
     -- realizarLoginMotorista "iangmai.com" "13"
-    -- insereNotificacao 1 "Ian solicitou entrar na sua carona do dia 21, até o caja"
+    let notificacao = Notificacao  "teste2" "teste1"
+    insereNotificacao notificacao
 
-    menuPrincipal
+    -- menuPrincipa
 
