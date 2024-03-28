@@ -3,44 +3,57 @@ module Main where
 import Data.Csv
 import Data.Time
 import Data.Time.Calendar 
-import Src.Schema.CaronaSchema as CARONA
+-- import Src.Schema.CaronaSchema as CARONA
 import Src.Logic.Carona as C
 import Data.Time.LocalTime
-import Src.Model.Carona
-import Src.Controller.ControllerCarona
+-- import Src.Model.Carona
+-- import Src.Controller.ControllerCarona
+import Src.Util.Utils(validarData)
 import GHC.IO (unsafePerformIO)
+
+-- getBrazilCurrentDate :: IO Day
+-- getBrazilCurrentDate = do
+--     brazilTZ <- loadSystemTZ "America/Sao_Paulo"  -- Fuso horário do Brasil
+--     brazilTime <- utcToLocalTimeTZ brazilTZ <$> getCurrentTime
+--     return $ localDay brazilTime
 
 main :: IO ()
 main = do
-    -- Obtém a data e hora atuais
-    currentTime <- getCurrentTime
-
-    -- Converte a UTCTime para o tipo Day (extrai apenas a data)
-    let today = utctDay currentTime
-
-        -- Obtém a hora atual no fuso horário local
-    zonedTime <- getZonedTime
-
-    -- Extrai o horário atual do ZonedTime
-    let timeOfDay = localTimeOfDay (zonedTimeToLocalTime zonedTime)
+--     putStrLn "Digite uma data no formato dd/mm/yyyy:"
+--     input <- getLine
+--     if validarData input
+--         then putStrLn "A data inserida é válida."
+--         else putStrLn "A data inserida não é válida."
 
     -- let caronaIds = [2]
     -- caronas <- CARONA.getCaronaById caronaIds
     -- mapM_ print caronas  -- Print the retrieved Carona objects
     -- CARONA.deleteCaronaById 1
-    CARONA.criarCarona timeOfDay today "Luana" "Everton" "André" [""] 19.99 5 [-1]
-    caronas <- getCaronaById [0]
-    csp <- CARONA.addPassageiro (head caronas) "Carmelita"
+    -- CARONA.criarCarona  getBrazilCurrentDate "Luana" "Everton" "André" [""] 19.99 5 [-1]
+    -- caronas <- getCaronaById [0]
+    -- csp <- CARONA.addPassageiro (head caronas) "Carmelita"
     -- print csp
-    caronas <- getCaronaById [0]
-    csp <- CARONA.addPassageiro (head caronas) "Caique"
-    print csp
+    -- caronas <- getCaronaById [0]
+    -- csp <- CARONA.addPassageiro (head caronas) "Caique"
+    -- print csp
 
-    caronas <- getCaronaById [0]
-    csp <- CARONA.removerPassageiro (head caronas) "Caique"
-    print csp
+    -- caronas <- getCaronaById [0]
+    -- csp <- CARONA.removerPassageiro (head caronas) "Caique"
+    -- print csp
 
+    gerarCarona "09:00" "02/03/2025" "Campina Grande" "Joao Pessoa" "091802112" 123.55
 
+    -- a <- adicionarPassageiro 99 "Caique"
+    -- print a
+
+    -- a <- removerPassageiro 0 "Caique"
+    -- putStrLn a
+
+    -- a <- removerPassageiro 99 "Caique"
+    -- putStrLn a
+    
+    -- a <- removerPassageiro 0 "Lu"
+    -- putStrLn a
 
     -- cs <- CARONA.getAllCaronas
     -- print cs
