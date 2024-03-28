@@ -11,29 +11,7 @@ import System.IO
 import Data.Csv
 import Control.Monad (MonadPlus(mzero))
 import qualified Data.Vector as V
-
-data Notificacao = Notificacao{
-    idNotificacao :: Int
-    ,carona :: Int
-    , conteudo :: String
-} deriving(Show)
-
-instance FromRecord Notificacao where
-    parseRecord v
-        | length v == 3 = Notificacao
-            <$> v .! 0
-            <*> v .! 1
-            <*> v .! 2
-        | otherwise = mzero
-
-instance ToRecord Notificacao where
-    toRecord (Notificacao idNotificacao carona conteudo) = record
-        [
-            toField idNotificacao
-            ,toField  carona
-            , toField conteudo
-            
-        ]
+import Src.Model.NotificacaoModel(Notificacao(..))
 
 type CounterState = Int 
 

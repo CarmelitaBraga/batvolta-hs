@@ -3,7 +3,9 @@ module Main where
 
 import Src.Model.MotoristaModel(Motorista)
 import Src.CLI.MotoristaCLI(menuPrincipal)
-import Src.Schemas.Notificacao(Notificacao(..), insereNotificacao)
+import Src.Schemas.Notificacao(insereNotificacao)
+import Src.Model.NotificacaoModel(Notificacao)
+
 main :: IO (Maybe Notificacao)
 main = do
     --SCHEMAS

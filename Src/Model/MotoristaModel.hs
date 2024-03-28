@@ -1,5 +1,5 @@
 module Src.Model.MotoristaModel(
-     Motorista(..),
+    Motorista(..),
     confereSenha,
     toRecord,
     parseRecord
