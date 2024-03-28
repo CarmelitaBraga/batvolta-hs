@@ -49,6 +49,21 @@ main = do
     -- a <- removerPassageiro 0 "Caique"
     -- putStrLn a
 
+    CARONA.criarViagemPassageiro 0 False "Campina" "Gramado" 5 "55533399974"
+
+
+    vs <- CARONA.getAllViagens
+    print vs
+
+    v <- CARONA.getViagemById [1]
+    print v
+
+    CARONA.deleteViagemById 15
+
+    v0 <- CARONA.getViagemByColumn "pid" "0"
+    print v0
+
+
     -- a <- removerPassageiro 99 "Caique"
     -- putStrLn a
     
