@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Src.Logic.Carona(
+module Src.Logic.CaronaLogic (
     gerarCarona,
     infoCarona, 
     infoCaronaById, 
@@ -48,8 +48,8 @@ infoCaronaById id = do
 infoCaronaByDestino :: String->IO [String]
 infoCaronaByDestino dest = do
     selectedCaronas <- getCaronaByColumn "destinos" dest
-
     mapM infoCarona (map cid selectedCaronas)
+
 infoCaronaByPassageiro::String->IO [String]
 infoCaronaByPassageiro pId = do
     selectedCaronas <- getCaronaByColumn "passageiros" pId
@@ -64,17 +64,6 @@ deletarCaronaPorId caronaId = do
         deleteCaronaById caronaId
         putStrLn "Carona deletada com sucesso!"
 
--- cancelar carona
-    -- motorista
-    -- passageiros
-
--- solicitar carona
-
--- aceitar carona
-
--- display todas as caronas com base no origem/destino, horario/dia, motoristas
-
--- criar carona (motorista)
 gerarCarona :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
 gerarCarona hora date origem destinos motorista valor numPassageirosMaximos = do
     if validarHorario hora then
@@ -107,3 +96,22 @@ removerPassageiro caronaId passageiro = do
             return "Esse passageiro não está nessa carona!"
         else do
             return (unsafePerformIO (infoCarona caronaId))
+
+-------------------------------------------------------------------------------
+-- updateViagem :: PassageiroViagem->PassageiroViagem->IO PassageiroViagem
+-- updateStatusViagem::Int->String->IO String
+-- updateStatusViagem viagemId status = do
+-- maybeViagem <- getViagemById [viagemId]
+-- if null maybeViagem then
+--     return "Este registro de carona de passageiro não existe."
+-- else do
+--     novaViagem <- PassageiroViagem 
+--     updateViagem maybeViagem
+
+-- updateAvaliacaoMotorista
+-- updateCaronaEmViagem
+-- updateSolicitacaoViagem
+-- 
+
+-- mostrarCaronasOrigemDestino::String->String->IO String
+-- filtrarCaronaOrigDest::String
