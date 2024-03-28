@@ -1,15 +1,24 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Src.Logic.Carona(infoCarona, infoCaronaByDestino, infoCaronaById, infoCaronaByPassageiro, infoCaronaByMotorista, deletarCaronaPorId) where
+module Src.Logic.Carona(
+    gerarCarona,
+    infoCarona, 
+    infoCaronaByDestino,
+    infoCaronaById, 
+    infoCaronaByPassageiro, 
+    infoCaronaByMotorista, 
+    deletarCaronaPorId
+    ) where
 
 import Src.Schema.CaronaSchema
 import Src.Model.Carona
-
-import Data.List (find)
-import Data.List (intercalate)
+import Src.Util.Utils
+import Data.List (intercalate, find)
 import Debug.Trace (traceShow)
+import GHC.IO (unsafePerformIO)
+import System.Posix.Internals (puts)
 
-infoCarona:: Int -> IO String
+infoCarona :: Int -> IO String
 infoCarona caronaId = do
     caronas <- getAllCaronas
     let maybeCarona = find (\c -> caronaId == cid c) caronas
@@ -55,10 +64,16 @@ deletarCaronaPorId id = deleteCaronaById (read id)
 
 -- aceitar carona
 
--- alterar carona: adição/remoção de passageiros, status, 
-
 -- display todas as caronas com base no origem/destino, horario/dia, motoristas
 
 -- criar carona (motorista)
--- criarCarona :: TimeOfDay -> Day -> String -> String -> Motorista -> Double -> IO String
--- criarCarona hora data origem destino motorista valor = do
+gerarCarona :: String -> String -> String -> String -> String -> Double -> IO ()
+gerarCarona hora date origem destino motorista valor = do
+    if validarHorario hora then
+        putStrLn "Horário fora do padrão requisitado!"
+    else do 
+        if validarData date then
+            putStrLn "Data fora do padrão requisitado!"
+        else do
+            criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destino motorista [] valor 0 [0]
+            putStrLn "Carona criada com sucesso!"
