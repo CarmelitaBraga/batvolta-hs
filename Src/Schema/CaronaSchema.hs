@@ -1,5 +1,5 @@
 module Src.Schema.CaronaSchema (
-    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, selectCaronaByDestino, getCaronaByColumn, addPassageiro, rmPassageiro, criarViagemPassageiro, getAllViagens, getViagemById, deleteViagemById, getViagemByColumn
+    criarCarona, deleteCaronaById, getCaronaById, getAllCaronas, getCaronaByDestino, getCaronaByColumn, addPassageiro, rmPassageiro, criarViagemPassageiro, getAllViagens, getViagemById, deleteViagemById, getViagemByColumn
 ) where
 
 import Data.Time.Calendar (Day)
@@ -29,6 +29,14 @@ caronaCsvPath = "./database/Caronas.csv"
 viagemCsvPath::String
 viagemCsvPath = "./database/ViagemPassageiros.csv"
 
+-- Instância ToField para StatusCarona
+instance ToField StatusCarona where
+  toField status =
+    case status of
+      NaoIniciada -> toField ("NaoIniciada" :: String)
+      EmAndamento -> toField ("EmAndamento" :: String)
+      Finalizada -> toField ("Finalizada" :: String)
+            
 -- Definição do estado do contador para IDs de carona
 type CounterState = Int
 
@@ -54,12 +62,11 @@ instance ToRecord Carona where
         , toField (hora entry)
         , toField (date entry)
         , toField (origem entry)
-        , toField (destino entry)
+        , toField ("" :: String)
         , toField (motorista entry)
-        , toField ("" :: String)  -- Lista de passageiros vazia
-        , toField (valor entry)
-        , toField (avaliacaoMotorista entry)
-        , toField ("" :: String)  -- Lista de avaliações de passageiros vazia
+        , toField ("" :: String)
+        , toField (status entry)
+        , toField (numPassageirosMaximos entry)
         ]
 
 getAllCaronas :: IO [Carona]
@@ -74,50 +81,40 @@ getCaronaById targets = do
 getCaronaByColumn :: String -> String -> IO [Carona]
 getCaronaByColumn att value = do
     caronas <- getAllCaronas
-    let selectedCaronas = if att == "passageiros"
-                          then filter (\c -> value `elem` (passageiros c)) caronas
-                          else filter (\c -> getCaronaAttribute c att == value) caronas
+    let selectedCaronas
+            | att == "passageiros" = filter (\c -> value `elem` passageiros c) caronas
+            | att == "destinos" = filter (\c -> value `elem` destinos c) caronas
+            | otherwise = filter (\c -> getCaronaAttribute c att == value) caronas
     return selectedCaronas
 
-deleteCaronaById :: Int -> IO String
+deleteCaronaById :: Int -> IO ()
 deleteCaronaById cidToDelete = do
     caronas <- getCaronaById [cidToDelete]
-    if null caronas
-        then return "Carona inexistente!" 
-    else do
-        delete (\c -> cid c == cidToDelete) strToCarona caronaToStr caronaCsvPath
-        return "Carona deletada com sucesso!"
-
-selectCaronaByDestino::String->IO [Carona]
-selectCaronaByDestino dest = do
-    allCaronas <- get parseCarona caronaCsvPath
-    let result = filter (\x -> destino x == dest) allCaronas
-    traceShow result $ return ()
-    return result
+    delete (\c -> cid c == cidToDelete) strToCarona caronaToStr csvPath
 
 -- Parse a line from CSV into a Carona
 parseCarona :: String -> Carona
 parseCarona line = case splitOn "," line of
-    [cidStr, horaStr, dateStr, origem, destino, motorista, passageirosStr, valorStr, avaliacaoMotoristaStr, avaliacoesPassageirosStr] ->
+    [cidStr, horaStr, dateStr, origem, destinosStr, motorista, passageirosStr, valorStr, statusStr, numPassageirosMaximos] ->
         Carona {
             cid = read cidStr,
             hora = parseTimeOrError True defaultTimeLocale "%H:%M" horaStr,
             date = parseTimeOrError True defaultTimeLocale "%d/%m/%Y" dateStr,
             origem = origem,
-            destino = destino,
+            destinos = splitOn ";" destinosStr,
             motorista = motorista,
             passageiros = splitOn ";" passageirosStr,
             valor = read valorStr,
-            avaliacaoMotorista = read avaliacaoMotoristaStr,
-            avaliacoesPassageiros = map read (splitOn ";" avaliacoesPassageirosStr)
+            status = read statusStr,
+            numPassageirosMaximos = read numPassageirosMaximos
         }
     _ -> error "Invalid line format for Carona"
 
-criarCarona :: TimeOfDay -> Day -> String -> String -> String -> [String] -> Double -> Int -> [Int] -> IO () ()
-criarCarona hora dt ori dest mot pss val avMot avPss = do
+criarCarona :: TimeOfDay -> Day -> String -> [String] -> String -> [String] -> Double -> StatusCarona -> Int -> IO ()
+criarCarona hora dt ori dest mot pss val status numPss = do
     nextId <- incrementCounter counterState
-    let carona = Carona nextId hora dt ori dest mot pss val avMot avPss
-    append caronaToStr [carona] caronaCsvPath
+    let carona = Carona nextId hora dt ori dest mot pss val status numPss
+    append caronaToStr [carona] csvPath
 
 updateCarona :: Carona -> Carona -> IO Carona
 updateCarona carona novaCarona = do
@@ -132,7 +129,7 @@ addPassageiro carona passageiro = do
                             [""] -> [passageiro]
                             _ -> passageiros carona ++ [passageiro]
     
-        caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destino carona) (motorista carona) novosPassageiros (valor carona) (avaliacaoMotorista carona) (avaliacoesPassageiros carona)
+        caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) novosPassageiros (valor carona) (status carona) (numPassageirosMaximos carona)
     
     updateCarona carona caronaAtualizada
     return caronaAtualizada
@@ -142,7 +139,7 @@ rmPassageiro carona passageiro = do
     let passageirosCarona = passageiros carona
         novosPassageiros =  filter (/= passageiro) passageirosCarona
     
-        caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destino carona) (motorista carona) novosPassageiros (valor carona) (avaliacaoMotorista carona) (avaliacoesPassageiros carona)
+        caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) novosPassageiros (valor carona) (status carona) (numPassageirosMaximos carona)
     
     updateCarona carona caronaAtualizada
     return caronaAtualizada
@@ -198,3 +195,9 @@ getViagemByColumn att value = do
 
 -- atualizar avaliação motorista
 -- getById, getAll, getByColumn
+getCaronaByDestino::String->IO [Carona]
+getCaronaByDestino dest = do
+    allCaronas <- get parseCarona csvPath
+    let result = filter (\c -> dest `elem` destinos c) allCaronas
+    traceShow result $ return ()
+    return result

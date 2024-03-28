@@ -41,7 +41,7 @@ main = do
     -- csp <- CARONA.removerPassageiro (head caronas) "Caique"
     -- print csp
 
-    gerarCarona "09:00" "02/03/2025" "Campina Grande" "Joao Pessoa" "091802112" 123.55
+    gerarCarona "09:00" "02/03/2025" "Campina Grande" ["Joao Pessoa"] "091802112" 123.55 3
 
     -- a <- adicionarPassageiro 99 "Caique"
     -- print a
