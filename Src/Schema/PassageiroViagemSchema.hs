@@ -7,7 +7,8 @@ module Src.Schema.PassageiroViagemSchema (
     deleteViagemById, 
     getViagemByColumn,
     updateViagem,
-    updateSolicitacaoViagem
+    updateSolicitacaoViagem,
+    updateAvaliacaoViagem
 ) where
 
 import Data.Time.Format
@@ -93,9 +94,20 @@ updateSolicitacaoViagem::Int->String->IO String
 updateSolicitacaoViagem viagemId status = do
     maybeViagem <- getViagemById [viagemId]
     if null maybeViagem then
-        return "Este registro de carona de passageiro não existe!"
+        return "Registro de carona de passageiro inexistente!"
     else do
         let viagem = head maybeViagem
-        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) (stringToBool status) (orige viagem) (desti viagem) (avaliacaoMtrst viagem) (passageiroId viagem)
+        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) (stringToBool status) (origemPass viagem) (destino viagem) (avaliacaoMtrst viagem) (passageiroId viagem)
         updateViagem viagem novaViagem
         return "Status de Carona de Passageiro alterada com sucesso!"
+
+updateAvaliacaoViagem::Int->Int->IO String
+updateAvaliacaoViagem viagemId nota = do
+    maybeViagem <- getViagemById [viagemId]
+    if null maybeViagem then
+        return "Registro de carona de passageiro inexistente!"
+    else do
+        let viagem = head maybeViagem
+        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) (aceita viagem) (origemPass viagem) (destino viagem) nota (passageiroId viagem)
+        updateViagem viagem novaViagem
+        return "Motorista avaliado com sucesso!"

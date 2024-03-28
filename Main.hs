@@ -64,8 +64,11 @@ main = do
     v0 <- V.getViagemByColumn "pid" "0"
     print v0
 
-    up <- V.updateSolicitacaoViagem 0 "false"
+    up <- V.updateSolicitacaoViagem 4 "true"
     print up
+
+    avalia <- V.updateAvaliacaoViagem 7 1
+    print avalia
 
     -- a <- removerPassageiro 99 "Caique"
     -- putStrLn a

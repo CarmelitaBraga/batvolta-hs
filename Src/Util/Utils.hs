@@ -56,8 +56,8 @@ getViagemAttribute viagem attr
     | attr == "pid" = show (pid viagem)
     | attr == "cid" = show (cId viagem)
     | attr == "aceita" = show (aceita viagem)
-    | attr == "origem" = orige viagem
-    | attr == "destino" = desti viagem
+    | attr == "origem" = origemPass viagem
+    | attr == "destino" = destino viagem
     | attr == "avaliacao" = show (avaliacaoMtrst viagem)
     | attr == "passageiroId" = passageiroId viagem
     | otherwise = error "Invalid attribute"

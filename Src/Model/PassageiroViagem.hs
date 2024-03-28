@@ -12,8 +12,8 @@ data PassageiroViagem = PassageiroViagem {
     pid :: Int,
     cId :: Int,
     aceita :: Bool,
-    orige :: String,
-    desti :: String,
+    origemPass :: String,
+    destino :: String,
     avaliacaoMtrst :: Int,
     passageiroId :: String
 } deriving (Show, Eq)
@@ -41,8 +41,8 @@ strToViagem str =
         { pid = read p,
           cId = read c,
           aceita = read a,
-          orige = o,
-          desti = d,
+          origemPass = o,
+          destino = d,
           avaliacaoMtrst = read am,
           passageiroId = pid
         }
@@ -50,13 +50,13 @@ strToViagem str =
 
 parseViagem :: String -> PassageiroViagem
 parseViagem line = case splitOn "," line of
-    [pidStr, cIdStr, aceitaStr, origem, desti, avaliacaoMotoristaStr, passageiroId] ->
+    [pidStr, cIdStr, aceitaStr, origem, destino, avaliacaoMotoristaStr, passageiroId] ->
         PassageiroViagem {
             pid = read pidStr,
             cId = read cIdStr,
             aceita = read aceitaStr,
-            orige = origem,
-            desti = desti,
+            origemPass = origem,
+            destino = destino,
             avaliacaoMtrst = read avaliacaoMotoristaStr,
             passageiroId = passageiroId
         }
@@ -67,8 +67,8 @@ instance ToRecord PassageiroViagem where
         [ toField (pid entry)
         , toField (cId entry)
         , toField (aceita entry)
-        , toField (orige entry)
-        , toField (desti entry)
+        , toField (origemPass entry)
+        , toField (destino entry)
         , toField (avaliacaoMtrst entry)
         , toField (passageiroId entry)
         ]
