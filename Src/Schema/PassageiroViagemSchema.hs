@@ -1,5 +1,3 @@
-
-
 module Src.Schema.PassageiroViagemSchema (
     criarViagemPassageiro, 
     getAllViagens, 
@@ -8,7 +6,8 @@ module Src.Schema.PassageiroViagemSchema (
     getViagemByColumn,
     updateViagem,
     updateSolicitacaoViagem,
-    updateAvaliacaoViagem
+    updateAvaliacaoViagem,
+    getViagemByCaronaPassageiro
 ) where
 
 import Data.Time.Format
@@ -23,7 +22,6 @@ import Src.Model.Carona
 import Src.Model.PassageiroViagem
 import Data.Char (toLower)
 
----------------------------------------------------------- VIAGENS
 stringToBool :: String -> Bool
 stringToBool s 
    | b == "true"  = True
@@ -83,6 +81,12 @@ getViagemByColumn att value = do
     let selectedViagens = filter (\c -> getViagemAttribute c att == value) viagens
     return selectedViagens
 
+getViagemByCaronaPassageiro :: Int -> String -> IO [PassageiroViagem]
+getViagemByCaronaPassageiro idCarona idPassageiro = do
+    maybeViagensPss <- getViagemByColumn "passageiroId" idPassageiro
+    let selectedViagens = filter (\c -> cId c == idCarona) maybeViagensPss
+    return selectedViagens
+
 updateViagem :: PassageiroViagem->PassageiroViagem->IO PassageiroViagem
 updateViagem viagem novaViagem = do
   allViagens <- getAllViagens
@@ -90,14 +94,21 @@ updateViagem viagem novaViagem = do
   Csv.write viagemToStr updatedAllViagens viagemCsvPath
   return novaViagem
 
-updateSolicitacaoViagem::Int->String->IO String
-updateSolicitacaoViagem viagemId status = do
-    maybeViagem <- getViagemById [viagemId]
+updateSolicitacaoViagem :: Int -> String -> String -> IO String
+updateSolicitacaoViagem caronaId passageiroId status = do
+    maybeViagem <- getViagemByCaronaPassageiro caronaId passageiroId
     if null maybeViagem then
         return "Registro de carona de passageiro inexistente!"
     else do
         let viagem = head maybeViagem
-        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) (stringToBool status) (origemPass viagem) (destino viagem) (avaliacaoMtrst viagem) (passageiroId viagem)
+        let novaViagem = PassageiroViagem
+                            (pid viagem)
+                            (cId viagem)
+                            (stringToBool status)
+                            (origemPass viagem)
+                            (destino viagem)
+                            (avaliacaoMtrst viagem)
+                            passageiroId
         updateViagem viagem novaViagem
         return "Status de Carona de Passageiro alterada com sucesso!"
 

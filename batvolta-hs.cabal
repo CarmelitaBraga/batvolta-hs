@@ -27,7 +27,7 @@ executable batvolta-hs
     Src.Logic.CaronaLogic
     Src.Schema.CaronaSchema
     Src.Schema.PassageiroViagemSchema
-    Src.CLI.ClienteCLI
+    Src.CLI.CaronaCLI
     Src.Controller.ControllerCarona
     
   other-extensions:
