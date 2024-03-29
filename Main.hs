@@ -8,7 +8,7 @@ import Src.Logic.CaronaLogic as C
 import Src.Schema.PassageiroViagemSchema as V
 import Data.Time.LocalTime
 -- import Src.Model.Carona
--- import Src.Controller.ControllerCarona
+import Src.Controller.ControllerCarona
 import Src.Util.Utils(validarData)
 import GHC.IO (unsafePerformIO)
 
@@ -42,7 +42,44 @@ main = do
     -- csp <- CARONA.removerPassageiro (head caronas) "Caique"
     -- print csp
 
-    -- C.gerarCarona "09:00" "02/03/2025" "Campina Grande" ["Joao Pessoa"] "091802112" 123.55 3
+    -- C.gerarCarona "19:01" "10/10/2024" "Amazonia" ["Joao Pessoa", "Ceara", "Rio de Janeiro", "Curitiba"] "091802112" 200.90 1
+
+ 
+    -- Joao Pessoa -> Stadunido no
+    -- Stadunido -> Curitiba no
+    -- Gramado -> Ceara yes
+    -- Ceara -> Minas Gerais 
+    -- d0 <- C.filtrarCaronaOriDest "Ceara" "Curitiba"
+    -- print d0
+
+    -- d1 <- C.filtrarCaronaOriDest "Joao Pessoa" "Curitiba"
+    -- print d1
+
+    -- d2 <- C.filtrarCaronaOriDest "Joao Pessoa" "Ceara"
+    -- print d2
+
+    -- mostrarCaronasOrigemDestino "Joao Pessoa" "Ceara"
+
+    -- d3 <- mostrarCaronasOrigemDestino "Curitiba" "Para"
+    -- print d3
+
+    -- mostrarCaronasOrigemDestino "Curitiba" "Para"
+
+    -- mostrarCaronasOrigemDestino "Amazonia" "Stadunido"
+
+    -- d5 <- C.filtrarCaronaOriDest "Stadunido" "Curitiba"
+    -- print d5
+
+    -- d6 <- C.filtrarCaronaOriDest "Gramado" "Ceara"
+    -- print d6
+
+    mostrarCaronasOrigemDestino "Joao Pessoa" "Patos"
+
+    -- d7 <- C.filtrarCaronaOriDest "Ceara" "Minas Gerais"
+    -- print d7
+
+    -- d8 <- C.filtrarCaronaOriDest "Joao Pessoa" "Patos"
+    -- print d8 --warning
 
     -- a <- adicionarPassageiro 99 "Caique"
     -- print a
@@ -50,25 +87,26 @@ main = do
     -- a <- removerPassageiro 0 "Caique"
     -- putStrLn a
 
-    V.criarViagemPassageiro 0 False "Campina" "Gramado" 5 "55533399974"
+
+    -- V.criarViagemPassageiro 0 False "Campina" "Gramado" 5 "55533399974"
 
 
-    vs <- V.getAllViagens
-    print vs
+    -- vs <- V.getAllViagens
+    -- print vs
 
-    v <- V.getViagemById [1]
-    print v
+    -- v <- V.getViagemById [1]
+    -- print v
 
-    V.deleteViagemById 15
+    -- V.deleteViagemById 15
 
-    v0 <- V.getViagemByColumn "pid" "0"
-    print v0
+    -- v0 <- V.getViagemByColumn "pid" "0"
+    -- print v0
 
-    up <- V.updateSolicitacaoViagem 4 "true"
-    print up
+    -- up <- V.updateSolicitacaoViagem 4 "true"
+    -- print up
 
-    avalia <- V.updateAvaliacaoViagem 7 1
-    print avalia
+    -- avalia <- V.updateAvaliacaoViagem 7 1
+    -- print avalia
 
     -- a <- removerPassageiro 99 "Caique"
     -- putStrLn a

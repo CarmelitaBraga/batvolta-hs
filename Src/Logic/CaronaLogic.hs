@@ -9,13 +9,14 @@ module Src.Logic.CaronaLogic (
     deletarCaronaPorId, 
     adicionarPassageiro, 
     removerPassageiro,
-    infoCaronaByDestino
+    infoCaronaByDestino,
+    filtrarCaronaOriDest
     ) where
 
 import Src.Schema.CaronaSchema
 import Src.Model.Carona
 import Src.Util.Utils
-import Data.List (intercalate, find)
+import Data.List (intercalate, find, elemIndex, elemIndices)
 import Debug.Trace (traceShow)
 import GHC.IO (unsafePerformIO)
 import System.Posix.Internals (puts)
@@ -27,13 +28,14 @@ infoCarona caronaId = do
     case maybeCarona of
         Nothing -> return "Carona not found"
         Just Carona{..} -> return $
-            "Origem: " ++ origem ++
+            "Id: " ++ show cid ++
+            ", Origem: " ++ origem ++
             ", Destinos: [" ++ intercalate ", " destinos ++ "]" ++
             ", Motorista: " ++ motorista ++
             ", Passageiros: [" ++ intercalate ", " passageiros ++ "]" ++
             ", Valor: " ++ show valor ++
             ", Status: " ++ show status ++
-            ", Número de passageiros máximos: " ++ show numPassageirosMaximos
+            ", Limite de passageiros: " ++ show numPassageirosMaximos
 
 infoCaronaByMotorista::String->IO [String]
 infoCaronaByMotorista mId = do
@@ -97,21 +99,24 @@ removerPassageiro caronaId passageiro = do
         else do
             return (unsafePerformIO (infoCarona caronaId))
 
--------------------------------------------------------------------------------
--- updateViagem :: PassageiroViagem->PassageiroViagem->IO PassageiroViagem
--- updateStatusViagem::Int->String->IO String
--- updateStatusViagem viagemId status = do
--- maybeViagem <- getViagemById [viagemId]
--- if null maybeViagem then
---     return "Este registro de carona de passageiro não existe."
--- else do
---     novaViagem <- PassageiroViagem 
---     updateViagem maybeViagem
+existeRota :: Carona -> String -> String -> Bool
+existeRota carona o d = 
+    let allStops = origem carona : destinos carona
+        origIndex = elemIndex o allStops
+        destIndices = elemIndices d allStops
+        lastIndexD = if null destIndices then Nothing else Just (last destIndices)
+    in case (origIndex, lastIndexD) of
+        (Just oi, Just di) -> oi < di
+        _ -> False
 
--- updateAvaliacaoMotorista
--- updateCaronaEmViagem
--- updateSolicitacaoViagem
--- 
-
--- mostrarCaronasOrigemDestino::String->String->IO String
--- filtrarCaronaOrigDest::String
+filtrarCaronaOriDest :: String -> String -> IO [String]
+filtrarCaronaOriDest orig dest = do
+    allCaronas <- getAllCaronas
+    let selectedOriginCaronas = filter (\c -> origem c == orig) allCaronas
+    let selectedDestinyCaronas = filter (\c -> dest `elem` (origem c : destinos c)) allCaronas
+    if null selectedDestinyCaronas
+        then return []
+        else do
+            let selectedOriginDestinyCaronas = filter (\c -> orig `elem` (origem c : destinos c)) selectedDestinyCaronas
+            let selectedCaronas = filter (\c -> existeRota c orig dest) selectedOriginDestinyCaronas
+            mapM (\c -> infoCarona (cid c)) selectedCaronas

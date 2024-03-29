@@ -1,11 +1,9 @@
-0,12:30:00,2024-03-25,Home,Work,John,Daniel;Emma;Sophia,25.50,4,3;5;4
-2,17:45:00,2024-03-27,Gym,Home,Mary,Eu,10.00,4,3
-6,19:56:41,2024-03-26,Casa de Luana,Casa de Everton,André,"",19.99,-1,-1
-7,19:57:18,2024-03-26,Casa de Luana,Casa de Everton,André,"",19.99,-1,-1
-8,20:13:48,2024-03-26,Casa de Luana,Casa de Everton,André,"",19.99,-1,-1
-9,23:35:50.026510431,2024-03-27,Casa de Luana,Casa de Everton,André,Passageiro1;Passageiro2,19.99,5,4;5
-1,23:36:50.2399835,2024-03-27,Casa de Luana,Casa de Everton,André,Passageiro1;Passageiro2,19.99,5,4;5
-10,23:38:29.284278446,2024-03-27,Casa de Luana,Casa de Everton,André,,19.99,5,-1
-3,23:38:48.658318834,2024-03-27,Casa de Luana,Casa de Everton,André,,19.99,5,-1
-4,23:39:05.949829848,2024-03-27,Casa de Luana,Casa de Everton,André,,19.99,5,-1
-5,23:39:35.169001542,2024-03-27,Luana,Everton,André,,19.99,5,-1
+0,19:01:00,2024-10-10,Amazonia,Joao Pessoa;Ceara;Rio de Janeiro;Curitiba,091802112,,200.90,NaoIniciada,1
+1,19:01:00,2024-10-10,Amazonia,Joao Pessoa;Rio de Janeiro;Ceara;Curitiba,091802112,,200.90,EmAndamento,1
+11,09:00:00,2025-03-02,Campina Grande,Patos;Joao Pessoa;Patos,091802112,,123.55,NaoIniciada,3
+12,09:00:00,2025-03-02,Campina Grande,Joao Pessoa;Patos,091802112,,123.55,EmAndamento,4
+13,09:00:00,2025-03-02,Campina Grande,Joao Pessoa,091802112,,123.55,NaoIniciada,3
+3,19:01:23,2023-10-10,Amazonia,Joao Pessoa;Ceara;Rio de Janeiro;Curitiba,091802112,Carme;Luc;Andre;Lu,200.90,NaoIniciada,5
+10,20:01:23,2024-03-04,Amazonia,Ceara;Para;Curitiba,091802112,Carme;Luc;Andre;Lu,200.90,Finalizada,5
+5,01:01:23,2025-03-04,Gramado,Ceara;Para;Minas Gerais,091802112,Carme;Luc;Andre;Lu,200.90,Finalizada,5
+6,21:00:00,2024-03-04,Curitiba,Ceara;Joao Pessoa,091802112,Carme;Luc;Andre;Lu,200.90,Finalizada,5

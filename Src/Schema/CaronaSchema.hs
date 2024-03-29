@@ -6,7 +6,8 @@ module Src.Schema.CaronaSchema (
     getCaronaByDestino, 
     getCaronaByColumn, 
     addPassageiro, 
-    rmPassageiro
+    rmPassageiro,
+    getCaronaByOrigem
 ) where
 
 import Data.Time.Calendar (Day)
@@ -147,6 +148,13 @@ rmPassageiro carona passageiro = do
     
     updateCarona carona caronaAtualizada
     return caronaAtualizada
+
+getCaronaByOrigem::String->IO [Carona]
+getCaronaByOrigem orig = do
+    allCaronas <- get parseCarona caronaCsvPath
+    let result = filter (\c -> origem c == orig) allCaronas
+    traceShow result $ return ()
+    return result
 
 getCaronaByDestino::String->IO [Carona]
 getCaronaByDestino dest = do
