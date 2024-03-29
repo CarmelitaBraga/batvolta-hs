@@ -5,7 +5,8 @@ module Src.Controller.ControllerCarona (
     deletarCaronaMotorista,
     mostrarCaronasOrigemDestino,
     finalizarCaronaStatus,
-    inicializarCaronaStatus
+    inicializarCaronaStatus,
+    responderSolicitacaoCarona
     ) where
 
 import Src.Logic.CaronaLogic
@@ -45,14 +46,18 @@ inicializarCaronaStatus pId = do
     msg <- alterarStatusCarona pId "EmAndamento"
     putStrLn msg
 
+-- Função para aceitar ou negar solicitação de carona
+-- resp aceita True e False
+responderSolicitacaoCarona::String->Int->String->IO()
+responderSolicitacaoCarona idPassageiro idCarona resp = do
+    status <- alterarStatusViagem idPassageiro idCarona resp
+    putStrLn status
+
 -- criarCaronaMotorista::String->(Maybe Carona)
 -- criarCaronaMotorista = 
 
 -- solicitarCaronaPassageiro::
 -- solicitarCaronaPassageiro = 
-
--- responderSolicitacaoCarona::
--- responderSolicitacaoCarona = 
 
 -- cancelarCaronaPassageiro::
 -- cancelarCaronaPassageiro = 

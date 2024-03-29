@@ -45,7 +45,7 @@ main = do
     -- csp <- CARONA.removerPassageiro (head caronas) "Caique"
     -- print csp
 
-    C.gerarCarona "19:01" "10/10/2024" "Amazonia" ["Joao Pessoa", "Ceara", "Rio de Janeiro", "Curitiba"] "091802112" 200.90 1
+    -- C.gerarCarona "19:01" "10/10/2024" "Amazonia" ["Joao Pessoa", "Ceara", "Rio de Janeiro", "Curitiba"] "091802112" 200.90 1
 
  
     -- Joao Pessoa -> Stadunido no
@@ -76,11 +76,11 @@ main = do
     -- d6 <- C.filtrarCaronaOriDest "Gramado" "Ceara"
     -- print d6
 
-    mostrarCaronasOrigemDestino "Joao Pessoa" "Patos"
+    -- mostrarCaronasOrigemDestino "Joao Pessoa" "Patos"
 
-    finalizarCaronaStatus 6
-    inicializarCaronaStatus 77
-    deletarCaronaPorId 47
+    -- finalizarCaronaStatus 6
+    -- inicializarCaronaStatus 77
+    -- deletarCaronaPorId 47
 
     -- d7 <- C.filtrarCaronaOriDest "Ceara" "Minas Gerais"
     -- print d7
@@ -143,3 +143,6 @@ main = do
 
     -- deletada <- deletarCaronaMotorista "0"
     -- putStrLn deletada
+
+    responderSolicitacaoCarona "55533399974" 100 "false"
+    responderSolicitacaoCarona "55533399974" 4 "true"

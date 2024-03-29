@@ -11,10 +11,12 @@ module Src.Logic.CaronaLogic (
     removerPassageiro,
     infoCaronaByDestino,
     filtrarCaronaOriDest,
-    alterarStatusCarona
+    alterarStatusCarona,
+    alterarStatusViagem
     ) where
 
 import Src.Schema.CaronaSchema
+import Src.Schema.PassageiroViagemSchema
 import Src.Model.Carona
 import Src.Util.Utils
 import Data.List (intercalate, find, elemIndex, elemIndices)
@@ -78,7 +80,6 @@ gerarCarona hora date origem destinos motorista valor numPassageirosMaximos = do
             criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destinos motorista [] valor NaoIniciada numPassageirosMaximos
             putStrLn "Carona criada com sucesso!"
 
--- alterar carona: adição/remoção de passageiros, status, 
 adicionarPassageiro :: Int -> String -> IO String
 adicionarPassageiro caronaId passageiro = do
     maybeCarona <- getCaronaById [caronaId]
@@ -126,3 +127,10 @@ alterarStatusCarona::Int->String->IO String
 alterarStatusCarona cId newStatus = do
     result <- updateStatusCarona cId newStatus
     return result
+
+alterarStatusViagem::String->Int->String->IO String
+alterarStatusViagem idPassageiro idCarona resp = do
+    maybeCarona <- getCaronaById [idCarona]
+    if null maybeCarona then
+        return "Nenhuma carona encontrada com este id."
+    else updateSolicitacaoViagem idCarona idPassageiro resp
