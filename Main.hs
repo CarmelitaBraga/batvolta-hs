@@ -5,7 +5,7 @@ import Src.CLI.MotoristaCLI(menuPrincipal)
 import Src.Schemas.Notificacao(insereNotificacao,getBy)
 import Src.Model.NotificacaoModel(Notificacao)
 
-main :: IO (Maybe Motorista)
+main :: IO ()
 main = do
 
     --SCHEMAS
