@@ -4,6 +4,8 @@ module Src.Controller.ControllerCarona (
     mostrarCaronasMotorista, 
     deletarCaronaMotorista,
     mostrarCaronasOrigemDestino,
+    possuiCaronaNaoIniciadaController,
+    infoCaronasNaoIniciadas,
     finalizarCaronaStatus,
     inicializarCaronaStatus,
     responderSolicitacaoCarona,
@@ -13,6 +15,8 @@ module Src.Controller.ControllerCarona (
 import Src.Logic.CaronaLogic
 import Src.Model.Carona
 import Src.Util.ValidationCarona
+import Control.Exception (catch)
+import Data.Bool (Bool)
 
 mostrarCaronasPassageiro::String -> IO String
 mostrarCaronasPassageiro pId = do
@@ -39,15 +43,19 @@ mostrarCaronasOrigemDestino origem destino = do
         then putStrLn "Nenhuma carona disponível para esta rota no momento."
         else mapM_ putStrLn caronas
 
-finalizarCaronaStatus::Int->IO()
-finalizarCaronaStatus pId = do
-    msg <- alterarStatusCarona pId "Finalizada"
-    putStrLn msg
+possuiCaronaNaoIniciadaController :: String -> IO Bool
+possuiCaronaNaoIniciadaController motorista = possuiCaronaNaoIniciada motorista
 
-inicializarCaronaStatus::Int->IO()
-inicializarCaronaStatus pId = do
-    msg <- alterarStatusCarona pId "EmAndamento"
-    putStrLn msg
+infoCaronasNaoIniciadas :: String -> IO String
+infoCaronasNaoIniciadas motorista = do
+    caronas <- infoCaronaNaoIniciadaByMotorista motorista
+    return $ unlines caronas
+
+finalizarCaronaStatus :: Int -> IO String
+finalizarCaronaStatus cId = finalizarCarona cId
+
+inicializarCaronaStatus::Int -> IO String
+inicializarCaronaStatus cId = iniciarCarona cId
 
 -- Função para aceitar ou negar solicitação de carona
 -- resp aceita True e False
@@ -55,19 +63,6 @@ responderSolicitacaoCarona::String->Int->String->IO()
 responderSolicitacaoCarona idPassageiro idCarona resp = do
     status <- alterarStatusViagem idPassageiro idCarona resp
     putStrLn status
-
--- criarCaronaMotorista::String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
--- criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
---     result <- gerarCarona hora date origem destinos motorista valor limitePss
---     putStrLn result
-
--- criarCaronaMotorista :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
--- criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
---     case validateCarona Carona of
---         Left errMsg -> putStrLn $ "Erro ao criar Carona: " ++ errMsg
---         Right validCarona -> do
---             result <- gerarCarona hora date origem destinos motorista valor limitePss
---             putStrLn result
 
 criarCaronaMotorista :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
 criarCaronaMotorista hora date origem destinos motorista valor limitePss = do

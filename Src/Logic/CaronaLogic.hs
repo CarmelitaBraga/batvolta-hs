@@ -6,17 +6,20 @@ module Src.Logic.CaronaLogic (
     infoCaronaById, 
     infoCaronaByPassageiro, 
     infoCaronaByMotorista, 
+    infoCaronaNaoIniciadaByMotorista,
     deletarCaronaPorId, 
     adicionarPassageiro, 
     removerPassageiro,
     infoCaronaByDestino,
     filtrarCaronaOriDest,
-    alterarStatusCarona,
-    alterarStatusViagem
+    alterarStatusViagem,
+    possuiCaronaNaoIniciada,
+    iniciarCarona,
+    finalizarCarona
     ) where
 
-import Src.Schema.CaronaSchema
 import Src.Schema.PassageiroViagemSchema
+import Src.Schema.CaronaSchema
 import Src.Model.Carona
 import Src.Util.Utils
 import Data.List (intercalate, find, elemIndex, elemIndices)
@@ -68,6 +71,11 @@ deletarCaronaPorId caronaId = do
     else do
         deleteCaronaById caronaId
         putStrLn "Carona deletada com sucesso!"
+
+infoCaronaNaoIniciadaByMotorista :: String -> IO [String]
+infoCaronaNaoIniciadaByMotorista motorista = do
+    selectedCaronas <- getCaronaByMotoristaEStatus motorista "NaoIniciada"
+    mapM infoCarona (map cid selectedCaronas)
 
 gerarCarona :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
 gerarCarona hora date origem destinos motorista valor numPassageirosMaximos = do
@@ -123,14 +131,31 @@ filtrarCaronaOriDest orig dest = do
             let selectedCaronas = filter (\c -> existeRota c orig dest) selectedOriginDestinyCaronas
             mapM (\c -> infoCarona (cid c)) selectedCaronas
 
-alterarStatusCarona::Int->String->IO String
-alterarStatusCarona cId newStatus = do
-    result <- updateStatusCarona cId newStatus
-    return result
-
 alterarStatusViagem::String->Int->String->IO String
 alterarStatusViagem idPassageiro idCarona resp = do
     maybeCarona <- getCaronaById [idCarona]
     if null maybeCarona then
         return "Nenhuma carona encontrada com este id."
     else updateSolicitacaoViagem idCarona idPassageiro resp
+
+possuiCaronaNaoIniciada :: String -> IO Bool
+possuiCaronaNaoIniciada motorista = possuiCaronaByMotoristaEStatus motorista "NaoIniciada"
+
+iniciarCarona :: Int -> IO String
+iniciarCarona cId = do
+    maybeCarona <- getCaronaById [cId]
+    if null maybeCarona then
+        return "Essa carona não existe!"
+    else do
+        updateStatusCarona (head maybeCarona) "EmAndamento"
+        return "Carona iniciada com sucesso!"
+
+finalizarCarona :: Int -> IO String
+finalizarCarona cId = do
+    maybeCarona <- getCaronaById [cId]
+    if null maybeCarona then
+        return "Essa carona não existe!"
+    else do
+        updateStatusCarona (head maybeCarona) "Finalizada"
+        return "Carona finalizada com sucesso!"
+

@@ -141,10 +141,9 @@ main = do
     -- caronasMotorista <- mostrarCaronasMotorista "André"
     -- putStrLn caronasMotorista
 
-    -- deletada <- deletarCaronaMotorista "0"
-    -- putStrLn deletada
+    -- deletarCaronaMotorista 0
 
-    responderSolicitacaoCarona "55533399974" 100 "false"
+    -- responderSolicitacaoCarona "55533399974" 100 "false"
     responderSolicitacaoCarona "55533399974" 4 "true"
 
 --falta motorista
