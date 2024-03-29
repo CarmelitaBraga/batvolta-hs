@@ -6,6 +6,7 @@ import Data.Time.Calendar
 import Src.Schema.CaronaSchema as CARONA
 import Src.Logic.CaronaLogic as C
 import Src.Schema.PassageiroViagemSchema as V
+import Src.CLI.CaronaCLI as CLI
 import Data.Time.LocalTime
 -- import Src.Model.Carona
 import Src.Controller.ControllerCarona
@@ -20,6 +21,8 @@ import GHC.IO (unsafePerformIO)
 
 main :: IO ()
 main = do
+
+    -- CLI.menuPrincipal
 --     putStrLn "Digite uma data no formato dd/mm/yyyy:"
 --     input <- getLine
 --     if validarData input
@@ -90,7 +93,6 @@ main = do
 
     -- a <- removerPassageiro 0 "Caique"
     -- putStrLn a
-
 
     -- V.criarViagemPassageiro 0 False "Campina" "Gramado" 5 "55533399974"
 
