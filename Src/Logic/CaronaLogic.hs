@@ -12,21 +12,14 @@ module Src.Logic.CaronaLogic (
     removerPassageiro,
     infoCaronaByDestino,
     filtrarCaronaOriDest,
-<<<<<<< Updated upstream
-    alterarStatusCarona,
-    alterarStatusViagem
-    ) where
-
-import Src.Schema.CaronaSchema
-import Src.Schema.PassageiroViagemSchema
-=======
+    alterarStatusViagem,
     possuiCaronaNaoIniciada,
     iniciarCarona,
     finalizarCarona
     ) where
 
+import Src.Schema.PassageiroViagemSchema
 import Src.Schema.CaronaSchema as SCHEMA
->>>>>>> Stashed changes
 import Src.Model.Carona
 import Src.Util.Utils
 import Data.List (intercalate, find, elemIndex, elemIndices)
@@ -139,19 +132,13 @@ filtrarCaronaOriDest orig dest = do
             let selectedCaronas = filter (\c -> existeRota c orig dest) selectedOriginDestinyCaronas
             mapM (\c -> infoCarona (cid c)) selectedCaronas
 
-<<<<<<< Updated upstream
-alterarStatusCarona::Int->String->IO String
-alterarStatusCarona cId newStatus = do
-    result <- updateStatusCarona cId newStatus
-    return result
-
 alterarStatusViagem::String->Int->String->IO String
 alterarStatusViagem idPassageiro idCarona resp = do
     maybeCarona <- getCaronaById [idCarona]
     if null maybeCarona then
         return "Nenhuma carona encontrada com este id."
     else updateSolicitacaoViagem idCarona idPassageiro resp
-=======
+
 possuiCaronaNaoIniciada :: String -> IO Bool
 possuiCaronaNaoIniciada motorista = SCHEMA.possuiCaronaByMotoristaEStatus motorista "NaoIniciada"
 
@@ -172,4 +159,4 @@ finalizarCarona cId = do
     else do
         updateStatusCarona (head maybeCarona) "Finalizada"
         return "Carona finalizada com sucesso!"
->>>>>>> Stashed changes
+
