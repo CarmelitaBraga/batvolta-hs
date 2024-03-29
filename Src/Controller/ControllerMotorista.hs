@@ -1,7 +1,9 @@
 module Src.Controller.ControllerMotorista where
 
-import Src.Model.MotoristaModel (Motorista)
+import Src.Model.MotoristaModel (Motorista (cpf))
 import Src.Logic.MotoristaLogic (cadastrarMotoristaLogic,atualizarMotoristaLogic,removerMotoristaLogic,buscarMotoristaLogic,realizarLoginMotoristaLogic)
+import Src.Schemas.Notificacao (getBy)
+import Src.Model.NotificacaoModel (Notificacao)
 
 
 realizarCadastroMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
@@ -19,3 +21,5 @@ visualizarInfoCadastroMotorista cpf senha = buscarMotoristaLogic cpf senha
 realizarLoginMotorista :: String -> String -> IO (Maybe Motorista)
 realizarLoginMotorista email senha = realizarLoginMotoristaLogic email senha
 
+carregaNotificacoes :: String -> IO [Notificacao]
+carregaNotificacoes cpf = getBy cpf

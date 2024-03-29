@@ -1,6 +1,6 @@
 module Src.CLI.MotoristaCLI where
 
-import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista, realizarLoginMotorista)
+import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista, realizarLoginMotorista,carregaNotificacoes)
 import System.IO
 import Src.Model.MotoristaModel(Motorista, getCpf)
 import Data.IORef
@@ -46,12 +46,14 @@ menuOpcoesMotorista motoristaRef = do
     putStrLn "1 - Atualizar Cadastro"
     putStrLn "2 - Cancelar Cadastro"
     putStrLn "3 - Visualizar Informações"
+    putStrLn "4 - Carregar historico de Notificações"
     putStrLn "0 - Sair"
     opcao <- getLine
     case opcao of
         "1" -> void (menuAtualizarCadastro motoristaRef)
         "2" -> void (menuCancelarCadastro motoristaRef)
         "3" -> void (menuVisualizarInfo motoristaRef)
+        "4" -> void (menuCarregarNotificacoes motoristaRef)
         "0" -> menuPrincipal
         _   -> do
             putStrLn "Opção inválida!"
@@ -133,3 +135,14 @@ menuRealizarLogin motoristaRef = do
             menuOpcoesMotorista motoristaRef
         Nothing -> do 
             menuPrincipal
+
+
+menuCarregarNotificacoes :: MotoristaRef -> IO ()
+menuCarregarNotificacoes motoristaRef = do
+    putStrLn "\nCarregar Notificações do Motorista"
+    motoristaMaybe <- readIORef motoristaRef
+    let cpfMotorista = getCpf motoristaMaybe
+    notificacoes <- carregaNotificacoes cpfMotorista
+    putStrLn "Notificações:"
+    mapM_ print notificacoes
+    menuOpcoesMotorista motoristaRef

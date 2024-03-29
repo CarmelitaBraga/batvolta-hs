@@ -23,6 +23,6 @@ main = do
     -- realizarLoginMotorista "iangmai.com" "13"
     -- insereNotificacao "testeMotorista" "testePassageiro" 1 "Ian solicitou entrar na sua carona do dia 21, até o caja"
     -- notificacoes <- getBy "testeMotorista"  -- Substitua "testeMotorista" pelo atributo desejado
-    --mapM_ print notificacoes
+    --mapM_ print notificacoesa
       menuPrincipal
 
