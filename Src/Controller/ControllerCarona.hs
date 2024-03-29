@@ -6,10 +6,13 @@ module Src.Controller.ControllerCarona (
     mostrarCaronasOrigemDestino,
     finalizarCaronaStatus,
     inicializarCaronaStatus,
-    responderSolicitacaoCarona
+    responderSolicitacaoCarona,
+    criarCaronaMotorista
     ) where
 
 import Src.Logic.CaronaLogic
+import Src.Model.Carona
+import Src.Util.ValidationCarona
 
 mostrarCaronasPassageiro::String -> IO String
 mostrarCaronasPassageiro pId = do
@@ -53,8 +56,32 @@ responderSolicitacaoCarona idPassageiro idCarona resp = do
     status <- alterarStatusViagem idPassageiro idCarona resp
     putStrLn status
 
--- criarCaronaMotorista::String->(Maybe Carona)
--- criarCaronaMotorista = 
+-- criarCaronaMotorista::String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
+-- criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
+--     result <- gerarCarona hora date origem destinos motorista valor limitePss
+--     putStrLn result
+
+-- criarCaronaMotorista :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
+-- criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
+--     case validateCarona Carona of
+--         Left errMsg -> putStrLn $ "Erro ao criar Carona: " ++ errMsg
+--         Right validCarona -> do
+--             result <- gerarCarona hora date origem destinos motorista valor limitePss
+--             putStrLn result
+
+criarCaronaMotorista :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
+criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
+    let check = validateCarona valor origem destinos limitePss motorista
+    if check /= "OK"
+        then putStrLn $ "Erro ao criar Carona: " ++ check
+        else do
+            result <- gerarCarona hora date origem destinos motorista valor limitePss
+            putStrLn $ "Carona criada com sucesso."
+
+
+
+-- modificarLimitePassageiros::
+-- modificarLimitePassageiros =
 
 -- solicitarCaronaPassageiro::
 -- solicitarCaronaPassageiro = 
@@ -62,11 +89,15 @@ responderSolicitacaoCarona idPassageiro idCarona resp = do
 -- cancelarCaronaPassageiro::
 -- cancelarCaronaPassageiro = 
 
+-- verificar se tem espaço
+-- embarcarPassageiro::
+-- embarcarPassageiro =
+
+-- desembarcarPassageiro::
+-- desembarcarPassageiro =
+
 -- atualizarStatusCarona::
 -- atualizarStatusCarona =
 
 -- avaliarMotoristaCarona::
 -- avaliarMotoristaCarona =
-
--- avaliarPassageiroCarona::
--- avaliarPassageiroCarona =

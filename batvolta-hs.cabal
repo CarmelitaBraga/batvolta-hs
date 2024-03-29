@@ -22,6 +22,7 @@ executable batvolta-hs
   other-modules:
     Src.Util.Utils
     Src.Util.CsvHandler
+    Src.Util.ValidationCarona
     Src.Model.Carona
     Src.Model.PassageiroViagem
     Src.Logic.CaronaLogic
