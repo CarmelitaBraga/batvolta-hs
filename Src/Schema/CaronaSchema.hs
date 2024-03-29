@@ -8,9 +8,12 @@ module Src.Schema.CaronaSchema (
     addPassageiro, 
     rmPassageiro,
     getCaronaByOrigem,
+    getCaronaByMotoristaEStatus,
+    possuiCaronaByMotoristaEStatus,
     updateStatusCarona
 ) where
 
+import Debug.Trace (traceShow)
 import Data.Time.Calendar (Day)
 import Data.Time.LocalTime (TimeOfDay)
 import Data.Time.Format
@@ -93,6 +96,12 @@ getCaronaByColumn att value = do
             | otherwise = filter (\c -> getCaronaAttribute c att == value) caronas
     return selectedCaronas
 
+getCaronaByMotoristaEStatus :: String -> String -> IO [Carona]
+getCaronaByMotoristaEStatus motorista statusBuscado = do
+    caronasMotorista <- getCaronaByColumn "motorista" motorista
+    let selectedCaronas = filter (\c -> (read statusBuscado) == status c) caronasMotorista
+    return selectedCaronas
+
 deleteCaronaById :: Int -> IO ()
 deleteCaronaById cidToDelete = do
     caronas <- getCaronaById [cidToDelete]
@@ -173,15 +182,15 @@ determineStatus status oldStatus =
         "Finalizada" -> Finalizada
         _ -> oldStatus
 
+possuiCaronaByMotoristaEStatus :: String -> String -> IO Bool
+possuiCaronaByMotoristaEStatus motorista statusStr = do
+    caronas <- getCaronaByMotoristaEStatus motorista statusStr
+    return (not (null caronas))
+
 -- Updated function
-updateStatusCarona::Int->String->IO String
-updateStatusCarona caronaId newStatusStr = do
-    maybeCarona <- getCaronaById [caronaId]
-    if null maybeCarona then
-        return "Carona inexistente!"
-    else do
-        let carona = head maybeCarona
-        let newStatus = determineStatus newStatusStr (status carona)
-        let novaCarona = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) (passageiros carona) (valor carona) newStatus (numPassageirosMaximos carona)
-        updateCarona carona novaCarona
-        return "Status de Carona alterada com sucesso!"
+updateStatusCarona::Carona->String->IO Carona
+updateStatusCarona carona newStatusStr = do
+    let newStatus = determineStatus newStatusStr (status carona)
+    let novaCarona = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) (passageiros carona) (valor carona) newStatus (numPassageirosMaximos carona)
+    updateCarona carona novaCarona
+    return novaCarona
