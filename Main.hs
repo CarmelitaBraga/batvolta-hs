@@ -148,4 +148,6 @@ main = do
 
 --falta motorista
     criarCaronaMotorista "23:59" "25/04/2024" "Campina" ["Porto", "Paris", "Amsterdan"] "121212112" 5560.22 2
+
+    avaliarMotoristaCarona 4 "55533399974" 1
     -- print o

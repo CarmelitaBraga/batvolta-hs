@@ -2,7 +2,6 @@ module Src.CLI.CaronaCLI (
     menuPrincipal
 ) where
 
-import Src.Logic.CaronaLogic as LOGIC
 import Src.Controller.ControllerCarona as CONTROLLER
 import System.IO
 import Src.Model.PassageiroViagem (PassageiroViagem(cId))
@@ -52,7 +51,7 @@ menuCriarCarona motorista = do
     valor <- inputDouble "Digite o valor: "
     numPassageirosMaximos <- inputInt "Digite a quantidade máximas de passageiros: "
     
-    LOGIC.gerarCarona hora date origem destinos motorista valor numPassageirosMaximos
+    CONTROLLER.criarCaronaMotorista hora date origem destinos motorista valor numPassageirosMaximos
 
 pedirDestinos :: IO [String]
 pedirDestinos = menuPedirDestinos []

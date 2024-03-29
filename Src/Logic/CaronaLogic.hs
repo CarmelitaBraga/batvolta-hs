@@ -15,7 +15,8 @@ module Src.Logic.CaronaLogic (
     alterarStatusViagem,
     possuiCaronaNaoIniciada,
     iniciarCarona,
-    finalizarCarona
+    finalizarCarona,
+    avaliaMotorista
     ) where
 
 import Src.Schema.PassageiroViagemSchema
@@ -77,16 +78,16 @@ infoCaronaNaoIniciadaByMotorista motorista = do
     selectedCaronas <- getCaronaByMotoristaEStatus motorista "NaoIniciada"
     mapM infoCarona (map cid selectedCaronas)
 
-gerarCarona :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
+gerarCarona :: String -> String -> String -> [String] -> String -> Double -> Int -> IO String
 gerarCarona hora date origem destinos motorista valor numPassageirosMaximos = do
     if validarHorario hora then
-        putStrLn "Horário fora do padrão requisitado!"
+        return "Horário fora do padrão requisitado!"
     else do 
         if validarData date then
-            putStrLn "Data fora do padrão requisitado!"
+            return "Data fora do padrão requisitado!"
         else do
             criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destinos motorista [] valor NaoIniciada numPassageirosMaximos
-            putStrLn "Carona criada com sucesso!"
+            return "Carona criada com sucesso!"
 
 adicionarPassageiro :: Int -> String -> IO String
 adicionarPassageiro caronaId passageiro = do
@@ -159,3 +160,10 @@ finalizarCarona cId = do
         updateStatusCarona (head maybeCarona) "Finalizada"
         return "Carona finalizada com sucesso!"
 
+avaliaMotorista::Int->String->Int->IO String
+avaliaMotorista idCarona idPassageiro aval = do
+    if aval <= 0 || aval > 5 then
+        return "Valor invalido!"
+    else do
+        updateAvaliacaoViagem idCarona idPassageiro aval
+        return "Motorista avaliado com sucesso!"

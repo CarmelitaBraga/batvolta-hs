@@ -9,7 +9,8 @@ module Src.Controller.ControllerCarona (
     finalizarCaronaStatus,
     inicializarCaronaStatus,
     responderSolicitacaoCarona,
-    criarCaronaMotorista
+    criarCaronaMotorista,
+    avaliarMotoristaCarona
     ) where
 
 import Src.Logic.CaronaLogic
@@ -71,8 +72,12 @@ criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
         then putStrLn $ "Erro ao criar Carona: " ++ check
         else do
             result <- gerarCarona hora date origem destinos motorista valor limitePss
-            putStrLn $ "Carona criada com sucesso."
+            putStrLn result
 
+avaliarMotoristaCarona::Int->String->Int->IO()
+avaliarMotoristaCarona idCarona idPassageiro aval = do
+    result <- avaliaMotorista idCarona idPassageiro aval
+    putStrLn result
 
 
 -- modificarLimitePassageiros::
@@ -94,5 +99,3 @@ criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
 -- atualizarStatusCarona::
 -- atualizarStatusCarona =
 
--- avaliarMotoristaCarona::
--- avaliarMotoristaCarona =

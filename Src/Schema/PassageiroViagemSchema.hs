@@ -110,11 +110,11 @@ updateSolicitacaoViagem caronaId passageiroId status = do
                             (avaliacaoMtrst viagem)
                             passageiroId
         updateViagem viagem novaViagem
-        return "Status de Carona de Passageiro alterada com sucesso!"
+        return "Status de Carona de Passageiro alterado com sucesso!"
 
-updateAvaliacaoViagem::Int->Int->IO String
-updateAvaliacaoViagem viagemId nota = do
-    maybeViagem <- getViagemById [viagemId]
+updateAvaliacaoViagem::Int->String->Int->IO String
+updateAvaliacaoViagem idCarona idPassageiro nota = do
+    maybeViagem <- getViagemByCaronaPassageiro idCarona idPassageiro
     if null maybeViagem then
         return "Registro de carona de passageiro inexistente!"
     else do
