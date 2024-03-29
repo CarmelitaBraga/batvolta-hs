@@ -3,7 +3,9 @@ module Src.Controller.ControllerCarona (
     mostrarCaronasPassageiro, 
     mostrarCaronasMotorista, 
     deletarCaronaMotorista,
-    mostrarCaronasOrigemDestino
+    mostrarCaronasOrigemDestino,
+    finalizarCaronaStatus,
+    inicializarCaronaStatus
     ) where
 
 import Src.Logic.CaronaLogic
@@ -32,6 +34,16 @@ mostrarCaronasOrigemDestino origem destino = do
     if null caronas
         then putStrLn "Nenhuma carona disponível para esta rota no momento."
         else mapM_ putStrLn caronas
+
+finalizarCaronaStatus::Int->IO()
+finalizarCaronaStatus pId = do
+    msg <- alterarStatusCarona pId "Finalizada"
+    putStrLn msg
+
+inicializarCaronaStatus::Int->IO()
+inicializarCaronaStatus pId = do
+    msg <- alterarStatusCarona pId "EmAndamento"
+    putStrLn msg
 
 -- criarCaronaMotorista::String->(Maybe Carona)
 -- criarCaronaMotorista = 

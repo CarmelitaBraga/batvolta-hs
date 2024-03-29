@@ -10,7 +10,8 @@ module Src.Logic.CaronaLogic (
     adicionarPassageiro, 
     removerPassageiro,
     infoCaronaByDestino,
-    filtrarCaronaOriDest
+    filtrarCaronaOriDest,
+    alterarStatusCarona
     ) where
 
 import Src.Schema.CaronaSchema
@@ -120,3 +121,8 @@ filtrarCaronaOriDest orig dest = do
             let selectedOriginDestinyCaronas = filter (\c -> orig `elem` (origem c : destinos c)) selectedDestinyCaronas
             let selectedCaronas = filter (\c -> existeRota c orig dest) selectedOriginDestinyCaronas
             mapM (\c -> infoCarona (cid c)) selectedCaronas
+
+alterarStatusCarona::Int->String->IO String
+alterarStatusCarona cId newStatus = do
+    result <- updateStatusCarona cId newStatus
+    return result

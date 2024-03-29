@@ -46,9 +46,10 @@ caronaToStr (Carona c h d o dest m ps v st numps) =
     formatDecimal x = showFFloat (Just 2) x ""
 
 strToCarona :: String -> Carona
-strToCarona str =  
-  let parts = splitOn "," (init str) in
-  case parts of
+strToCarona str =
+  let cleanedStr = reverse $ dropWhile (== ',') $ reverse str
+      parts = splitOn "," cleanedStr
+  in case parts of
     [c, h, d, o, dest, m, ps, v, st, numps] ->
       Carona
         { cid = read c,

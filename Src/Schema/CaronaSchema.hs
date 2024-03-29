@@ -7,7 +7,8 @@ module Src.Schema.CaronaSchema (
     getCaronaByColumn, 
     addPassageiro, 
     rmPassageiro,
-    getCaronaByOrigem
+    getCaronaByOrigem,
+    updateStatusCarona
 ) where
 
 import Data.Time.Calendar (Day)
@@ -113,7 +114,7 @@ parseCarona line = case splitOn "," line of
             status = read statusStr,
             numPassageirosMaximos = read numPassageirosMaximos
         }
-    _ -> error "Invalid line format for Carona"
+    _ -> error $ "Invalid line format for Carona: " ++ line
 
 criarCarona :: TimeOfDay -> Day -> String -> [String] -> String -> [String] -> Double -> StatusCarona -> Int -> IO ()
 criarCarona hora dt ori dest mot pss val status numPss = do
@@ -162,3 +163,25 @@ getCaronaByDestino dest = do
     let result = filter (\c -> dest `elem` destinos c) allCaronas
     traceShow result $ return ()
     return result
+
+-- Function to determine the new status
+determineStatus :: String -> StatusCarona -> StatusCarona
+determineStatus status oldStatus = 
+    case status of
+        "NaoIniciada" -> NaoIniciada
+        "EmAndamento" -> EmAndamento
+        "Finalizada" -> Finalizada
+        _ -> oldStatus
+
+-- Updated function
+updateStatusCarona::Int->String->IO String
+updateStatusCarona caronaId newStatusStr = do
+    maybeCarona <- getCaronaById [caronaId]
+    if null maybeCarona then
+        return "Carona inexistente!"
+    else do
+        let carona = head maybeCarona
+        let newStatus = determineStatus newStatusStr (status carona)
+        let novaCarona = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) (passageiros carona) (valor carona) newStatus (numPassageirosMaximos carona)
+        updateCarona carona novaCarona
+        return "Status de Carona alterada com sucesso!"
