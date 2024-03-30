@@ -1,9 +1,10 @@
 module Src.Controller.ControllerCarona (
+    criarViagemPassageiro,
     mostrarCaronaPorId, 
     mostrarCaronasPassageiro, 
     mostrarCaronasMotorista, 
     deletarCaronaMotorista,
-    mostrarCaronasOrigemDestino,
+    mostrarCaronasDisponiveisOrigemDestino,
     possuiCaronaNaoIniciadaController,
     infoCaronasNaoIniciadas,
     finalizarCaronaStatus,
@@ -16,7 +17,8 @@ module Src.Controller.ControllerCarona (
     desembarcarPassageiro,
     solicitarCaronaPassageiro,
     mostrarTrechoViagemPassageiro,
-    cancelarCaronaPassageiro
+    cancelarCaronaPassageiro,
+    possuiCaronasOrigemDestinoController
     ) where
 
 import Src.Logic.CaronaLogic
@@ -25,6 +27,8 @@ import Src.Model.Carona
 import Src.Util.ValidationCarona
 import Control.Exception (catch)
 import Data.Bool (Bool)
+import Data.List (intercalate)
+import Src.Schema.PassageiroViagemSchema (criarViagemPassageiro)
 
 mostrarCaronasPassageiro::String -> IO String
 mostrarCaronasPassageiro pId = do
@@ -44,15 +48,18 @@ mostrarCaronaPorId cid = do
 deletarCaronaMotorista::Int->IO ()
 deletarCaronaMotorista cid = deletarCaronaPorId cid
 
-mostrarCaronasOrigemDestino :: String -> String -> IO ()
-mostrarCaronasOrigemDestino origem destino = do
-    caronas <- filtrarCaronaOriDest origem destino
+mostrarCaronasDisponiveisOrigemDestino :: String -> String -> IO String
+mostrarCaronasDisponiveisOrigemDestino origem destino = do
+    caronas <- infoCaronaDisponivelOriDest origem destino
     if null caronas
-        then putStrLn "Nenhuma carona disponível para esta rota no momento."
-        else mapM_ putStrLn caronas
+        then return "Nenhuma carona disponível para esta rota no momento."
+        else return (intercalate "\n" (map show caronas))
 
 possuiCaronaNaoIniciadaController :: String -> IO Bool
 possuiCaronaNaoIniciadaController motorista = possuiCaronaNaoIniciada motorista
+
+possuiCaronasOrigemDestinoController :: String -> String -> IO Bool
+possuiCaronasOrigemDestinoController origem destino = possuiCaronaOrigemDestino origem destino
 
 infoCaronasNaoIniciadas :: String -> IO String
 infoCaronasNaoIniciadas motorista = do
@@ -103,10 +110,10 @@ desembarcarPassageiro idCarona idPassageiro = do
     putStrLn result
 
 -- TODO: alguma integração com notificação de motorista
-solicitarCaronaPassageiro::Int->String->String->String->IO()
+solicitarCaronaPassageiro::Int -> String -> String -> String -> IO String
 solicitarCaronaPassageiro idCarona idPassageiro origem destino = do
-    result <- solicitaParticiparCarona idCarona idPassageiro origem destino
-    putStrLn result
+    solicitaParticiparCarona idCarona idPassageiro origem destino
+
 
 mostrarTrechoViagemPassageiro::Int->String->IO()
 mostrarTrechoViagemPassageiro idCarona idPassageiro = do
