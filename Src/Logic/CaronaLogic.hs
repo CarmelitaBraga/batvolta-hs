@@ -253,4 +253,7 @@ motoristaPossuiCarona = possuiCaronaByMotorista
 recusarOuAceitarPassageiro :: Int -> Bool -> IO String
 recusarOuAceitarPassageiro pvId aceitarOuRecusar = do
     updateAceitaOuRecusaPassageiro pvId aceitarOuRecusar
-    return "Passageiro aceito/recusado com sucesso!"
+    if aceitarOuRecusar then
+        return "Passageiro aceito com sucesso!"
+    else do
+        return "Passageiro recusado com sucesso!"
