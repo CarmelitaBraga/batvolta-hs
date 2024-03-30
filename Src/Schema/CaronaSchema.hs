@@ -27,7 +27,7 @@ import Data.List.Split (splitOn)
 import Src.Util.CsvHandler as Csv
 import GHC.IO (unsafePerformIO)
 import Debug.Trace (traceShow)
-import Src.Util.Utils (getCaronaAttribute, getViagemAttribute)
+import Src.Util.Utils (retornaSubLista, getCaronaAttribute, getViagemAttribute)
 import Src.Model.Carona
 import Src.Model.PassageiroViagem
 import Debug.Trace
