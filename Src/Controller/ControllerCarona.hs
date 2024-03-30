@@ -10,7 +10,8 @@ module Src.Controller.ControllerCarona (
     inicializarCaronaStatus,
     responderSolicitacaoCarona,
     criarCaronaMotorista,
-    avaliarMotoristaCarona
+    avaliarMotoristaCarona,
+    modificarLimitePassageiros
     ) where
 
 import Src.Logic.CaronaLogic
@@ -80,8 +81,10 @@ avaliarMotoristaCarona idCarona idPassageiro aval = do
     putStrLn result
 
 
--- modificarLimitePassageiros::
--- modificarLimitePassageiros =
+modificarLimitePassageiros::Int->String->Int->IO()
+modificarLimitePassageiros idCarona idMotorista novoLimite = do
+    result <- mudaLimitePassageirosCarona idCarona idMotorista novoLimite
+    putStrLn result
 
 -- solicitarCaronaPassageiro::
 -- solicitarCaronaPassageiro = 

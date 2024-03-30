@@ -10,7 +10,8 @@ module Src.Schema.CaronaSchema (
     getCaronaByOrigem,
     getCaronaByMotoristaEStatus,
     possuiCaronaByMotoristaEStatus,
-    updateStatusCarona
+    updateStatusCarona,
+    updateLimitePassageirosCarona
 ) where
 
 import Debug.Trace (traceShow)
@@ -192,5 +193,11 @@ updateStatusCarona::Carona->String->IO Carona
 updateStatusCarona carona newStatusStr = do
     let newStatus = determineStatus newStatusStr (status carona)
     let novaCarona = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) (passageiros carona) (valor carona) newStatus (numPassageirosMaximos carona)
+    updateCarona carona novaCarona
+    return novaCarona
+
+updateLimitePassageirosCarona::Carona->Int->IO Carona
+updateLimitePassageirosCarona carona novoLimitePss = do
+    let novaCarona = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) (passageiros carona) (valor carona) (status carona) novoLimitePss
     updateCarona carona novaCarona
     return novaCarona

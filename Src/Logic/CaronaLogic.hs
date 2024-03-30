@@ -16,7 +16,8 @@ module Src.Logic.CaronaLogic (
     possuiCaronaNaoIniciada,
     iniciarCarona,
     finalizarCarona,
-    avaliaMotorista
+    avaliaMotorista,
+    mudaLimitePassageirosCarona
     ) where
 
 import Src.Schema.PassageiroViagemSchema
@@ -167,3 +168,16 @@ avaliaMotorista idCarona idPassageiro aval = do
     else do
         updateAvaliacaoViagem idCarona idPassageiro aval
         return "Motorista avaliado com sucesso!"
+
+mudaLimitePassageirosCarona :: Int -> String -> Int -> IO String
+mudaLimitePassageirosCarona idCarona idMotorista novoLimite = do
+    maybeCarona <- getCaronaById [idCarona]
+    if null maybeCarona 
+        then return "Essa carona não existe!"
+        else do
+            let carona = head maybeCarona
+            if motorista carona /= idMotorista
+                then return "Id do motorista não corresponde ao motorista da Carona!"
+                else do
+                    updateLimitePassageirosCarona carona novoLimite
+                    return "Carona atualizada com sucesso!"
