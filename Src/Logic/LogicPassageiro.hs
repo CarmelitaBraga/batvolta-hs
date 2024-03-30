@@ -102,7 +102,6 @@ module Src.Logic.LogicPassageiro where
                 Just passageiro -> do
                     if confereSenha passageiro senha
                         then do
-                            putStrLn "Login realizado com sucesso!"
                             return resultado
                         else do
                             putStrLn "Senha incorreta!"

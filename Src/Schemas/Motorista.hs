@@ -130,7 +130,7 @@ removerMotorista  atributo = do
     where
         -- Função auxiliar para obter o valor da coluna cpf, cpf não precisa ser passado como String 
         -- para ser interpretado como coluna
-        getField motorista = cpf motorista
+        getField = cpf 
 
 
 escreverMotoristas :: [Motorista] -> IO ()
@@ -149,10 +149,10 @@ atualizarMotorista atributo coluna novoValor = do
             escreverMotoristas motoristasAtualizados
             return (Just (head motoristasAtualizados)) -- Retornamos Just com o motorista atualizado
         else do
-            putStrLn "Nenhum motorista encontrado com o cpf fornecido, ou o valor passado é o mesmo que o atual."
+            putStrLn "O valor passado é o mesmo que o atual."
             return Nothing
     where
-        getField motorista = cpf motorista
+        getField = cpf 
         atualizarCampo motorista =
             case coluna of
                 -- CPF NAO PODE SER ATUALIZADO 

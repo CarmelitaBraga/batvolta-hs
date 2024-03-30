@@ -108,11 +108,8 @@ module Src.Schemas.Passageiro (
         if length passageirosFiltrados < length passageiros
             then do
                 escreverPassageiros passageirosFiltrados
-                putStrLn "Passageiro removido com sucesso!"
                 return (Just (head passageirosFiltrados))
-            else do
-                putStrLn "Passageiro não encontrado!"
-                return Nothing
+            else return Nothing
 
     escreverPassageiros :: [Passageiro] -> IO ()
     escreverPassageiros passageiros = do
@@ -145,10 +142,9 @@ module Src.Schemas.Passageiro (
         if passageirosAtualizados /= passageiros
             then do
                 escreverPassageiros passageirosAtualizados
-                putStrLn "passageiro atualizado com sucesso."
                 return (Just (head passageirosAtualizados)) -- Retornamos Just com o passageiro atualizado
             else do
-                putStrLn "Nenhum passageiro encontrado com o cpf fornecido, ou o valor passado é o mesmo que o atual."
+                putStrLn "O valor passado é o mesmo que o atual."
                 return Nothing
         where
             atualizarCampo passageiro =

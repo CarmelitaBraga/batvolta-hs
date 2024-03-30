@@ -1,0 +1,11 @@
+0,19:01:00,2024-10-10,Amazonia,Joao Pessoa;Ceara;Rio de Janeiro;Curitiba,091802112,,200.90,NaoIniciada,1
+1,19:01:00,2024-10-10,Amazonia,Joao Pessoa;Rio de Janeiro;Ceara;Curitiba,091802112,,200.90,EmAndamento,1
+11,09:00:00,2025-03-02,Campina Grande,Patos;Joao Pessoa;Patos,091802112,,123.55,NaoIniciada,3
+12,09:00:00,2025-03-02,Campina Grande,Joao Pessoa;Patos,091802112,,123.55,EmAndamento,4
+13,09:00:00,2025-03-02,Campina Grande,Joao Pessoa,091802112,,123.55,NaoIniciada,3
+3,19:01:23,2023-10-10,Amazonia,Joao Pessoa;Ceara;Rio de Janeiro;Curitiba,091802112,Carme;Luc;Andre;Lu,200.90,NaoIniciada,5
+10,20:01:23,2024-03-04,Amazonia,Ceara;Para;Curitiba,091802112,Carme;Luc;Andre;Lu,200.90,Finalizada,5
+5,01:01:23,2025-03-04,Gramado,Ceara;Para;Minas Gerais,091802112,Carme;Luc;Andre;Lu,200.90,Finalizada,5
+6,21:00:00,2024-03-04,Curitiba,Ceara;Joao Pessoa,091802112,Carme;Luc;Andre;Lu,200.90,Finalizada,5
+0,20:00:00,2024-02-20,S�o Paulo,Teste;Teste2;Teste3;Teste4,Andr�,,19.99,NaoIniciada,20,
+2,23:59:00,2024-04-25,Campina,Porto;Paris;Amsterdan,121212112,,5560.22,NaoIniciada,2,

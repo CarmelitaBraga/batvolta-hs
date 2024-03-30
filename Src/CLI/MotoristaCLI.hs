@@ -6,6 +6,9 @@ import Src.Model.MotoristaModel(Motorista, getCpf)
 import Data.IORef
 import Control.Monad
 import Data.Maybe (fromMaybe)
+import Src.CLI.CaronaCLI (menuPrincipalCaronaMotorista)
+--import Main
+
 -- Motorista Logado
 type MotoristaRef = IORef (Maybe Motorista)
 
@@ -47,6 +50,7 @@ menuOpcoesMotorista motoristaRef = do
     putStrLn "2 - Cancelar Cadastro"
     putStrLn "3 - Visualizar Informações"
     putStrLn "4 - Carregar historico de Notificações"
+    putStrLn "5 - Menu de Caronas"
     putStrLn "0 - Sair"
     opcao <- getLine
     case opcao of
@@ -54,6 +58,7 @@ menuOpcoesMotorista motoristaRef = do
         "2" -> void (menuCancelarCadastro motoristaRef)
         "3" -> void (menuVisualizarInfo motoristaRef)
         "4" -> void (menuCarregarNotificacoes motoristaRef)
+        "5" -> void (menuPrincipalCaronaMotorista motoristaRef)
         "0" -> menuPrincipal
         _   -> do
             putStrLn "Opção inválida!"

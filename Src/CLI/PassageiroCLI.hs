@@ -5,7 +5,7 @@ module Src.CLI.PassageiroCLI where
     import Src.Controller.ControllerPassageiro(realizarCadastroPassageiro, cancelarCadastroPassageiro, atualizarCadastroPassageiro,visualizarInfoCadastroPassageiro,realizarLoginPassageiro)
     import Data.IORef
     import Control.Monad
-
+    
     -- Passageiro
     type PassageiroRef = IORef (Maybe Passageiro)
 
@@ -20,7 +20,7 @@ module Src.CLI.PassageiroCLI where
         str <- inputString prompt
         return (read str)
 
-    menuPrincipalPassageiro :: IO (Maybe Passageiro)
+    menuPrincipalPassageiro :: IO ()
     menuPrincipalPassageiro = do
         putStrLn "\nSelecione uma opção: "
         putStrLn "1 - Cadastro de Passageiro"
@@ -28,18 +28,17 @@ module Src.CLI.PassageiroCLI where
         putStrLn "0 - Sair"
         opcao <- getLine
         case opcao of
-            "1" -> menuCadastrarPassageiro
+            "1" -> void $ menuCadastrarPassageiro
             "2" -> do
                 passageiroRef <- newIORef Nothing               
-                menuRealizarLoginPassageiro passageiroRef
+                void $ menuRealizarLoginPassageiro passageiroRef
             "0" -> do
                 putStrLn "Saindo..."
-                return Nothing
             _   -> do
                 putStrLn "Opção inválida!"
                 menuPrincipalPassageiro 
 
-    menuOpcoesPassageiro :: PassageiroRef -> IO (Maybe Passageiro)
+    menuOpcoesPassageiro :: PassageiroRef -> IO ()
     menuOpcoesPassageiro passageiroRef = do
         passageiro <- readIORef passageiroRef
         print passageiro
@@ -50,15 +49,15 @@ module Src.CLI.PassageiroCLI where
         putStrLn "0 - Voltar Menu Principal"
         opcao <- getLine
         case opcao of
-            "1" -> menuAtualizarCadastroPassageiro passageiroRef
-            "2" -> menuCancelarCadastroPassageiro passageiroRef
-            "3" -> menuVisualizarInfoPassageiro passageiroRef
+            "1" -> void $ menuAtualizarCadastroPassageiro passageiroRef
+            "2" -> void $ menuCancelarCadastroPassageiro passageiroRef
+            "3" -> void $ menuVisualizarInfoPassageiro passageiroRef
             "0" -> menuPrincipalPassageiro
             _   -> do
                 putStrLn "Opção inválida!"
                 menuOpcoesPassageiro passageiroRef
 
-    menuCadastrarPassageiro :: IO (Maybe Passageiro)
+    menuCadastrarPassageiro :: IO ()
     menuCadastrarPassageiro = do
         putStrLn "\nCadastrar Passageiro"
         nome <- inputString "Digite o nome: "
@@ -73,7 +72,7 @@ module Src.CLI.PassageiroCLI where
             Nothing -> putStrLn "Erro ao cadastrar passageiro."
         menuPrincipalPassageiro
 
-    menuCancelarCadastroPassageiro :: PassageiroRef -> IO (Maybe Passageiro)
+    menuCancelarCadastroPassageiro :: PassageiroRef -> IO ()
     menuCancelarCadastroPassageiro passageiroRef = do
         putStrLn "\nCancelar Cadastro de Passageiro"
         cpf <- inputString "Digite seu CPF: "
@@ -87,7 +86,7 @@ module Src.CLI.PassageiroCLI where
                 putStrLn "Erro ao cancelar cadastro de passageiro."
                 menuOpcoesPassageiro passageiroRef
 
-    menuAtualizarCadastroPassageiro :: PassageiroRef -> IO (Maybe Passageiro)
+    menuAtualizarCadastroPassageiro :: PassageiroRef -> IO ()
     menuAtualizarCadastroPassageiro passageiroRef = do
         putStrLn "\nAtualizar Cadastro de Passageiro"
         cpf <- inputString "Digite seu CPF: "
@@ -108,20 +107,14 @@ module Src.CLI.PassageiroCLI where
             Nothing -> putStrLn "Erro ao atualizar cadastro de passageiro."
         menuOpcoesPassageiro passageiroRef
 
-    menuVisualizarInfoPassageiro :: PassageiroRef -> IO (Maybe Passageiro)
+    menuVisualizarInfoPassageiro :: PassageiroRef -> IO ()
     menuVisualizarInfoPassageiro passageiroRef = do
-        putStrLn "\nVisualizar Informações de Passageiro"
-        cpf <- inputString "Digite o seu CPF: "
-        senha <- inputString "Digite a sua Senha: "
-        resultado <- visualizarInfoCadastroPassageiro cpf senha
-        case resultado of
-            Just passageiro -> do
-                putStrLn "Informações do passageiro: "
-                print passageiro
-            Nothing -> putStrLn "Passageiro não encontrado."
+        passageiro <- readIORef passageiroRef
+        putStrLn "Informações do passageiro: "
+        print passageiro
         menuOpcoesPassageiro passageiroRef
     
-    menuRealizarLoginPassageiro :: PassageiroRef -> IO (Maybe Passageiro)
+    menuRealizarLoginPassageiro :: PassageiroRef -> IO ()
     menuRealizarLoginPassageiro passageiroRef = do
         putStrLn "\nRealizar Login de Passageiro"
         email <- inputString "Digite o e-mail: "

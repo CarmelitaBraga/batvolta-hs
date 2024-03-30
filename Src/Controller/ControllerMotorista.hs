@@ -7,19 +7,19 @@ import Src.Model.NotificacaoModel (Notificacao)
 
 
 realizarCadastroMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
-realizarCadastroMotorista cpf cep nome email telefone senha cnh = cadastrarMotoristaLogic cpf cep nome email telefone senha cnh
+realizarCadastroMotorista = cadastrarMotoristaLogic
 
 cancelarCadastroMotorista :: String -> String -> IO (Maybe Motorista)
-cancelarCadastroMotorista cpf senha = removerMotoristaLogic cpf senha
+cancelarCadastroMotorista = removerMotoristaLogic
 
 atualizarCadastroMotorista :: String -> String -> String -> String -> IO (Maybe Motorista)
-atualizarCadastroMotorista cpf senha atributo novoValor = atualizarMotoristaLogic cpf senha atributo novoValor
+atualizarCadastroMotorista= atualizarMotoristaLogic 
 
 visualizarInfoCadastroMotorista :: String -> String-> IO (Maybe Motorista)
-visualizarInfoCadastroMotorista cpf senha = buscarMotoristaLogic cpf senha
+visualizarInfoCadastroMotorista = buscarMotoristaLogic
 
 realizarLoginMotorista :: String -> String -> IO (Maybe Motorista)
-realizarLoginMotorista email senha = realizarLoginMotoristaLogic email senha
+realizarLoginMotorista = realizarLoginMotoristaLogic
 
 carregaNotificacoes :: String -> IO [Notificacao]
-carregaNotificacoes cpf = getBy cpf
+carregaNotificacoes = getBy
