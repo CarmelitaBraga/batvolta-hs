@@ -11,22 +11,28 @@ module Src.Logic.CaronaLogic (
     adicionarPassageiro, 
     removerPassageiro,
     infoCaronaByDestino,
-    filtrarCaronaOriDest,
     existeRota,
     lugaresDisponiveis,
+    infoCaronaDisponivelOriDest,
     possuiCaronaNaoIniciada,
+    possuiCaronaOrigemDestino,
     iniciarCarona,
     finalizarCarona,
     mudaLimitePassageirosCarona
     ) where
 
 import Src.Schema.CaronaSchema
+-- Retirar daqui posteriormente (pensar na comunicação entre Schemas)
+import Src.Schema.PassageiroViagemSchema
 import Src.Model.Carona
 import Src.Util.Utils
 import Data.List (intercalate, find, elemIndex, elemIndices)
 import Debug.Trace (traceShow)
 import GHC.IO (unsafePerformIO)
 import System.Posix.Internals (puts)
+import GHC.Exts (reallyUnsafePtrEquality)
+import Control.Monad (filterM)
+import Debug.Trace
 
 infoCarona :: Int -> IO String
 infoCarona caronaId = do
@@ -132,8 +138,8 @@ existeRota carona o d =
         (Just oi, Just di) -> oi < di
         _ -> False
 
-filtrarCaronaOriDest :: String -> String -> IO [String]
-filtrarCaronaOriDest orig dest = do
+infoCaronaDisponivelOriDest :: String -> String -> IO [String]
+infoCaronaDisponivelOriDest orig dest = do
     allCaronas <- getAllCaronas
     let selectedOriginCaronas = filter (\c -> origem c == orig) allCaronas
     let selectedDestinyCaronas = filter (\c -> dest `elem` (origem c : destinos c)) allCaronas
@@ -141,11 +147,18 @@ filtrarCaronaOriDest orig dest = do
         then return []
         else do
             let selectedOriginDestinyCaronas = filter (\c -> orig `elem` (origem c : destinos c)) selectedDestinyCaronas
-            let selectedCaronas = filter (\c -> existeRota c orig dest) selectedOriginDestinyCaronas
-            mapM (\c -> infoCarona (cid c)) selectedCaronas
+            let selectedCaronasComRota = filter (\c -> existeRota c orig dest) selectedOriginDestinyCaronas
+            selectedCaronasDisponiveis <- filterM (\c -> possuiVagasDisponiveis c (getCaminho c orig dest)) selectedCaronasComRota
+            mapM (infoCarona . cid) selectedCaronasDisponiveis
+
 
 possuiCaronaNaoIniciada :: String -> IO Bool
 possuiCaronaNaoIniciada motorista = possuiCaronaByMotoristaEStatus motorista "NaoIniciada"
+
+possuiCaronaOrigemDestino :: String -> String -> IO Bool
+possuiCaronaOrigemDestino origem destino = do
+    caronas <- infoCaronaDisponivelOriDest origem destino
+    return (not (null caronas))
 
 iniciarCarona :: Int -> IO String
 iniciarCarona cId = do
