@@ -42,7 +42,6 @@ infoCarona caronaId = do
         Nothing -> return "Carona not found"
         Just Carona{..} -> return $
             "Id: " ++ show cid ++
-            ", Origem: " ++ origem ++
             ", Destinos: [" ++ intercalate ", " destinos ++ "]" ++
             ", Motorista: " ++ motorista ++
             ", Passageiros: [" ++ intercalate ", " passageiros ++ "]" ++
@@ -84,15 +83,15 @@ infoCaronaNaoIniciadaByMotorista motorista = do
     selectedCaronas <- getCaronaByMotoristaEStatus motorista "NaoIniciada"
     mapM infoCarona (map cid selectedCaronas)
 
-gerarCarona :: String -> String -> String -> [String] -> String -> Double -> Int -> IO String
-gerarCarona hora date origem destinos motorista valor numPassageirosMaximos = do
+gerarCarona :: String -> String -> [String] -> String -> Double -> Int -> IO String
+gerarCarona hora date destinos motorista valor numPassageirosMaximos = do
     if validarHorario hora then
         return "Horário fora do padrão requisitado!"
     else do 
         if validarData date then
             return "Data fora do padrão requisitado!"
         else do
-            criarCarona (stringToTimeOfDay hora) (stringToDay date) origem destinos motorista [] valor NaoIniciada numPassageirosMaximos
+            criarCarona (stringToTimeOfDay hora) (stringToDay date) destinos motorista [] valor NaoIniciada numPassageirosMaximos
             return "Carona criada com sucesso!"
 
 lugaresDisponiveis::Carona->Bool
@@ -130,7 +129,7 @@ removerPassageiro caronaId passageiro = do
 
 existeRota :: Carona -> String -> String -> Bool
 existeRota carona o d = 
-    let allStops = origem carona : destinos carona
+    let allStops = head (destinos carona) : destinos carona
         origIndex = elemIndex o allStops
         destIndices = elemIndices d allStops
         lastIndexD = if null destIndices then Nothing else Just (last destIndices)
@@ -141,12 +140,12 @@ existeRota carona o d =
 infoCaronaDisponivelOriDest :: String -> String -> IO [String]
 infoCaronaDisponivelOriDest orig dest = do
     allCaronas <- getAllCaronas
-    let selectedOriginCaronas = filter (\c -> origem c == orig) allCaronas
-    let selectedDestinyCaronas = filter (\c -> dest `elem` (origem c : destinos c)) allCaronas
+    let selectedOriginCaronas = filter (\c -> head (destinos c)  == orig) allCaronas
+    let selectedDestinyCaronas = filter (\c -> dest `elem` (head (destinos c) : destinos c)) allCaronas
     if null selectedDestinyCaronas
         then return []
         else do
-            let selectedOriginDestinyCaronas = filter (\c -> orig `elem` (origem c : destinos c)) selectedDestinyCaronas
+            let selectedOriginDestinyCaronas = filter (\c -> orig `elem` (head (destinos c) : destinos c)) selectedDestinyCaronas
             let selectedCaronasComRota = filter (\c -> existeRota c orig dest) selectedOriginDestinyCaronas
             selectedCaronasDisponiveis <- filterM (\c -> possuiVagasDisponiveis c (getCaminho c orig dest)) selectedCaronasComRota
             mapM (infoCarona . cid) selectedCaronasDisponiveis

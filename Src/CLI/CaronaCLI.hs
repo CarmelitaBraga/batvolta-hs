@@ -67,7 +67,7 @@ menuCriarCarona motorista = do
     valor <- inputDouble "Digite o valor: "
     numPassageirosMaximos <- inputInt "Digite a quantidade máximas de passageiros: "
     
-    CONTROLLER.criarCaronaMotorista hora date origem destinos motorista valor numPassageirosMaximos
+    CONTROLLER.criarCaronaMotorista hora date (origem:destinos) motorista valor numPassageirosMaximos
 
 pedirDestinos :: IO [String]
 pedirDestinos = menuPedirDestinos []

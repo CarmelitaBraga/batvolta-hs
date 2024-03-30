@@ -41,7 +41,6 @@ getCaronaAttribute carona attr
     | attr == "cid" = show (cid carona)
     | attr == "hora" = show (hora carona)
     | attr == "date" = show (date carona)
-    | attr == "origem" = origem carona
     | attr == "destinos" = unwords (destinos carona)
     | attr == "motorista" = motorista carona
     | attr == "passageiros" = unwords (passageiros carona)

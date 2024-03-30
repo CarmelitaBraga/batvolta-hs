@@ -79,13 +79,13 @@ responderSolicitacaoCarona idPassageiro idCarona resp = do
     status <- alterarStatusViagem idPassageiro idCarona resp
     putStrLn status
 
-criarCaronaMotorista :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
-criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
-    let check = validateCarona valor origem destinos limitePss motorista
+criarCaronaMotorista :: String -> String -> [String] -> String -> Double -> Int -> IO ()
+criarCaronaMotorista hora date destinos motorista valor limitePss = do
+    let check = validateCarona valor destinos limitePss motorista
     if check /= "OK"
         then putStrLn $ "Erro ao criar Carona: " ++ check
         else do
-            result <- gerarCarona hora date origem destinos motorista valor limitePss
+            result <- gerarCarona hora date destinos motorista valor limitePss
             putStrLn result
 
 avaliarMotoristaCarona::Int->String->Int->IO()
