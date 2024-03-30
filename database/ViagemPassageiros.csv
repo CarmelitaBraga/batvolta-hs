@@ -1,4 +1,4 @@
-0,1,True,Patos,Campina,1,55533399974
-1,4,True,Campina,Gramado,5,55533399974
-2,0,False,Campina,Gramado,3,55533399974
-3,1,False,Campina,Gramado,5,55533399974
+1,2,True,Campina;Gramado,5,55533399974
+3,1,False,Campina;Gramado,5,55533399974
+3,1,False,Campina;Gramado,5,55533399974
+0,2,False,Campina;Porto;Paris;Gramado,0,Andre
