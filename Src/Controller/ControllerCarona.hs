@@ -11,10 +11,15 @@ module Src.Controller.ControllerCarona (
     responderSolicitacaoCarona,
     criarCaronaMotorista,
     avaliarMotoristaCarona,
-    modificarLimitePassageiros
+    modificarLimitePassageiros,
+    embarcarPassageiro,
+    desembarcarPassageiro,
+    solicitarCaronaPassageiro,
+    mostrarTrechoViagemPassageiro
     ) where
 
 import Src.Logic.CaronaLogic
+import Src.Logic.PassageiroViagemLogic
 import Src.Model.Carona
 import Src.Util.ValidationCarona
 import Control.Exception (catch)
@@ -80,25 +85,35 @@ avaliarMotoristaCarona idCarona idPassageiro aval = do
     result <- avaliaMotorista idCarona idPassageiro aval
     putStrLn result
 
-
 modificarLimitePassageiros::Int->String->Int->IO()
 modificarLimitePassageiros idCarona idMotorista novoLimite = do
     result <- mudaLimitePassageirosCarona idCarona idMotorista novoLimite
     putStrLn result
 
--- solicitarCaronaPassageiro::
--- solicitarCaronaPassageiro = 
+-- verificar se tem espaço
+embarcarPassageiro::Int->String->IO()
+embarcarPassageiro idCarona idPassageiro = do
+    result <- adicionarPassageiro idCarona idPassageiro
+    putStrLn result
+
+desembarcarPassageiro::Int->String->IO()
+desembarcarPassageiro idCarona idPassageiro = do
+    result <- removerPassageiro idCarona idPassageiro
+    putStrLn result
 
 -- cancelarCaronaPassageiro::
 -- cancelarCaronaPassageiro = 
 
--- verificar se tem espaço
--- embarcarPassageiro::
--- embarcarPassageiro =
-
--- desembarcarPassageiro::
--- desembarcarPassageiro =
-
 -- atualizarStatusCarona::
 -- atualizarStatusCarona =
 
+-- TODO: alguma integração com notificação de motorista
+solicitarCaronaPassageiro::Int->String->String->String->IO()
+solicitarCaronaPassageiro idCarona idPassageiro origem destino = do
+    result <- solicitaParticiparCarona idCarona idPassageiro origem destino
+    putStrLn result
+
+mostrarTrechoViagemPassageiro::Int->String->IO()
+mostrarTrechoViagemPassageiro idCarona idPassageiro = do
+    result <- infoTrechoByCaronaPassageiro idCarona idPassageiro
+    putStrLn result

@@ -152,4 +152,16 @@ main = do
     avaliarMotoristaCarona 4 "55533399974" 1
 
     modificarLimitePassageiros 4 "091802112" 10
+
+    embarcarPassageiro 4 "pintinho"
+
+    desembarcarPassageiro 4 "pintinho"
+
+    -- solicitarCaronaPassageiro idCarona idPassageiro origem destino
+    solicitarCaronaPassageiro 10 "93485urh3489h" "Ceara" "Para" 
     -- print o
+
+    po <- V.criarViagemPassageiro 4 False "Amazonia" "Para" 0 "carme"
+    print po
+
+    mostrarTrechoViagemPassageiro 10 "93485urh3489h"
