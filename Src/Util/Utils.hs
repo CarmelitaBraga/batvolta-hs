@@ -1,4 +1,4 @@
-module Src.Util.Utils (getCaronaAttribute, splitBy, validarData, validarHorario, stringToTimeOfDay, stringToDay, getViagemAttribute) where
+module Src.Util.Utils (retornaSubLista, getCaronaAttribute, splitBy, validarData, validarHorario, stringToTimeOfDay, stringToDay, getViagemAttribute) where
 
 import Src.Model.Carona
 import Src.Model.PassageiroViagem
