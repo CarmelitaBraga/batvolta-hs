@@ -158,10 +158,9 @@ main = do
     desembarcarPassageiro 4 "pintinho"
 
     -- solicitarCaronaPassageiro idCarona idPassageiro origem destino
-    solicitarCaronaPassageiro 10 "93485urh3489h" "Ceara" "Para" 
+    -- solicitarCaronaPassageiro 10 "93485urh3489h" "Ceara" "Para" 
     -- print o
 
-    po <- V.criarViagemPassageiro 4 False "Amazonia" "Para" 0 "carme"
-    print po
-
     mostrarTrechoViagemPassageiro 10 "93485urh3489h"
+
+    cancelarCaronaPassageiro 10 "93485urh3489h"

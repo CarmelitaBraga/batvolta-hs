@@ -2,7 +2,8 @@ module Src.Logic.PassageiroViagemLogic (
     alterarStatusViagem,
     avaliaMotorista,
     solicitaParticiparCarona,
-    infoTrechoByCaronaPassageiro
+    infoTrechoByCaronaPassageiro,
+    cancelaViagemPassageiro
 ) where
 
 import Src.Model.PassageiroViagem
@@ -68,3 +69,15 @@ infoTrechoByCaronaPassageiro idCarona idPassageiro = do
                 viagemId = pid viagem
             info <- infoViagem viagemId
             return info
+
+cancelaViagemPassageiro :: Int -> String -> IO String
+cancelaViagemPassageiro idCarona idPassageiro = do
+    maybeViagem <- getViagemByCaronaPassageiro idCarona idPassageiro
+    if null maybeViagem
+        then return "Trecho de carona inexistente para o passageiro informado!"
+        else do
+            let viagem = head maybeViagem
+                viagemId = pid viagem
+            deleteViagemById viagemId
+            -- TODO: checar se a carona ja foi inicializada e se passageiro ta no carro
+            return "Carona cancelada com sucesso!"

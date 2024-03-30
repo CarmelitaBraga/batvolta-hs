@@ -15,7 +15,8 @@ module Src.Controller.ControllerCarona (
     embarcarPassageiro,
     desembarcarPassageiro,
     solicitarCaronaPassageiro,
-    mostrarTrechoViagemPassageiro
+    mostrarTrechoViagemPassageiro,
+    cancelarCaronaPassageiro
     ) where
 
 import Src.Logic.CaronaLogic
@@ -101,12 +102,6 @@ desembarcarPassageiro idCarona idPassageiro = do
     result <- removerPassageiro idCarona idPassageiro
     putStrLn result
 
--- cancelarCaronaPassageiro::
--- cancelarCaronaPassageiro = 
-
--- atualizarStatusCarona::
--- atualizarStatusCarona =
-
 -- TODO: alguma integração com notificação de motorista
 solicitarCaronaPassageiro::Int->String->String->String->IO()
 solicitarCaronaPassageiro idCarona idPassageiro origem destino = do
@@ -117,3 +112,8 @@ mostrarTrechoViagemPassageiro::Int->String->IO()
 mostrarTrechoViagemPassageiro idCarona idPassageiro = do
     result <- infoTrechoByCaronaPassageiro idCarona idPassageiro
     putStrLn result
+
+cancelarCaronaPassageiro::Int->String->IO()
+cancelarCaronaPassageiro idCarona idPassageiro = do
+    result <- cancelaViagemPassageiro idCarona idPassageiro
+    putStrLn result 
