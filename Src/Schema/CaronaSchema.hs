@@ -5,6 +5,7 @@ module Src.Schema.CaronaSchema (
     getAllCaronas, 
     getCaronaByDestino, 
     getCaronaByColumn, 
+    getCaminho,
     addPassageiro, 
     rmPassageiro,
     getCaronaByOrigem,
@@ -29,6 +30,7 @@ import Debug.Trace (traceShow)
 import Src.Util.Utils (getCaronaAttribute, getViagemAttribute)
 import Src.Model.Carona
 import Src.Model.PassageiroViagem
+import Debug.Trace
 
 instance ToField TimeOfDay where
     toField time = toField $ formatTime defaultTimeLocale "%H:%M" time
@@ -164,14 +166,12 @@ getCaronaByOrigem::String->IO [Carona]
 getCaronaByOrigem orig = do
     allCaronas <- get parseCarona caronaCsvPath
     let result = filter (\c -> origem c == orig) allCaronas
-    traceShow result $ return ()
     return result
 
 getCaronaByDestino::String->IO [Carona]
 getCaronaByDestino dest = do
     allCaronas <- get parseCarona caronaCsvPath
     let result = filter (\c -> dest `elem` destinos c) allCaronas
-    traceShow result $ return ()
     return result
 
 -- Function to determine the new status
@@ -201,3 +201,8 @@ updateLimitePassageirosCarona carona novoLimitePss = do
     let novaCarona = Carona (cid carona) (hora carona) (date carona) (origem carona) (destinos carona) (motorista carona) (passageiros carona) (valor carona) (status carona) novoLimitePss
     updateCarona carona novaCarona
     return novaCarona
+
+getCaminho :: Carona -> String -> String -> [String]
+getCaminho carona origem destino = do 
+   let caminho = destinos carona
+   retornaSubLista caminho origem destino
