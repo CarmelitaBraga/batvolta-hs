@@ -7,6 +7,7 @@ module Src.Schema.PassageiroViagemSchema (
     updateViagem,
     updateSolicitacaoViagem,
     updateAvaliacaoViagem,
+    possuiVagasDisponiveis,
     getViagemByCaronaPassageiro
 ) where
 
@@ -21,6 +22,7 @@ import Src.Util.Utils (getViagemAttribute)
 import Src.Model.Carona
 import Src.Model.PassageiroViagem
 import Data.Char (toLower)
+import Debug.Trace
 
 stringToBool :: String -> Bool
 stringToBool s 
@@ -51,10 +53,10 @@ findNextIdV currentId viagensList =
         then findNextIdV (currentId + 1) viagensList
         else currentId
 
-criarViagemPassageiro :: Int -> Bool -> String -> String -> Int -> String -> IO()
-criarViagemPassageiro c ack ori dest aval psId = do
+criarViagemPassageiro :: Int -> Bool -> [String] -> Int -> String -> IO()
+criarViagemPassageiro c ack cam aval psId = do
     nextId <- incrementCounterV counterStateV
-    let viagem = PassageiroViagem nextId c ack ori dest aval psId
+    let viagem = PassageiroViagem nextId c ack cam aval psId
     append viagemToStr [viagem] viagemCsvPath
 
 getAllViagens::IO [PassageiroViagem]
@@ -78,7 +80,9 @@ deleteViagemById pidToDelete = do
 getViagemByColumn :: String -> String -> IO [PassageiroViagem]
 getViagemByColumn att value = do
     viagens <- getAllViagens
-    let selectedViagens = filter (\c -> getViagemAttribute c att == value) viagens
+    let selectedViagens
+            | att == "caminho" = filter (\v -> value `elem` caminho v) viagens
+            | otherwise = filter (\v -> getViagemAttribute v att == value) viagens
     return selectedViagens
 
 getViagemByCaronaPassageiro :: Int -> String -> IO [PassageiroViagem]
@@ -105,8 +109,7 @@ updateSolicitacaoViagem caronaId passageiroId status = do
                             (pid viagem)
                             (cId viagem)
                             (stringToBool status)
-                            (origemPass viagem)
-                            (destino viagem)
+                            (caminho viagem)
                             (avaliacaoMtrst viagem)
                             passageiroId
         updateViagem viagem novaViagem
@@ -119,6 +122,22 @@ updateAvaliacaoViagem idCarona idPassageiro nota = do
         return "Registro de carona de passageiro inexistente!"
     else do
         let viagem = head maybeViagem
-        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) (aceita viagem) (origemPass viagem) (destino viagem) nota (passageiroId viagem)
+        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) (aceita viagem) (caminho viagem) nota (passageiroId viagem)
         updateViagem viagem novaViagem
         return "Motorista avaliado com sucesso!"
+
+possuiVagasDisponiveis :: Carona -> [String] -> IO Bool
+possuiVagasDisponiveis carona caminho = do 
+    passageirosNoCaminho <- getPassageirosNoCaminho (cid carona) caminho
+    return (length passageirosNoCaminho < numPassageirosMaximos carona)
+
+getPassageirosNoCaminho :: Int -> [String] -> IO [PassageiroViagem]
+getPassageirosNoCaminho cId caminhoTotal = do
+    passageirosDaCarona <- getViagemByColumn "cid" (show cId)
+    let passageirosNoCaminho = filter (\passageiro ->
+                                         let caminhoPassageiroSemUltimo = init (caminho passageiro)
+                                         in any (`elem` caminhoTotal) caminhoPassageiroSemUltimo
+                                      ) passageirosDaCarona
+    return passageirosNoCaminho
+
+
