@@ -68,6 +68,6 @@ retornaSubLista (h:t) comeco fim
 
 criaSubListaFim :: [String] -> String -> [String] -> [String]
 criaSubListaFim [] _ _ = []
-criaSubListaFim (h:t) fim acc
-    | h == fim = acc ++ [h]
-    | otherwise = criaSubListaFim t fim (acc ++ [h])
+criaSubListaFim (h:t) fim subLista
+    | h == fim = subLista ++ [h]
+    | otherwise = criaSubListaFim t fim (subLista ++ [h])
