@@ -56,8 +56,19 @@ getViagemAttribute viagem attr
     | attr == "pid" = show (pid viagem)
     | attr == "cid" = show (cId viagem)
     | attr == "aceita" = show (aceita viagem)
-    | attr == "origem" = origemPass viagem
-    | attr == "destino" = destino viagem
+    | attr == "caminho" = unwords (caminho viagem)
     | attr == "avaliacao" = show (avaliacaoMtrst viagem)
     | attr == "passageiroId" = passageiroId viagem
     | otherwise = error "Invalid attribute"
+
+retornaSubLista :: [String] -> String -> String -> [String]
+retornaSubLista [] _ _ = []
+retornaSubLista (h:t) comeco fim
+    | h == comeco = criaSubListaFim t fim [h]
+    | otherwise = retornaSubLista t comeco fim
+
+criaSubListaFim :: [String] -> String -> [String] -> [String]
+criaSubListaFim [] _ _ = []
+criaSubListaFim (h:t) fim acc
+    | h == fim = acc ++ [h]
+    | otherwise = criaSubListaFim t fim (acc ++ [h])
