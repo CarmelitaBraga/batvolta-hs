@@ -6,8 +6,6 @@ module Src.CLI.PassageiroCLI where
     import Data.IORef
     import Control.Monad
     import Src.Controller.ControllerCarona as CONTROLLER
-
-
     
     -- Passageiro
     type PassageiroRef = IORef (Maybe Passageiro)
@@ -44,7 +42,6 @@ module Src.CLI.PassageiroCLI where
     menuOpcoesPassageiro :: PassageiroRef -> IO ()
     menuOpcoesPassageiro passageiroRef = do
         passageiro <- readIORef passageiroRef
-        print passageiro
         putStrLn "\nOpções do Passageiro: "
         putStrLn "1 - Atualizar Cadastro"
         putStrLn "2 - Cancelar Cadastro"
@@ -151,6 +148,7 @@ module Src.CLI.PassageiroCLI where
     menuPrincipalPassageiroCarona passageiroRef = do
         putStrLn "\nSelecione uma opção:"
         putStrLn "1 - Procurar Carona"-- origem e destino
+
         -- solicitar carona
         -- cancelar solitação
         -- pegarMinhasCaronas
@@ -158,12 +156,12 @@ module Src.CLI.PassageiroCLI where
         -- desemabarcar
         -- avaliarMotorista
 
-        putStrLn "0 - Sair"
+        putStrLn "0 - Voltar"
         opcao <- getLine
         case opcao of
             "1" -> menuProcurarCarona passageiroRef
             "0" -> do
-                putStrLn "Saindo..."
+                menuOpcoesPassageiro passageiroRef
             _   -> do
                 putStrLn "Opção inválida!"
                 menuPrincipalPassageiroCarona passageiroRef 
@@ -186,7 +184,9 @@ module Src.CLI.PassageiroCLI where
             else do
                 maybeCaronaEscolhida <- CONTROLLER.solicitarCaronaPassageiro cId passageiroCpf origem destino
                 putStrLn maybeCaronaEscolhida
+                menuPrincipalPassageiroCarona passageiroRef
 
         else do
             putStrLn "Não existem caronas para essa origem e destino!"
+            menuPrincipalPassageiroCarona passageiroRef
 
