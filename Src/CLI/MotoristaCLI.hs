@@ -12,6 +12,7 @@ import Data.IORef
 import Control.Monad
 import Data.Maybe (fromMaybe)
 import Data.Char (isDigit)
+import qualified Src.Logic.CaronaLogic as CONTROLLER
 
 
 -- Motorista Logado
@@ -36,9 +37,26 @@ inputInt prompt = do
 
 inputDouble :: String -> IO Double
 inputDouble prompt = do
-    str <- inputString prompt
-    return (read str)
+    putStrLn prompt
+    input <- getLine
+    if all isDigit input || (not (null input) && length (filter (`elem` ".") input) == 1 && all (\c -> isDigit c || c == '.') input)
+        then return (read input)
+        else do
+            putStrLn "Entrada inválida! Tente novamente."
+            inputDouble prompt
 
+inputBoolean :: String -> IO Bool
+inputBoolean prompt = do
+    putStrLn prompt
+    input <- getLine
+    if input == "aceitar"
+        then return True
+    else if input == "recusar"
+        then return False
+    else do
+            putStrLn "Entrada inválida! Tente novamente."
+            inputBoolean prompt
+            
 -- Implementação dos menus
 menuPrincipal :: IO ()
 menuPrincipal = do
@@ -169,22 +187,24 @@ menuCarregarNotificacoes motoristaRef = do
 
 
 -- Menu Para Caronas
-
 menuPrincipalCaronaMotorista :: MotoristaRef -> IO ()
 menuPrincipalCaronaMotorista motoristaRef = do
     putStrLn "\nSelecione uma opção:"
     putStrLn "1 - Criar uma Carona"
     putStrLn "2 - Iniciar Carona"
     putStrLn "3 - Finalizar Carona"
-    -- Aceitar/Recusar passageiro
-    -- Cancelar carona
-    -- Visualizar carona
-    --
+    putStrLn "4 - Aceitar/Recusar passageiro"
+    putStrLn "5 - Cancelar uma Carona"
+    putStrLn "6 - Visualizar uma Carona"
     putStrLn "0 - Sair"
     opcao <- getLine
     case opcao of
         "1" -> menuCriarCarona motoristaRef
         "2" -> menuIniciarCarona motoristaRef
+        "3" -> menuFinalizarCarona motoristaRef
+        "4" -> menuAceitarRecusarPassageiro motoristaRef
+        "5" -> menuCancelarCarona motoristaRef
+        "6" -> menuVisualizarCarona motoristaRef
         "0" -> do
             putStrLn "Saindo..."
             menuOpcoesMotorista motoristaRef
@@ -205,6 +225,24 @@ menuCriarCarona motoristaRef = do
     motoristaMaybe <- readIORef motoristaRef
     let motorista = getCpf motoristaMaybe
     CONTROLLER.criarCaronaMotorista hora date (origem:destinos) motorista valor numPassageirosMaximos
+    menuPrincipalCaronaMotorista motoristaRef
+
+menuCancelarCarona :: MotoristaRef -> IO()
+menuCancelarCarona motoristaRef = do
+    motoristaMaybe <- readIORef motoristaRef
+    let motorista = getCpf motoristaMaybe
+    possuiCarona <- CONTROLLER.possuiCaronaNaoIniciadaController motorista
+
+    if possuiCarona then do
+        putStrLn "Qual carona você deseja cancelar:"
+        caronas <- CONTROLLER.infoCaronasNaoIniciadas motorista
+        putStrLn caronas
+
+        cId <- inputInt "Digite o Id da carona: "
+        deletar <- CONTROLLER.deletarCaronaPorId motorista cId
+        putStrLn deletar
+    else do
+        putStrLn "Não existem caronas possíveis de se cancelar!"
     menuPrincipalCaronaMotorista motoristaRef
 
 pedirDestinos :: IO [String]
@@ -229,9 +267,72 @@ menuIniciarCarona motoristaRef = do
         putStrLn caronas
 
         cId <- inputInt "Digite o Id da carona: "
-        iniciarCarona <- CONTROLLER.inicializarCaronaStatus cId
-        putStrLn iniciarCarona
+        deletar <- CONTROLLER.inicializarCaronaStatus cId
+        putStrLn deletar
 
     else do
         putStrLn "Não existem caronas possíveis de se iniciar!"
+    menuPrincipalCaronaMotorista motoristaRef
+
+menuFinalizarCarona :: MotoristaRef -> IO()
+menuFinalizarCarona motoristaRef = do
+    motoristaMaybe <- readIORef motoristaRef
+    let motorista = getCpf motoristaMaybe
+    possuiCarona <- CONTROLLER.possuiCaronaEmAndamentoController motorista
+    if possuiCarona then do
+        putStrLn "Qual carona você deseja Finalizar:"
+        caronas <- CONTROLLER.infoCaronasEmAndamento motorista
+        putStrLn caronas
+
+        cId <- inputInt "Digite o Id da carona: "
+        deletar <- CONTROLLER.finalizarCaronaStatus cId
+        putStrLn deletar
+    else do
+        putStrLn "Não existem caronas possíveis de se finalizar!"
+    menuPrincipalCaronaMotorista motoristaRef
+
+menuAceitarRecusarPassageiro :: MotoristaRef -> IO ()
+menuAceitarRecusarPassageiro motoristaRef = do
+    motoristaMaybe <- readIORef motoristaRef
+    let motorista = getCpf motoristaMaybe
+    possuiCarona <- possuiCaronasPassageirosViagemFalse motorista
+    if possuiCarona then do
+        putStrLn "Qual carona você deseja olhar os passageiros:"
+        caronas <- infoCaronaPassageirosViagemFalse motorista
+        putStrLn caronas
+        cId <- inputInt "Digite o Id: "
+        temPassageiroViagemFalse <- possuiPassageiroViagemFalse cId
+        if temPassageiroViagemFalse then do
+            putStrLn "Qual passageiro você deseja aceitar/recusar?"
+            passageirosFalse <- infoPassageiroViagemFalse cId
+            putStrLn passageirosFalse
+            pvId <- inputInt "Digite o Id: "
+            temEssePassageiro <- possuiPassageiroViagem cId pvId
+            if temEssePassageiro then do
+                aceitarOuRecusar <- inputBoolean "Você deseja aceitar ou recusar: "
+                response <- aceitarOuRecusarPassageiro pvId aceitarOuRecusar
+                putStrLn response
+                menuPrincipalCaronaMotorista motoristaRef
+            else do
+                putStrLn "Esse passageiro não está disponível!"
+                menuPrincipalCaronaMotorista motoristaRef
+        else do
+            putStrLn "Essa carona não está disponível!"
+            menuPrincipalCaronaMotorista motoristaRef
+    else do
+        putStrLn "Não existem caronas disponíveis para aceitar ou recusar passageiros!"
+        menuPrincipalCaronaMotorista motoristaRef
+
+menuVisualizarCarona :: MotoristaRef -> IO()
+menuVisualizarCarona motoristaRef = do
+    motoristaMaybe <- readIORef motoristaRef
+    let motorista = getCpf motoristaMaybe
+    possuiCaronas <- motoristaPossuiCaronas motorista
+    if possuiCaronas then do
+        putStrLn "Qual carona você deseja visualizar:"
+        caronas <- CONTROLLER.mostrarCaronasMotorista motorista
+        putStrLn caronas     
+    else do
+        putStrLn "Não existem caronas disponíveis para aceitar ou recusar passageiros!"
+
     menuPrincipalCaronaMotorista motoristaRef

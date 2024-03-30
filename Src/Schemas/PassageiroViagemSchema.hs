@@ -4,10 +4,14 @@ module Src.Schemas.PassageiroViagemSchema (
     getViagemById, 
     deleteViagemById, 
     getViagemByColumn,
+    getPassageirosViagemFalse,
     updateViagem,
+    updateAceitaOuRecusaPassageiro,
     updateSolicitacaoViagem,
     updateAvaliacaoViagem,
     possuiVagasDisponiveis,
+    possuiPassageiroViagemFalse,
+    possuiViagemByCaronaAndId,
     getViagemByCaronaPassageiro
 ) where
 
@@ -23,6 +27,8 @@ import Src.Model.Carona
 import Src.Model.PassageiroViagem
 import Data.Char (toLower)
 import Debug.Trace
+import Data.Csv.Incremental (Parser(Fail))
+import Control.Monad (when)
 
 stringToBool :: String -> Bool
 stringToBool s 
@@ -126,10 +132,38 @@ updateAvaliacaoViagem idCarona idPassageiro nota = do
         updateViagem viagem novaViagem
         return "Motorista avaliado com sucesso!"
 
+updateAceitaOuRecusaPassageiro :: Int -> Bool -> IO String
+updateAceitaOuRecusaPassageiro pvId aceitaOuRecusa = do
+    maybeViagem <- getViagemById [pvId]
+    if null maybeViagem then
+        return "Esse passageiro não está presente em nenhuma carona!"
+    else do
+        let viagem = head maybeViagem
+        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) aceitaOuRecusa (caminho viagem) (avaliacaoMtrst viagem) (passageiroId viagem)
+        updateViagem viagem novaViagem
+        return "Motorista avaliado com sucesso!"
+
 possuiVagasDisponiveis :: Carona -> [String] -> IO Bool
 possuiVagasDisponiveis carona caminho = do 
     passageirosNoCaminho <- getPassageirosNoCaminho (cid carona) caminho
     return (length passageirosNoCaminho < numPassageirosMaximos carona)
+
+possuiPassageiroViagemFalse :: Carona -> IO Bool
+possuiPassageiroViagemFalse carona = do
+    passageiros <- getPassageirosViagemFalse carona
+    return (not (null passageiros))
+
+possuiViagemByCaronaAndId :: Carona -> Int -> IO Bool
+possuiViagemByCaronaAndId carona pvId = do
+    listaPassageiroViagem <- getViagemById [pvId]
+    let temViagem = any (\passageiroViagem -> cId passageiroViagem == cid carona) listaPassageiroViagem
+    return temViagem
+
+getPassageirosViagemFalse :: Carona -> IO [PassageiroViagem]
+getPassageirosViagemFalse carona = do
+    passageiros <- getViagemByColumn "cid" (show (cid carona))
+    let passageirosFalse = filter (not . aceita) passageiros
+    return passageirosFalse
 
 getPassageirosNoCaminho :: Int -> [String] -> IO [PassageiroViagem]
 getPassageirosNoCaminho cId caminhoTotal = do

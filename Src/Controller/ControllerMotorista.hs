@@ -2,7 +2,7 @@ module Src.Controller.ControllerMotorista where
 
 import Src.Model.MotoristaModel (Motorista (cpf))
 import Src.Logic.MotoristaLogic (cadastrarMotoristaLogic,atualizarMotoristaLogic,removerMotoristaLogic,buscarMotoristaLogic,realizarLoginMotoristaLogic)
-import Src.Schemas.Notificacao (getBy)
+import Src.Schemas.Notificacao (getBy,insereNotificacao)
 import Src.Model.NotificacaoModel (Notificacao)
 
 
@@ -23,3 +23,6 @@ realizarLoginMotorista = realizarLoginMotoristaLogic
 
 carregaNotificacoes :: String -> IO [Notificacao]
 carregaNotificacoes = getBy
+
+adicionarNotificacao :: String -> String -> Int -> String -> IO (Maybe Notificacao)
+adicionarNotificacao = insereNotificacao

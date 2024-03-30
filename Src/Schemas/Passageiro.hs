@@ -7,7 +7,8 @@ module Src.Schemas.Passageiro (
     , cadastraPassageiro
     , confereSenha
     , removePassageiroByCpf
-    , editPassageiroCSV) where
+    , editPassageiroCSV
+    , getCLICpf) where
 
     import Text.CSV
     import qualified Data.ByteString.Lazy as B
@@ -157,8 +158,13 @@ module Src.Schemas.Passageiro (
                     "Senha" -> passageiro { senha = novoValor }
                     _ -> passageiro
 
+    
     getCpf :: Passageiro -> String
     getCpf = cpf
+
+    getCLICpf :: Maybe Passageiro -> String
+    getCLICpf Nothing = "Passageiro não encontrado"
+    getCLICpf (Just passageiro) = cpf passageiro
 
     checkIsEmpty ::  IO Bool
     checkIsEmpty = do

@@ -11,6 +11,7 @@ module Src.Schemas.CaronaSchema (
     getCaronaByOrigem,
     getCaronaByMotoristaEStatus,
     possuiCaronaByMotoristaEStatus,
+    possuiCaronaByMotorista,
     updateStatusCarona,
     updateLimitePassageirosCarona
 ) where
@@ -180,6 +181,11 @@ determineStatus status oldStatus =
         "EmAndamento" -> EmAndamento
         "Finalizada" -> Finalizada
         _ -> oldStatus
+
+possuiCaronaByMotorista :: String -> IO Bool
+possuiCaronaByMotorista motorista = do
+    caronas <- getCaronaByColumn "motorista" motorista
+    return (not (null caronas)) 
 
 possuiCaronaByMotoristaEStatus :: String -> String -> IO Bool
 possuiCaronaByMotoristaEStatus motorista statusStr = do

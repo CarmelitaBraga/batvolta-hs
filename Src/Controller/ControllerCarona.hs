@@ -6,7 +6,14 @@ module Src.Controller.ControllerCarona (
     deletarCaronaMotorista, -- Motorista
     mostrarCaronasDisponiveisOrigemDestino, -- Passageiro
     possuiCaronaNaoIniciadaController, -- Motorista
+    possuiCaronaEmAndamentoController, -- Motorista
+    possuiCaronasPassageirosViagemFalse,
+    possuiPassageiroViagemFalse,
+    possuiPassageiroViagem,
     infoCaronasNaoIniciadas, -- Motorista
+    infoCaronasEmAndamento, -- Motorista
+    infoCaronaPassageirosViagemFalse, -- Passageiro viagem
+    infoPassageiroViagemFalse,
     finalizarCaronaStatus, -- Motorista
     inicializarCaronaStatus, -- Motorista
     responderSolicitacaoCarona, -- Motorista
@@ -18,24 +25,12 @@ module Src.Controller.ControllerCarona (
     solicitarCaronaPassageiro, -- Passageiro
     mostrarTrechoViagemPassageiro, -- Passageiro
     cancelarCaronaPassageiro, -- Passageiro
-    possuiCaronasOrigemDestinoController -- Passageiro
+    possuiCaronasOrigemDestinoController, -- Passageiro
+    motoristaPossuiCaronas, -- Motorista
+    aceitarOuRecusarPassageiro
     ) where
 
 import Src.Logic.CaronaLogic
-    ( adicionarPassageiro,
-      deletarCaronaPorId,
-      finalizarCarona,
-      gerarCarona,
-      infoCaronaById,
-      infoCaronaByMotorista,
-      infoCaronaByPassageiro,
-      infoCaronaNaoIniciadaByMotorista,
-      iniciarCarona,
-      mudaLimitePassageirosCarona,
-      possuiCaronaNaoIniciada,
-      removerPassageiro,
-      infoCaronaDisponivelOriDest,
-      possuiCaronaOrigemDestino )
 import Src.Logic.PassageiroViagemLogic
 import Src.Model.Carona
 import Src.Util.ValidationCarona
@@ -50,7 +45,7 @@ mostrarCaronasPassageiro pId = do
     return $ unlines caronas
 
 mostrarCaronasMotorista::String->IO String
-mostrarCaronasMotorista mId = do 
+mostrarCaronasMotorista mId = do
     caronas <- infoCaronaByMotorista mId
     return $ unlines caronas
 
@@ -59,8 +54,8 @@ mostrarCaronaPorId cid = do
     carona <- infoCaronaById cid
     return $ unlines carona
 
-deletarCaronaMotorista::Int->IO ()
-deletarCaronaMotorista cid = deletarCaronaPorId cid
+deletarCaronaMotorista::String -> Int ->IO String
+deletarCaronaMotorista = deletarCaronaPorId
 
 mostrarCaronasDisponiveisOrigemDestino :: String -> String -> IO String
 mostrarCaronasDisponiveisOrigemDestino origem destino = do
@@ -70,21 +65,50 @@ mostrarCaronasDisponiveisOrigemDestino origem destino = do
         else return (intercalate "\n" (map show caronas))
 
 possuiCaronaNaoIniciadaController :: String -> IO Bool
-possuiCaronaNaoIniciadaController motorista = possuiCaronaNaoIniciada motorista
+possuiCaronaNaoIniciadaController = possuiCaronaNaoIniciada
+
+possuiCaronaEmAndamentoController :: String -> IO Bool
+possuiCaronaEmAndamentoController = possuiCaronaEmAndamento
 
 possuiCaronasOrigemDestinoController :: String -> String -> IO Bool
-possuiCaronasOrigemDestinoController origem destino = possuiCaronaOrigemDestino origem destino
+possuiCaronasOrigemDestinoController = possuiCaronaOrigemDestino
+
+possuiCaronasPassageirosViagemFalse :: String -> IO Bool
+possuiCaronasPassageirosViagemFalse motorista = do
+    caronas <- infoCaronaPassageirosViagemFalse motorista
+    return (not (null caronas))
+
+possuiPassageiroViagemFalse :: Int -> IO Bool
+possuiPassageiroViagemFalse = possuiPassageiroViagemFalseByCarona
+
+possuiPassageiroViagem :: Int -> Int -> IO Bool
+possuiPassageiroViagem = possuiPassageiroByCarona
 
 infoCaronasNaoIniciadas :: String -> IO String
 infoCaronasNaoIniciadas motorista = do
     caronas <- infoCaronaNaoIniciadaByMotorista motorista
     return $ unlines caronas
 
+infoCaronasEmAndamento :: String -> IO String
+infoCaronasEmAndamento motorista = do
+    caronas <- infoCaronaEmAndamentoByMotorista motorista
+    return $ unlines caronas
+
+infoCaronaPassageirosViagemFalse :: String -> IO String
+infoCaronaPassageirosViagemFalse motorista = do
+    caronas <- infoCaronaPassageirosViagemFalseByMotorista motorista
+    return $ unlines caronas
+
+infoPassageiroViagemFalse :: Int -> IO String
+infoPassageiroViagemFalse carona = do
+    passageiros <- infoPassageiroViagemFalseByCarona carona
+    return $ unlines passageiros
+
 finalizarCaronaStatus :: Int -> IO String
-finalizarCaronaStatus cId = finalizarCarona cId
+finalizarCaronaStatus  = finalizarCarona
 
 inicializarCaronaStatus::Int -> IO String
-inicializarCaronaStatus cId = iniciarCarona cId
+inicializarCaronaStatus  = iniciarCarona
 
 -- Função para aceitar ou negar solicitação de carona
 -- resp aceita True e False
@@ -137,4 +161,10 @@ mostrarTrechoViagemPassageiro idCarona idPassageiro = do
 cancelarCaronaPassageiro::Int->String->IO()
 cancelarCaronaPassageiro idCarona idPassageiro = do
     result <- cancelaViagemPassageiro idCarona idPassageiro
-    putStrLn result 
+    putStrLn result
+
+motoristaPossuiCaronas :: String -> IO Bool
+motoristaPossuiCaronas = motoristaPossuiCarona
+
+aceitarOuRecusarPassageiro :: Int -> Bool -> IO String
+aceitarOuRecusarPassageiro = recusarOuAceitarPassageiro

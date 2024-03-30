@@ -81,3 +81,8 @@ cancelaViagemPassageiro idCarona idPassageiro = do
             deleteViagemById viagemId
             -- TODO: checar se a carona ja foi inicializada e se passageiro ta no carro
             return "Carona cancelada com sucesso!"
+
+possuiPassageiroViagemFalse :: Int -> Int -> IO Bool
+possuiPassageiroViagemFalse idCarona idPassageiroViagem = do
+    passageiroViagem <- getViagemById [idPassageiroViagem]
+    return (cId (head passageiroViagem) == idCarona)

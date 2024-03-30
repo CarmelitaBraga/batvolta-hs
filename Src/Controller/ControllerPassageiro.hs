@@ -2,6 +2,8 @@ module Src.Controller.ControllerPassageiro where
 
     import Src.Schemas.Passageiro(Passageiro)
     import Src.Logic.LogicPassageiro(cadastraPassageiroLogic, removePassageiroByCpfLogic, editPassageiroCSVLogic, getPassageiroByCpfLogic, realizarLoginPassageiroLogic)
+    import Src.Schemas.Notificacao (getBy)
+    import Src.Model.NotificacaoModel (Notificacao)
 
     realizarCadastroPassageiro :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
     realizarCadastroPassageiro = cadastraPassageiroLogic
@@ -17,3 +19,6 @@ module Src.Controller.ControllerPassageiro where
 
     realizarLoginPassageiro :: String -> String -> IO (Maybe Passageiro)
     realizarLoginPassageiro = realizarLoginPassageiroLogic
+
+    carregaNotificacoes :: String -> IO [Notificacao]
+    carregaNotificacoes = getBy

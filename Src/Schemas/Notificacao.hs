@@ -15,6 +15,7 @@ type CounterState = Int
 
 csvPath :: FilePath
 csvPath = "./database/notificacaoMotorista.csv"
+csvPathPassageiro = "./database/notificacaoPassageiro.csv"
 
 counterState :: CounterState
 counterState = 0
@@ -56,6 +57,29 @@ insereNotificacao idMotorista idPassageiro idCarona conteudoCriar = do
             return notificacao
     return Nothing
 
+insereNotificacaoPassageiro :: String -> String -> Int -> String -> IO (Maybe Notificacao)
+insereNotificacaoPassageiro idMotorista idPassageiro idCarona conteudoCriar = do
+    isEmpty <- checkIsEmpty csvPathPassageiro
+    if isEmpty
+        then do
+            let nextId = 0
+                notificacao = Notificacao nextId idMotorista idPassageiro idCarona conteudoCriar 
+                csvData = encode [notificacao]
+                header = B8.pack "idNotificacao,idMotorista,idPassageiro,idCarona,conteudo\n"
+                final = BL.fromStrict header <> csvData
+            withFile csvPath WriteMode $ \handle -> do
+                BL.hPutStr handle final
+            return notificacao
+       else do
+            nextId <- incrementCounter counterState
+            let notificacao = Notificacao nextId idMotorista idPassageiro idCarona conteudoCriar
+                csvData = encode [notificacao]
+            withFile csvPathPassageiro AppendMode $ \handle -> do
+                BL.hPutStr handle csvData
+            return notificacao
+    return Nothing
+
+    
 checkIsEmpty :: FilePath -> IO Bool
 checkIsEmpty path = do
     withFile path ReadMode $ \handle -> do
@@ -79,4 +103,12 @@ getBy atributoDesejado = do
     let notificacoesEncontradas = filter (\n -> idMotorista n == atributoDesejado) notificacoes
         notificacoesOrdenadas = sortBy (\n1 n2 -> compare (idNotificacao n2) (idNotificacao n1)) notificacoesEncontradas
     return notificacoesOrdenadas
+
+passageiroGetBy :: String -> IO [Notificacao]
+passageiroGetBy atributoDesejado = do
+    notificacoes <- carregarNotificacoes csvPathPassageiro
+    let notificacoesEncontradas = filter (\n -> idPassageiro n == atributoDesejado) notificacoes
+        notificacoesOrdenadas = sortBy (\n1 n2 -> compare (idNotificacao n2) (idNotificacao n1)) notificacoesEncontradas
+    return notificacoesOrdenadas
+
 
