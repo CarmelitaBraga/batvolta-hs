@@ -11,7 +11,7 @@ instance ToField Bool where
     toField False = pack "False"
 
 data PassageiroViagem = PassageiroViagem {
-    pid :: Int,
+    pvId :: Int,
     cId :: Int,
     aceita :: Bool,
     caminho :: [String],
@@ -24,34 +24,34 @@ instance Read PassageiroViagem where
 
 -- Function to convert a PassageiroViagem to a string
 viagemToStr :: PassageiroViagem -> String
-viagemToStr (PassageiroViagem p c a cam am pid) =
+viagemToStr (PassageiroViagem p c a cam am pvId) =
   show p ++ "," ++
   show c ++ "," ++
   show a ++ "," ++
   intercalate ";" cam ++ "," ++
   show am ++ "," ++
-  pid
+  pvId
 
 strToViagem :: String -> PassageiroViagem
 strToViagem str =
   let parts = splitOn "," (filter (\c -> c /= '\r' && c /= '\\') str)
   in case parts of
-        [p, c, a, cam, am, pid] ->
+        [p, c, a, cam, am, pvId] ->
           PassageiroViagem
-            { pid = read p,
+            { pvId = read p,
               cId = read c,
               aceita = read a,
               caminho = splitOn ";" cam,
               avaliacaoMtrst = read am,
-              passageiroId = pid
+              passageiroId = pvId
             }
         _ -> error "Invalid input format for PassageiroViagem"
 
 parseViagem :: String -> PassageiroViagem
 parseViagem line = case splitOn "," line of
-    [pidStr, cIdStr, aceitaStr, caminhoStr, avaliacaoMotoristaStr, passageiroId] ->
+    [pvIdStr, cIdStr, aceitaStr, caminhoStr, avaliacaoMotoristaStr, passageiroId] ->
         PassageiroViagem {
-            pid = read pidStr,
+            pvId = read pvIdStr,
             cId = read cIdStr,
             aceita = read aceitaStr,
             caminho = splitOn ";" caminhoStr,
@@ -62,7 +62,7 @@ parseViagem line = case splitOn "," line of
 
 instance ToRecord PassageiroViagem where
     toRecord entry = record
-        [ toField (pid entry)
+        [ toField (pvId entry)
         , toField (cId entry)
         , toField (aceita entry)
         , toField ("" :: String)

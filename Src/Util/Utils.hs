@@ -52,7 +52,7 @@ getCaronaAttribute carona attr
 
 getViagemAttribute :: PassageiroViagem -> String -> String
 getViagemAttribute viagem attr
-    | attr == "pid" = show (pid viagem)
+    | attr == "pvId" = show (pvId viagem)
     | attr == "cid" = show (cId viagem)
     | attr == "aceita" = show (aceita viagem)
     | attr == "caminho" = unwords (caminho viagem)

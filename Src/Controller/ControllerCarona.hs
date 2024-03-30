@@ -31,8 +31,8 @@ import Data.List (intercalate)
 import Src.Schema.PassageiroViagemSchema (criarViagemPassageiro)
 
 mostrarCaronasPassageiro::String -> IO String
-mostrarCaronasPassageiro pId = do
-    caronas <- infoCaronaByPassageiro pId
+mostrarCaronasPassageiro idPassageiro = do
+    caronas <- infoCaronaByPassageiro idPassageiro
     return $ unlines caronas
 
 mostrarCaronasMotorista::String->IO String

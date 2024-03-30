@@ -68,7 +68,8 @@ main = do
 
     -- mostrarCaronasOrigemDestino "Curitiba" "Para"
 
-    -- mostrarCaronasOrigemDestino "Amazonia" "Stadunido"
+    -- eh <- mostrarCaronasDisponiveisOrigemDestino "Ceara" "Rio de Janeiro"
+    -- putStrLn eh
 
     -- d5 <- C.filtrarCaronaOriDest "Stadunido" "Curitiba"
     -- print d5
@@ -105,7 +106,7 @@ main = do
 
     -- V.deleteViagemById 15
 
-    -- v0 <- V.getViagemByColumn "pid" "0"
+    -- v0 <- V.getViagemByColumn "pvId" "0"
     -- print v0
 
     -- up <- V.updateSolicitacaoViagem 4 "true"
@@ -147,20 +148,21 @@ main = do
     responderSolicitacaoCarona "55533399974" 4 "true"
 
 --falta motorista
-    criarCaronaMotorista "23:59" "25/04/2024" "Campina" ["Porto", "Paris", "Amsterdan"] "121212112" 5560.22 2
+    criarCaronaMotorista "23:59" "25/04/2024" ["Campina", "Porto", "Paris", "Amsterdan"] "121212112" 5560.22 2
 
-    avaliarMotoristaCarona 4 "55533399974" 1
+    -- avaliarMotoristaCarona 4 "55533399974" 1
 
-    modificarLimitePassageiros 4 "091802112" 10
+    -- modificarLimitePassageiros 4 "091802112" 10
 
     embarcarPassageiro 4 "pintinho"
 
     desembarcarPassageiro 4 "pintinho"
 
     -- solicitarCaronaPassageiro idCarona idPassageiro origem destino
-    -- solicitarCaronaPassageiro 10 "93485urh3489h" "Ceara" "Para" 
+    po <- solicitarCaronaPassageiro 10 "93485urh3489h" "Ceara" "Para"
+    putStrLn po
     -- print o
 
-    mostrarTrechoViagemPassageiro 10 "93485urh3489h"
+    mostrarTrechoViagemPassageiro 100 "93485urh3489h"
 
     cancelarCaronaPassageiro 10 "93485urh3489h"

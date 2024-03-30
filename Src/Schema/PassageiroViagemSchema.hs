@@ -49,7 +49,7 @@ incrementCounterV currentState = do
 
 findNextIdV :: CounterStateViagem -> [PassageiroViagem] -> CounterStateViagem
 findNextIdV currentId viagensList =
-    if any (\u -> pid u == currentId) viagensList
+    if any (\u -> pvId u == currentId) viagensList
         then findNextIdV (currentId + 1) viagensList
         else currentId
 
@@ -65,16 +65,16 @@ getAllViagens = Csv.get strToViagem viagemCsvPath
 getViagemById :: [Int] -> IO [PassageiroViagem]
 getViagemById targets = do
   viagensList <- Csv.get strToViagem viagemCsvPath
-  let result = filter (\u -> pid u `elem` targets) viagensList
+  let result = filter (\u -> pvId u `elem` targets) viagensList
   return result
 
 deleteViagemById :: Int -> IO ()
-deleteViagemById pidToDelete = do
-    viagens <- getViagemById [pidToDelete]
+deleteViagemById pvIdToDelete = do
+    viagens <- getViagemById [pvIdToDelete]
     if null viagens
         then putStrLn "Viagem inexistente!" 
     else do
-        delete (\c -> pid c == pidToDelete) strToViagem viagemToStr viagemCsvPath
+        delete (\c -> pvId c == pvIdToDelete) strToViagem viagemToStr viagemCsvPath
         putStrLn "Viagem deletada com sucesso!"
 
 getViagemByColumn :: String -> String -> IO [PassageiroViagem]
@@ -94,7 +94,7 @@ getViagemByCaronaPassageiro idCarona idPassageiro = do
 updateViagem :: PassageiroViagem->PassageiroViagem->IO PassageiroViagem
 updateViagem viagem novaViagem = do
   allViagens <- getAllViagens
-  let updatedAllViagens = map (\u -> if pid u == pid viagem then novaViagem else u) allViagens
+  let updatedAllViagens = map (\u -> if pvId u == pvId viagem then novaViagem else u) allViagens
   Csv.write viagemToStr updatedAllViagens viagemCsvPath
   return novaViagem
 
@@ -106,7 +106,7 @@ updateSolicitacaoViagem caronaId passageiroId status = do
     else do
         let viagem = head maybeViagem
         let novaViagem = PassageiroViagem
-                            (pid viagem)
+                            (pvId viagem)
                             (cId viagem)
                             (stringToBool status)
                             (caminho viagem)
@@ -122,7 +122,7 @@ updateAvaliacaoViagem idCarona idPassageiro nota = do
         return "Registro de carona de passageiro inexistente!"
     else do
         let viagem = head maybeViagem
-        let novaViagem = PassageiroViagem (pid viagem) (cId viagem) (aceita viagem) (caminho viagem) nota (passageiroId viagem)
+        let novaViagem = PassageiroViagem (pvId viagem) (cId viagem) (aceita viagem) (caminho viagem) nota (passageiroId viagem)
         updateViagem viagem novaViagem
         return "Motorista avaliado com sucesso!"
 

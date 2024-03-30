@@ -15,11 +15,11 @@ import Data.List (find, intercalate)
 infoViagem :: Int -> IO String
 infoViagem viagemId = do
     viagens <- getAllViagens  -- Assuming you have a function getAllViagens to get all viagens
-    let maybeViagem = find (\v -> viagemId == pid v) viagens
+    let maybeViagem = find (\v -> viagemId == pvId v) viagens
     case maybeViagem of
         Nothing -> return "Viagem not found"
         Just viagem -> return $
-            "Id: " ++ show (pid viagem) ++
+            "Id: " ++ show (pvId viagem) ++
             ", Carona Id: " ++ show (cId viagem) ++
             ", Aceita: " ++ show (aceita viagem) ++
             ", caminho: [" ++ intercalate ", " (caminho viagem) ++ "]" ++
@@ -66,7 +66,7 @@ infoTrechoByCaronaPassageiro idCarona idPassageiro = do
         then return "Trecho de carona inexistente para o passageiro informado!"
         else do
             let viagem = head maybeViagem
-                viagemId = pid viagem
+                viagemId = pvId viagem
             info <- infoViagem viagemId
             return info
 
@@ -77,7 +77,7 @@ cancelaViagemPassageiro idCarona idPassageiro = do
         then return "Trecho de carona inexistente para o passageiro informado!"
         else do
             let viagem = head maybeViagem
-                viagemId = pid viagem
+                viagemId = pvId viagem
             deleteViagemById viagemId
             -- TODO: checar se a carona ja foi inicializada e se passageiro ta no carro
             return "Carona cancelada com sucesso!"

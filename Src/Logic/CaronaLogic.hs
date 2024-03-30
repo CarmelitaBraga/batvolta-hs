@@ -30,7 +30,6 @@ import Data.List (intercalate, find, elemIndex, elemIndices)
 import Debug.Trace (traceShow)
 import GHC.IO (unsafePerformIO)
 import System.Posix.Internals (puts)
-import GHC.Exts (reallyUnsafePtrEquality)
 import Control.Monad (filterM)
 import Debug.Trace
 
@@ -65,8 +64,8 @@ infoCaronaByDestino dest = do
     mapM infoCarona (map cid selectedCaronas)
 
 infoCaronaByPassageiro::String->IO [String]
-infoCaronaByPassageiro pId = do
-    selectedCaronas <- getCaronaByColumn "passageiros" pId
+infoCaronaByPassageiro idPassageiro = do
+    selectedCaronas <- getCaronaByColumn "passageiros" idPassageiro
     mapM infoCarona (map cid selectedCaronas)
 
 deletarCaronaPorId::Int -> IO ()
