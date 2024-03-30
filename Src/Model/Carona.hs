@@ -15,7 +15,6 @@ data Carona = Carona
   { cid :: Int,
     hora :: TimeOfDay,
     date :: Day,
-    origem :: String,
     destinos :: [String],
     motorista :: String,
     passageiros :: [String],
@@ -30,11 +29,10 @@ instance Read Carona where
 
 -- Function to convert a Carona to a string
 caronaToStr :: Carona -> String
-caronaToStr (Carona c h d o dest m ps v st numps) =
+caronaToStr (Carona c h d dest m ps v st numps) =
   show c ++ "," ++
   show h ++ "," ++
   show d ++ "," ++
-  o ++ "," ++
   intercalate ";" dest ++ "," ++
   m ++ "," ++
   intercalate ";" ps ++ "," ++
@@ -50,12 +48,11 @@ strToCarona str =
   let cleanedStr = reverse $ dropWhile (== ',') $ reverse str
       parts = splitOn "," cleanedStr
   in case parts of
-    [c, h, d, o, dest, m, ps, v, st, numps] ->
+    [c, h, d, dest, m, ps, v, st, numps] ->
       Carona
         { cid = read c,
           hora = read h,
           date = read d,
-          origem = o,
           destinos = splitOn ";" dest,
           motorista = m,
           passageiros = splitOn ";" ps,

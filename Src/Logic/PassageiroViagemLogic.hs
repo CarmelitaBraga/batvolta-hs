@@ -7,10 +7,10 @@ module Src.Logic.PassageiroViagemLogic (
 ) where
 
 import Src.Model.PassageiroViagem
-import Src.Schema.PassageiroViagemSchema
-import Src.Schema.CaronaSchema
+import Src.Schemas.PassageiroViagemSchema
+import Src.Schemas.CaronaSchema
 import Src.Logic.CaronaLogic (existeRota, lugaresDisponiveis)
-import Data.List (find)
+import Data.List (find, intercalate)
 
 infoViagem :: Int -> IO String
 infoViagem viagemId = do
@@ -22,8 +22,7 @@ infoViagem viagemId = do
             "Id: " ++ show (pid viagem) ++
             ", Carona Id: " ++ show (cId viagem) ++
             ", Aceita: " ++ show (aceita viagem) ++
-            ", Origem: " ++ origemPass viagem ++
-            ", Destino: " ++ destino viagem ++
+            ", caminho: [" ++ intercalate ", " (caminho viagem) ++ "]" ++
             ", Avaliação Motorista: " ++ show (avaliacaoMtrst viagem) ++
             ", Passageiro: " ++ passageiroId viagem
 
@@ -42,8 +41,8 @@ avaliaMotorista idCarona idPassageiro aval = do
         updateAvaliacaoViagem idCarona idPassageiro aval
         return "Motorista avaliado com sucesso!"
 
-solicitaParticiparCarona::Int->String->String->String->IO String
-solicitaParticiparCarona idCarona idPassageiro ori dest = do
+solicitaParticiparCarona :: Int -> String -> String -> String -> IO String
+solicitaParticiparCarona idCarona idPassageiro origem destino = do
     -- checar se tem rota
     -- checar se tem lugar
     -- checar se tem carona
@@ -53,11 +52,12 @@ solicitaParticiparCarona idCarona idPassageiro ori dest = do
         then return "Carona inexistente!"
         else do
             let carona = head maybeCarona
-            if existeRota carona ori dest && lugaresDisponiveis carona
-                then do
-                    criarViagemPassageiro idCarona False ori dest 0 idPassageiro
+                rota = getCaminho carona origem destino
+            if null rota
+                then return "Essa carona não possui essa rota!"
+                else do
+                    criarViagemPassageiro idCarona False (getCaminho carona origem destino) 0 idPassageiro
                     return "Registro de Passageiro em Carona criado com sucesso!"
-                else return "Registro de Passageiro em Carona indisponivel no momento!"
 
 infoTrechoByCaronaPassageiro :: Int -> String -> IO String
 infoTrechoByCaronaPassageiro idCarona idPassageiro = do

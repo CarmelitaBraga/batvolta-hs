@@ -1,13 +1,18 @@
 module Src.CLI.MotoristaCLI where
 
+--Imports
+--Controllers
 import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista, realizarLoginMotorista,carregaNotificacoes)
-import System.IO
+import Src.Controller.ControllerCarona as CONTROLLER
+--Models
 import Src.Model.MotoristaModel(Motorista, getCpf)
+--Bibliotecas
+import System.IO
 import Data.IORef
 import Control.Monad
 import Data.Maybe (fromMaybe)
-import Src.CLI.CaronaCLI (menuPrincipalCaronaMotorista)
---import Main
+import Data.Char (isDigit)
+
 
 -- Motorista Logado
 type MotoristaRef = IORef (Maybe Motorista)
@@ -21,6 +26,16 @@ inputString prompt = do
 
 inputInt :: String -> IO Int
 inputInt prompt = do
+    putStrLn prompt
+    input <- getLine
+    if all isDigit input  -- Verifica se todos os caracteres da entrada são dígitos
+        then return (read input)  -- Converte a entrada para Int se for válida
+        else do
+            putStrLn "Entrada inválida! Tente novamente."
+            inputInt prompt
+
+inputDouble :: String -> IO Double
+inputDouble prompt = do
     str <- inputString prompt
     return (read str)
 
@@ -151,3 +166,72 @@ menuCarregarNotificacoes motoristaRef = do
     putStrLn "Notificações:"
     mapM_ print notificacoes
     menuOpcoesMotorista motoristaRef
+
+
+-- Menu Para Caronas
+
+menuPrincipalCaronaMotorista :: MotoristaRef -> IO ()
+menuPrincipalCaronaMotorista motoristaRef = do
+    putStrLn "\nSelecione uma opção:"
+    putStrLn "1 - Criar uma Carona"
+    putStrLn "2 - Iniciar Carona"
+    putStrLn "3 - Finalizar Carona"
+    -- Aceitar/Recusar passageiro
+    -- Cancelar carona
+    -- Visualizar carona
+    --
+    putStrLn "0 - Sair"
+    opcao <- getLine
+    case opcao of
+        "1" -> menuCriarCarona motoristaRef
+        "2" -> menuIniciarCarona motoristaRef
+        "0" -> do
+            putStrLn "Saindo..."
+            menuOpcoesMotorista motoristaRef
+        _   -> do
+            putStrLn "Opção inválida!"
+            menuPrincipalCaronaMotorista motoristaRef
+    
+
+menuCriarCarona :: MotoristaRef -> IO ()
+menuCriarCarona motoristaRef = do
+    putStrLn "\nCriar uma Carona"
+    hora <- inputString "Digite a hora (no formato HH:MM): "
+    date <- inputString "Digite a data (no formato DD/MM/AA): "
+    origem <- inputString "Digite a origem da viagem: "
+    destinos <- pedirDestinos
+    valor <- inputDouble "Digite o valor: "
+    numPassageirosMaximos <- inputInt "Digite a quantidade máximas de passageiros: "
+    motoristaMaybe <- readIORef motoristaRef
+    let motorista = getCpf motoristaMaybe
+    CONTROLLER.criarCaronaMotorista hora date (origem:destinos) motorista valor numPassageirosMaximos
+    menuPrincipalCaronaMotorista motoristaRef
+
+pedirDestinos :: IO [String]
+pedirDestinos = menuPedirDestinos []
+
+menuPedirDestinos :: [String] -> IO [String]
+menuPedirDestinos destinos = do
+    maybeDestino <- inputString $ "Digite a " ++ show (length destinos + 1) ++ "ª cidade (aperte apenas enter para terminar de inserir destinos): "
+    if null maybeDestino
+        then return destinos
+        else menuPedirDestinos (destinos ++ [maybeDestino])
+
+menuIniciarCarona :: MotoristaRef -> IO ()
+menuIniciarCarona motoristaRef = do
+    motoristaMaybe <- readIORef motoristaRef
+    let motorista = getCpf motoristaMaybe
+    possuiCarona <- CONTROLLER.possuiCaronaNaoIniciadaController motorista
+
+    if possuiCarona then do
+        putStrLn "Qual carona você deseja iniciar:"
+        caronas <- CONTROLLER.infoCaronasNaoIniciadas motorista
+        putStrLn caronas
+
+        cId <- inputInt "Digite o Id da carona: "
+        iniciarCarona <- CONTROLLER.inicializarCaronaStatus cId
+        putStrLn iniciarCarona
+
+    else do
+        putStrLn "Não existem caronas possíveis de se iniciar!"
+    menuPrincipalCaronaMotorista motoristaRef

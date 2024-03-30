@@ -28,8 +28,8 @@ executable batvolta-hs
       Src.Schemas.Motorista
       Src.Schemas.Passageiro
       Src.Schemas.Notificacao
-      Src.Schema.CaronaSchema
-      Src.Schema.PassageiroViagemSchema
+      Src.Schemas.CaronaSchema
+      Src.Schemas.PassageiroViagemSchema
       Src.Model.MotoristaModel
       Src.Model.NotificacaoModel
       Src.Model.Carona

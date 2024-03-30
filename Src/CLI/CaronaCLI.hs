@@ -1,5 +1,5 @@
 module Src.CLI.CaronaCLI (
-    menuPrincipalCaronaMotorista
+    menuPrincipalCaronaMotorista,
 ) where
 
 import Src.Controller.ControllerCarona as CONTROLLER
@@ -8,6 +8,8 @@ import Src.Model.PassageiroViagem (PassageiroViagem(cId))
 import Data.IORef
 import Src.Model.MotoristaModel(Motorista, getCpf)
 import Src.Model.Carona (Carona(motorista))
+import qualified Src.Schemas.PassageiroViagemSchema as CONTROLLER
+
 
 type MotoristaRef = IORef (Maybe Motorista)
 
@@ -34,7 +36,7 @@ menuPrincipalCaronaMotorista motoristaRef = do
     putStrLn "\nSelecione uma opção:"
     putStrLn "1 - Criar uma Carona"
     putStrLn "2 - Iniciar Carona"
-    putStrLn "2 - Finalizar Carona"
+    putStrLn "3 - Finalizar Carona"
     putStrLn "0 - Sair"
     opcao <- getLine
     case opcao of
@@ -57,7 +59,7 @@ menuCriarCarona motoristaRef = do
     numPassageirosMaximos <- inputInt "Digite a quantidade máximas de passageiros: "
     motoristaMaybe <- readIORef motoristaRef
     let motorista = getCpf motoristaMaybe
-    CONTROLLER.criarCaronaMotorista hora date origem destinos motorista valor numPassageirosMaximos
+    CONTROLLER.criarCaronaMotorista hora date (origem:destinos) motorista valor numPassageirosMaximos
     menuPrincipalCaronaMotorista motoristaRef
 
 pedirDestinos :: IO [String]
@@ -76,13 +78,50 @@ menuIniciarCarona motoristaRef = do
     motoristaMaybe <- readIORef motoristaRef
     let motorista = getCpf motoristaMaybe
     possuiCarona <- CONTROLLER.possuiCaronaNaoIniciadaController motorista
+
     if possuiCarona then do
         putStrLn "Qual carona você deseja iniciar:"
         caronas <- CONTROLLER.infoCaronasNaoIniciadas motorista
         putStrLn caronas
+
         cId <- inputInt "Digite o Id da carona: "
         iniciarCarona <- CONTROLLER.inicializarCaronaStatus cId
         putStrLn iniciarCarona
+
     else do
         putStrLn "Não existem caronas possíveis de se iniciar!"
     menuPrincipalCaronaMotorista motoristaRef
+
+menuProcurarCarona :: String -> IO ()
+menuProcurarCarona passageiro = do
+    origem <- inputString "De onde a carona deve partir? "
+    destino <- inputString "Onde a carona deve chegar? "
+    existeCaronas <- CONTROLLER.possuiCaronasOrigemDestinoController origem destino
+
+    if existeCaronas then do
+        caronas <- CONTROLLER.mostrarCaronasDisponiveisOrigemDestino origem destino
+        putStrLn caronas
+
+        cId <- inputInt "Qual carona deseja solicitar (Digite o Id da carona) (Digite -1 para não escolher nenhuma): "
+        if cId == -1 then 
+            menuPrincipalPassageiro passageiro
+        else do
+            maybeCaronaEscolhida <- CONTROLLER.solicitarCaronaPassageiro cId passageiro origem destino
+            putStrLn maybeCaronaEscolhida
+
+    else do
+        putStrLn "Não existem caronas para essa origem e destino!"
+
+menuPrincipalPassageiro :: String -> IO ()
+menuPrincipalPassageiro passageiro = do
+    putStrLn "\nSelecione uma opção:"
+    putStrLn "1 - Procurar Carona"
+    putStrLn "0 - Sair"
+    opcao <- getLine
+    case opcao of
+        "1" -> menuProcurarCarona passageiro
+        "0" -> do
+            putStrLn "Saindo..."
+        _   -> do
+            putStrLn "Opção inválida!"
+            menuPrincipalPassageiro passageiro  

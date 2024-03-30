@@ -1,30 +1,48 @@
 module Src.Controller.ControllerCarona (
-    mostrarCaronaPorId, 
-    mostrarCaronasPassageiro, 
-    mostrarCaronasMotorista, 
-    deletarCaronaMotorista,
-    mostrarCaronasOrigemDestino,
-    possuiCaronaNaoIniciadaController,
-    infoCaronasNaoIniciadas,
-    finalizarCaronaStatus,
-    inicializarCaronaStatus,
-    responderSolicitacaoCarona,
-    criarCaronaMotorista,
-    avaliarMotoristaCarona,
-    modificarLimitePassageiros,
-    embarcarPassageiro,
-    desembarcarPassageiro,
-    solicitarCaronaPassageiro,
-    mostrarTrechoViagemPassageiro,
-    cancelarCaronaPassageiro
+    criarViagemPassageiro, --Motorista
+    mostrarCaronaPorId, -- ambos
+    mostrarCaronasPassageiro, -- Passageiro
+    mostrarCaronasMotorista, -- Motorista
+    deletarCaronaMotorista, -- Motorista
+    mostrarCaronasDisponiveisOrigemDestino, -- Passageiro
+    possuiCaronaNaoIniciadaController, -- Motorista
+    infoCaronasNaoIniciadas, -- Motorista
+    finalizarCaronaStatus, -- Motorista
+    inicializarCaronaStatus, -- Motorista
+    responderSolicitacaoCarona, -- Motorista
+    criarCaronaMotorista, -- Motorista
+    avaliarMotoristaCarona, -- Passageiro
+    modificarLimitePassageiros, -- Motorista
+    embarcarPassageiro, -- Passageiro
+    desembarcarPassageiro, -- Passageiro
+    solicitarCaronaPassageiro, -- Passageiro
+    mostrarTrechoViagemPassageiro, -- Passageiro
+    cancelarCaronaPassageiro, -- Passageiro
+    possuiCaronasOrigemDestinoController -- Passageiro
     ) where
 
 import Src.Logic.CaronaLogic
+    ( adicionarPassageiro,
+      deletarCaronaPorId,
+      finalizarCarona,
+      gerarCarona,
+      infoCaronaById,
+      infoCaronaByMotorista,
+      infoCaronaByPassageiro,
+      infoCaronaNaoIniciadaByMotorista,
+      iniciarCarona,
+      mudaLimitePassageirosCarona,
+      possuiCaronaNaoIniciada,
+      removerPassageiro,
+      infoCaronaDisponivelOriDest,
+      possuiCaronaOrigemDestino )
 import Src.Logic.PassageiroViagemLogic
 import Src.Model.Carona
 import Src.Util.ValidationCarona
 import Control.Exception (catch)
 import Data.Bool (Bool)
+import Data.List (intercalate)
+import Src.Schemas.PassageiroViagemSchema (criarViagemPassageiro)
 
 mostrarCaronasPassageiro::String -> IO String
 mostrarCaronasPassageiro pId = do
@@ -44,15 +62,18 @@ mostrarCaronaPorId cid = do
 deletarCaronaMotorista::Int->IO ()
 deletarCaronaMotorista cid = deletarCaronaPorId cid
 
-mostrarCaronasOrigemDestino :: String -> String -> IO ()
-mostrarCaronasOrigemDestino origem destino = do
-    caronas <- filtrarCaronaOriDest origem destino
+mostrarCaronasDisponiveisOrigemDestino :: String -> String -> IO String
+mostrarCaronasDisponiveisOrigemDestino origem destino = do
+    caronas <- infoCaronaDisponivelOriDest origem destino
     if null caronas
-        then putStrLn "Nenhuma carona disponível para esta rota no momento."
-        else mapM_ putStrLn caronas
+        then return "Nenhuma carona disponível para esta rota no momento."
+        else return (intercalate "\n" (map show caronas))
 
 possuiCaronaNaoIniciadaController :: String -> IO Bool
 possuiCaronaNaoIniciadaController motorista = possuiCaronaNaoIniciada motorista
+
+possuiCaronasOrigemDestinoController :: String -> String -> IO Bool
+possuiCaronasOrigemDestinoController origem destino = possuiCaronaOrigemDestino origem destino
 
 infoCaronasNaoIniciadas :: String -> IO String
 infoCaronasNaoIniciadas motorista = do
@@ -72,13 +93,13 @@ responderSolicitacaoCarona idPassageiro idCarona resp = do
     status <- alterarStatusViagem idPassageiro idCarona resp
     putStrLn status
 
-criarCaronaMotorista :: String -> String -> String -> [String] -> String -> Double -> Int -> IO ()
-criarCaronaMotorista hora date origem destinos motorista valor limitePss = do
-    let check = validateCarona valor origem destinos limitePss motorista
+criarCaronaMotorista :: String -> String -> [String] -> String -> Double -> Int -> IO ()
+criarCaronaMotorista hora date destinos motorista valor limitePss = do
+    let check = validateCarona valor destinos limitePss motorista
     if check /= "OK"
         then putStrLn $ "Erro ao criar Carona: " ++ check
         else do
-            result <- gerarCarona hora date origem destinos motorista valor limitePss
+            result <- gerarCarona hora date destinos motorista valor limitePss
             putStrLn result
 
 avaliarMotoristaCarona::Int->String->Int->IO()
@@ -103,10 +124,10 @@ desembarcarPassageiro idCarona idPassageiro = do
     putStrLn result
 
 -- TODO: alguma integração com notificação de motorista
-solicitarCaronaPassageiro::Int->String->String->String->IO()
+solicitarCaronaPassageiro::Int -> String -> String -> String -> IO String
 solicitarCaronaPassageiro idCarona idPassageiro origem destino = do
-    result <- solicitaParticiparCarona idCarona idPassageiro origem destino
-    putStrLn result
+    solicitaParticiparCarona idCarona idPassageiro origem destino
+
 
 mostrarTrechoViagemPassageiro::Int->String->IO()
 mostrarTrechoViagemPassageiro idCarona idPassageiro = do
