@@ -329,7 +329,7 @@ menuAceitarRecusarPassageiro motoristaRef = do
             if temEssePassageiro then do
                 aceitarOuRecusar <- inputBoolean "Você deseja aceitar ou recusar: "
                 response <- aceitarOuRecusarPassageiro pvId aceitarOuRecusar
-                insereNotificacaoPassageiro motorista (show pvId) cId response
+                insereNotificacaoPassageiro motorista (show pvId) cId (response ++ "na carona de Id:" ++ show cId)
                 putStrLn response
                 menuPrincipalCaronaMotorista motoristaRef
             else do

@@ -132,16 +132,16 @@ updateAvaliacaoViagem idCarona idPassageiro nota = do
         updateViagem viagem novaViagem
         return "Motorista avaliado com sucesso!"
 
-updateAceitaOuRecusaPassageiro :: Int -> Bool -> IO String
+updateAceitaOuRecusaPassageiro :: Int -> Bool -> IO()
 updateAceitaOuRecusaPassageiro pvId aceitaOuRecusa = do
     maybeViagem <- getViagemById [pvId]
     if null maybeViagem then
-        return "Esse passageiro não está presente em nenhuma carona!"
+        putStrLn "Esse passageiro não está presente em nenhuma carona!"
     else do
         let viagem = head maybeViagem
         let novaViagem = PassageiroViagem (pid viagem) (cId viagem) aceitaOuRecusa (caminho viagem) (avaliacaoMtrst viagem) (passageiroId viagem)
         updateViagem viagem novaViagem
-        return "Motorista avaliado com sucesso!"
+        putStr ""
 
 possuiVagasDisponiveis :: Carona -> [String] -> IO Bool
 possuiVagasDisponiveis carona caminho = do 
