@@ -67,7 +67,7 @@ insereNotificacaoPassageiro idMotorista idPassageiro idCarona conteudoCriar = do
                 csvData = encode [notificacao]
                 header = B8.pack "idNotificacao,idMotorista,idPassageiro,idCarona,conteudo\n"
                 final = BL.fromStrict header <> csvData
-            withFile csvPath WriteMode $ \handle -> do
+            withFile csvPathPassageiro WriteMode $ \handle -> do
                 BL.hPutStr handle final
             return notificacao
        else do

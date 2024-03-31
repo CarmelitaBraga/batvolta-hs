@@ -256,7 +256,7 @@ recusarOuAceitarPassageiro :: Int -> Bool -> IO String
 recusarOuAceitarPassageiro pvId aceitarOuRecusar = do
     updateAceitaOuRecusaPassageiro pvId aceitarOuRecusar
     if aceitarOuRecusar then
-        return "Passageiro aceito!"
+        return "Passageiro aceito"
     else do
         deleteViagemById pvId
         return "Passageiro recusado com sucesso!"
