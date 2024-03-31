@@ -5,7 +5,7 @@ module Src.CLI.MotoristaCLI where
 import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista, realizarLoginMotorista,carregaNotificacoes)
 import Src.Controller.ControllerCarona as CONTROLLER
 --Models
-import Src.Model.MotoristaModel(Motorista, getCpf)
+import Src.Model.MotoristaModel(Motorista (genero), getCpf)
 --Bibliotecas
 import System.IO
 import Data.IORef
@@ -13,6 +13,8 @@ import Control.Monad
 import Data.Maybe (fromMaybe)
 import Data.Char (isDigit)
 import qualified Src.Logic.CaronaLogic as CONTROLLER
+import Src.Schemas.Notificacao(insereNotificacaoPassageiro)
+import Src.Model.Carona (Carona(cid))
 
 
 -- Motorista Logado
@@ -108,7 +110,8 @@ menuCadastrarMotorista = do
     telefone <- inputString "Digite o telefone: "
     senha <- inputString "Digite a senha: "
     cnh <- inputString "Digite a CNH: "
-    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh
+    genero <- inputString "Digite o genero(Masculino ou Feminino)"
+    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh genero
     case resultado of
         Just motorista -> putStrLn "Motorista cadastrado com sucesso!"
         Nothing -> putStrLn "Erro ao cadastrar motorista."
@@ -195,7 +198,7 @@ menuPrincipalCaronaMotorista motoristaRef = do
     putStrLn "3 - Finalizar Carona"
     putStrLn "4 - Aceitar/Recusar passageiro"
     putStrLn "5 - Cancelar uma Carona"
-    putStrLn "6 - Visualizar uma Carona"
+    putStrLn "6 - Visualizar caronas"
     putStrLn "0 - Sair"
     opcao <- getLine
     case opcao of
@@ -311,6 +314,7 @@ menuAceitarRecusarPassageiro motoristaRef = do
             if temEssePassageiro then do
                 aceitarOuRecusar <- inputBoolean "Você deseja aceitar ou recusar: "
                 response <- aceitarOuRecusarPassageiro pvId aceitarOuRecusar
+                insereNotificacaoPassageiro motorista (show pvId) cId response
                 putStrLn response
                 menuPrincipalCaronaMotorista motoristaRef
             else do

@@ -6,7 +6,7 @@ import Src.Schemas.Notificacao (getBy,insereNotificacao)
 import Src.Model.NotificacaoModel (Notificacao)
 
 
-realizarCadastroMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
+realizarCadastroMotorista :: String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
 realizarCadastroMotorista = cadastrarMotoristaLogic
 
 cancelarCadastroMotorista :: String -> String -> IO (Maybe Motorista)

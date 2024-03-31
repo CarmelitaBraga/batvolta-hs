@@ -1,12 +1,12 @@
 module Src.Logic.MotoristaLogic where
 
-import Src.Model.MotoristaModel (Motorista, confereSenha)
+import Src.Model.MotoristaModel (Motorista (genero), confereSenha)
 import Src.Schemas.Motorista (cadastraMotorista, getBy, removerMotorista, atualizarMotorista)
 import Control.Monad (when)
-import Src.Util.Util(validarCPF, nullOrEmpty,validarEmail)
+import Src.Util.Util(validarCPF, nullOrEmpty,validarEmail,validarGenero)
 
-cadastrarMotoristaLogic :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
-cadastrarMotoristaLogic cpf cep nome email telefone senha cnh
+cadastrarMotoristaLogic :: String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
+cadastrarMotoristaLogic cpf cep nome email telefone senha cnh genero
     | validarCPF cpf = do
         putStrLn "CPF não atende aos requisitos"
         return Nothing
@@ -28,7 +28,10 @@ cadastrarMotoristaLogic cpf cep nome email telefone senha cnh
     | nullOrEmpty cnh = do
         putStrLn "CNH não pode ser vazio"
         return Nothing
-    | otherwise = cadastraMotorista cpf cep nome email telefone senha cnh
+    | validarGenero genero = do
+        putStrLn "O genero não é valido"
+        return Nothing
+    | otherwise = cadastraMotorista cpf cep nome email telefone senha cnh genero
 
 
 

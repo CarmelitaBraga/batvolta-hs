@@ -25,3 +25,5 @@ splitOn delim str =
         [] -> []
         (_:xs) -> splitOn delim xs
 
+validarGenero :: String -> Bool
+validarGenero genero = not (genero == "feminino" || genero == "masculino")
