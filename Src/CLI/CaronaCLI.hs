@@ -85,8 +85,13 @@ menuIniciarCarona motoristaRef = do
         putStrLn caronas
 
         cId <- inputInt "Digite o Id da carona: "
-        iniciarCarona <- CONTROLLER.inicializarCaronaStatus cId
-        putStrLn iniciarCarona
+        caronaPertenceMotorista <- CONTROLLER.checarCaronaDeMotorista cId motorista
+        if caronaPertenceMotorista
+            then do
+                iniciarCarona <- CONTROLLER.inicializarCaronaStatus cId
+                putStrLn iniciarCarona
+            else do
+                putStrLn "Carona não pertence a motorista!"
 
     else do
         putStrLn "Não existem caronas possíveis de se iniciar!"

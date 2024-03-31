@@ -27,7 +27,8 @@ module Src.Controller.ControllerCarona (
     cancelarCaronaPassageiro, -- Passageiro
     possuiCaronasOrigemDestinoController, -- Passageiro
     motoristaPossuiCaronas, -- Motorista
-    aceitarOuRecusarPassageiro
+    aceitarOuRecusarPassageiro,
+    checarCaronaDeMotorista
     ) where
 
 import Src.Logic.CaronaLogic
@@ -168,3 +169,8 @@ motoristaPossuiCaronas = motoristaPossuiCarona
 
 aceitarOuRecusarPassageiro :: Int -> Bool -> IO String
 aceitarOuRecusarPassageiro = recusarOuAceitarPassageiro
+
+checarCaronaDeMotorista::Int->String->IO Bool
+checarCaronaDeMotorista idCarona idMotorista = do
+    result <- caronaPertenceMotorista idCarona idMotorista
+    return result

@@ -217,7 +217,7 @@ menuCriarCarona :: MotoristaRef -> IO ()
 menuCriarCarona motoristaRef = do
     putStrLn "\nCriar uma Carona"
     hora <- inputString "Digite a hora (no formato HH:MM): "
-    date <- inputString "Digite a data (no formato DD/MM/AA): "
+    date <- inputString "Digite a data (no formato DD/MM/AAAA): "
     origem <- inputString "Digite a origem da viagem: "
     destinos <- pedirDestinos
     valor <- inputDouble "Digite o valor: "
@@ -239,8 +239,13 @@ menuCancelarCarona motoristaRef = do
         putStrLn caronas
 
         cId <- inputInt "Digite o Id da carona: "
-        deletar <- CONTROLLER.deletarCaronaPorId motorista cId
-        putStrLn deletar
+        caronaPertenceMotorista <- CONTROLLER.checarCaronaDeMotorista cId motorista
+        if caronaPertenceMotorista
+            then do
+                deletar <- CONTROLLER.deletarCaronaPorId motorista cId
+                putStrLn deletar
+            else do
+                putStrLn "Carona não pertence a motorista!"
     else do
         putStrLn "Não existem caronas possíveis de se cancelar!"
     menuPrincipalCaronaMotorista motoristaRef
@@ -267,8 +272,13 @@ menuIniciarCarona motoristaRef = do
         putStrLn caronas
 
         cId <- inputInt "Digite o Id da carona: "
-        deletar <- CONTROLLER.inicializarCaronaStatus cId
-        putStrLn deletar
+        caronaPertenceMotorista <- CONTROLLER.checarCaronaDeMotorista cId motorista
+        if caronaPertenceMotorista
+            then do
+                deletar <- CONTROLLER.inicializarCaronaStatus cId
+                putStrLn deletar
+            else do
+                putStrLn "Carona não pertence a motorista!"
 
     else do
         putStrLn "Não existem caronas possíveis de se iniciar!"
@@ -285,8 +295,13 @@ menuFinalizarCarona motoristaRef = do
         putStrLn caronas
 
         cId <- inputInt "Digite o Id da carona: "
-        deletar <- CONTROLLER.finalizarCaronaStatus cId
-        putStrLn deletar
+        caronaPertenceMotorista <- CONTROLLER.checarCaronaDeMotorista cId motorista
+        if caronaPertenceMotorista
+            then do
+                deletar <- CONTROLLER.finalizarCaronaStatus cId
+                putStrLn deletar
+            else do
+                putStrLn "Carona não pertence a motorista!"
     else do
         putStrLn "Não existem caronas possíveis de se finalizar!"
     menuPrincipalCaronaMotorista motoristaRef

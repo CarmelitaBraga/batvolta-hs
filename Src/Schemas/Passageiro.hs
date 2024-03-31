@@ -53,7 +53,7 @@ module Src.Schemas.Passageiro (
 
 
     csvFilePath :: FilePath
-    csvFilePath = "./Database/Passageiros.csv"
+    csvFilePath = "./database/Passageiros.csv"
 
     cadastraPassageiro :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
     cadastraPassageiro nome cpf email telefone cep senha = do

@@ -26,7 +26,8 @@ module Src.Logic.CaronaLogic (
     finalizarCarona,
     mudaLimitePassageirosCarona,
     motoristaPossuiCarona,
-    recusarOuAceitarPassageiro
+    recusarOuAceitarPassageiro,
+    caronaPertenceMotorista
     ) where
 
 import Src.Schemas.CaronaSchema
@@ -38,7 +39,6 @@ import Src.Util.Utils
 import Data.List (intercalate, find, elemIndex, elemIndices)
 import GHC.IO (unsafePerformIO)
 import System.Posix.Internals (puts)
-import GHC.Exts (reallyUnsafePtrEquality)
 import Control.Monad (filterM)
 import Debug.Trace
 import Src.Model.PassageiroViagem (PassageiroViagem(pid))
@@ -257,3 +257,11 @@ recusarOuAceitarPassageiro pvId aceitarOuRecusar = do
         return "Passageiro aceito com sucesso!"
     else do
         return "Passageiro recusado com sucesso!"
+
+caronaPertenceMotorista::Int->String->IO Bool
+caronaPertenceMotorista idCarona idMotorista = do
+    selectedCaronas <- getCaronaByColumn "motorista" idMotorista
+    let caronaMotorista = filter (\c -> cid c == idCarona) selectedCaronas
+    if null selectedCaronas || null caronaMotorista
+        then return False
+        else return True
