@@ -64,13 +64,13 @@ getViagemAttribute viagem attr
 retornaSubLista :: [String] -> String -> String -> [String]
 retornaSubLista [] _ _ = []
 retornaSubLista (h:t) comeco fim
-    | h == comeco = criaSubListaFim t fim [h]
+    | toLowerCase h == toLowerCase comeco = criaSubListaFim t fim [h]
     | otherwise = retornaSubLista t comeco fim
     where 
         criaSubListaFim :: [String] -> String -> [String] -> [String]
         criaSubListaFim [] _ _ = []
         criaSubListaFim (h:t) fim subLista
-            | h == fim = subLista ++ [h]
+            | toLowerCase h == toLowerCase fim = subLista ++ [h]
             | otherwise = criaSubListaFim t fim (subLista ++ [h])
 
 toLowerCase :: String -> String

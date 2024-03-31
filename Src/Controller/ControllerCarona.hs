@@ -153,3 +153,7 @@ getViagemSemAvaliacao :: String -> IO String
 getViagemSemAvaliacao cpf = do
     viagemToStr <- getCaronasSemAvaliacao cpf
     return $ unlines viagemToStr
+
+avaliarMotorista :: Int -> String -> Int -> IO String
+avaliarMotorista idCarona idPassageiro aval = do
+    avaliaMotorista idCarona idPassageiro aval

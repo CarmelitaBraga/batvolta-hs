@@ -26,14 +26,14 @@ import System.IO
 import GHC.IO.Handle (hClose)
 import qualified Data.Vector as V
 import Control.Monad (liftM3)
-
+import Src.Util.Utils (toLowerCase)
 
 csvPath :: FilePath
 csvPath = "./database/motorista.csv"
 
 
-cadastraMotorista :: String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
-cadastraMotorista cpf cep nome email telefone senha cnh genero = do
+cadastraMotorista :: String -> String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
+cadastraMotorista cpf cep nome email telefone senha cnh genero regiao = do
     motoristaCpfExist <- getBy "cpf" cpf
     case motoristaCpfExist of
         Just motorista -> do
@@ -52,7 +52,9 @@ cadastraMotorista cpf cep nome email telefone senha cnh genero = do
                             putStrLn "Já existe um motorista cadastrado com essa CNH"
                             return Nothing
                         Nothing -> do
-                            let novoMotorista = Motorista cpf cep nome email telefone senha cnh genero
+                            let generoAlterado = toLowerCase genero
+                                regiaoAlterada = toLowerCase regiao
+                                novoMotorista = Motorista cpf cep nome email telefone senha cnh generoAlterado regiaoAlterada
                             insereMotorista novoMotorista
                             return (Just novoMotorista)
 
@@ -64,7 +66,7 @@ insereMotorista motorista = do
     if isEmpty
         then do
             let csvData = encode [motorista]
-                header = B8.pack "cpf,cep,nome,email,telefone,senha,cnh,genero\n"
+                header = B8.pack "cpf,cep,nome,email,telefone,senha,cnh,genero,regiao\n"
                 final = BL.fromStrict header <> csvData
             withFile csvPath WriteMode $ \handle -> do
                 BL.hPutStr handle final
@@ -107,6 +109,7 @@ getBy coluna atributoDesejado = do
                 "senha" -> senha motorista
                 "cnh" -> cnh motorista
                 "genero" -> genero motorista
+                "regiao" -> regiao motorista
                 _ -> ""
 
 

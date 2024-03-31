@@ -3,7 +3,7 @@ module Src.Logic.PassageiroViagemLogic  where
 import Src.Model.PassageiroViagem
 import Src.Schemas.PassageiroViagemSchema
 import Src.Schemas.CaronaSchema
-import Src.Logic.CaronaLogic (existeRota, lugaresDisponiveis)
+import Src.Logic.CaronaLogic (lugaresDisponiveis)
 import Data.List (find, intercalate)
 import Src.Model.Carona (Carona(status, motorista))
 import Src.Schemas.Notificacao

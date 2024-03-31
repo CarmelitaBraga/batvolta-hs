@@ -20,11 +20,12 @@ module Src.Schemas.Passageiro (
     import qualified Data.Vector as V
     import Data.Csv (FromRecord(..), ToRecord(..), HasHeader(..), ToField, toRecord, decode, encode, record, toField, (.!))
     import Control.Monad (MonadPlus(mzero))
+    import Src.Util.Utils (toLowerCase)
     
-
     data Passageiro = Passageiro
         { nome :: String
         , cpf :: String
+        , genero :: String
         , email :: String
         , telefone :: String
         , cep :: String
@@ -35,28 +36,31 @@ module Src.Schemas.Passageiro (
         toRecord entry = record
             [ toField (nome entry)
             , toField (cpf entry)
+            , toField (genero entry)
             , toField (email entry)
             , toField (telefone entry)
             , toField (cep entry)
             , toField (senha entry)
             ]
+
     instance FromRecord Passageiro where
         parseRecord v
-            | length v == 6 = Passageiro
+            | length v == 7 = Passageiro
                 <$> v .! 0
                 <*> v .! 1
                 <*> v .! 2
                 <*> v .! 3
                 <*> v .! 4
                 <*> v .! 5
+                <*> v .! 6
             | otherwise = mzero
 
 
     csvFilePath :: FilePath
     csvFilePath = "./database/Passageiros.csv"
 
-    cadastraPassageiro :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
-    cadastraPassageiro nome cpf email telefone cep senha = do
+    cadastraPassageiro :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
+    cadastraPassageiro nome cpf genero email telefone cep senha= do
         passageiroExist <- getPassageiroByCpf cpf
         case passageiroExist of
             Just _ -> do
@@ -69,7 +73,8 @@ module Src.Schemas.Passageiro (
                         putStrLn "Email já cadastrado!"
                         return Nothing
                     Nothing -> do
-                        let passageiro = Passageiro nome cpf email telefone cep senha
+                        let generoAlterado = toLowerCase genero
+                        let passageiro = Passageiro nome cpf generoAlterado email telefone cep senha
                         savePassageiroCSV passageiro
                         return (Just passageiro)
 
@@ -125,7 +130,7 @@ module Src.Schemas.Passageiro (
         isEmpty <- checkIsEmpty
         if isEmpty then do
             let csvData = encode [passageiro]
-                header = BC.pack "nome,cpf,email,telefone,cep,senha\n"
+                header = BC.pack "nome,cpf,genero,email,telefone,cep,senha\n"
             withFile fileName WriteMode $ \arq -> do
                 B.hPutStr arq header
                 B.hPutStr arq csvData

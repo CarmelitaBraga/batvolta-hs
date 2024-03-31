@@ -5,7 +5,7 @@ module Src.CLI.MotoristaCLI where
 import Src.Controller.ControllerMotorista(realizarCadastroMotorista, cancelarCadastroMotorista, atualizarCadastroMotorista, visualizarInfoCadastroMotorista, realizarLoginMotorista,carregaNotificacoes)
 import Src.Controller.ControllerCarona as CONTROLLER
 --Models
-import Src.Model.MotoristaModel(Motorista (genero), getCpf)
+import Src.Model.MotoristaModel(Motorista (..), getCpf)
 --Bibliotecas
 import System.IO
 import Data.IORef
@@ -111,8 +111,9 @@ menuCadastrarMotorista = do
     telefone <- inputString "Digite o telefone: "
     senha <- inputString "Digite a senha: "
     cnh <- inputString "Digite a CNH: "
-    genero <- inputString "Digite o genero(Masculino ou Feminino)"
-    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh genero
+    regiao <- inputString "Digite a regiao: "
+    genero <- inputString "Digite o genero (M ou F): "
+    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh genero regiao
     case resultado of
         Just motorista -> putStrLn "Motorista cadastrado com sucesso!"
         Nothing -> putStrLn "Erro ao cadastrar motorista."

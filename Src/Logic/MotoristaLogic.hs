@@ -1,12 +1,12 @@
 module Src.Logic.MotoristaLogic where
 
-import Src.Model.MotoristaModel (Motorista (genero), confereSenha)
+import Src.Model.MotoristaModel (Motorista (genero, regiao), confereSenha)
 import Src.Schemas.Motorista (cadastraMotorista, getBy, removerMotorista, atualizarMotorista)
 import Control.Monad (when)
-import Src.Util.Util(validarCPF, nullOrEmpty,validarEmail,validarGenero)
+import Src.Util.Util(validarCPF, nullOrEmpty,validarEmail,validarGenero, validaRegiao)
 
-cadastrarMotoristaLogic :: String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
-cadastrarMotoristaLogic cpf cep nome email telefone senha cnh genero
+cadastrarMotoristaLogic :: String -> String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
+cadastrarMotoristaLogic cpf cep nome email telefone senha cnh genero regiao
     | validarCPF cpf = do
         putStrLn "CPF não atende aos requisitos"
         return Nothing
@@ -31,7 +31,10 @@ cadastrarMotoristaLogic cpf cep nome email telefone senha cnh genero
     | validarGenero genero = do
         putStrLn "O genero não é valido"
         return Nothing
-    | otherwise = cadastraMotorista cpf cep nome email telefone senha cnh genero
+    | validaRegiao regiao = do
+        putStrLn "A região não é valida"
+        return Nothing
+    | otherwise = cadastraMotorista cpf cep nome email telefone senha cnh genero regiao
 
 
 

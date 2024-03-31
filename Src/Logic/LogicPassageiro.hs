@@ -2,15 +2,18 @@ module Src.Logic.LogicPassageiro where
     
     import Src.Schemas.Passageiro (Passageiro , getPassageiroByCpf, getPassageiroByEmail, cadastraPassageiro, confereSenha, removePassageiroByCpf, editPassageiroCSV)
     import Control.Monad (when, Monad (return))
-    import Src.Util.Util(validarCPF, nullOrEmpty, validarEmail)
+    import Src.Util.Util(validarCPF, nullOrEmpty, validarEmail, validarGenero)
 
-    cadastraPassageiroLogic :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
-    cadastraPassageiroLogic nome cpf email telefone cep senha
+    cadastraPassageiroLogic :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
+    cadastraPassageiroLogic nome cpf genero email telefone cep senha
         | nullOrEmpty nome = do
             putStrLn "Nome não pode ser vazio"
             return Nothing
         | validarCPF cpf = do
             putStrLn "CPF não atende aos requisitos"
+            return Nothing
+        | validarGenero genero = do
+            putStrLn "Gênero deve ser masculino ou feminino"
             return Nothing
         | validarEmail email = do
             putStrLn "E-mail não atende aos requisitos"
@@ -24,7 +27,7 @@ module Src.Logic.LogicPassageiro where
         | nullOrEmpty senha = do
             putStrLn "Senha não pode ser vazio"
             return Nothing
-        | otherwise = cadastraPassageiro nome cpf email telefone cep senha
+        | otherwise = cadastraPassageiro nome cpf genero email telefone cep senha
 
     editPassageiroCSVLogic :: String -> String -> String -> String -> IO (Maybe Passageiro)
     editPassageiroCSVLogic cpf senhaPassada coluna novoValor

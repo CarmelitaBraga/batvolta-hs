@@ -5,7 +5,7 @@ module Src.Controller.ControllerPassageiro where
     import Src.Schemas.Notificacao (getBy)
     import Src.Model.NotificacaoModel (Notificacao)
 
-    realizarCadastroPassageiro :: String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
+    realizarCadastroPassageiro :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
     realizarCadastroPassageiro = cadastraPassageiroLogic
 
     cancelarCadastroPassageiro :: String -> String -> IO (Maybe Passageiro)

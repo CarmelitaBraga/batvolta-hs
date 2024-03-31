@@ -1,11 +1,12 @@
 module Src.Util.Util where
 
-import Data.Char (isDigit, digitToInt, intToDigit, isAlphaNum)
+import Data.Char (isDigit, digitToInt, intToDigit, isAlphaNum, toLower)
+
 import Text.Regex.Posix
 
 validarCPF :: String -> Bool
 validarCPF cpf
-    | length cpf /= 11 = True 
+    | length cpf /= 11 = True
     | not (all isDigit cpf) = True
     | otherwise = False
 
@@ -25,5 +26,14 @@ splitOn delim str =
         [] -> []
         (_:xs) -> splitOn delim xs
 
+generos :: [String]
+generos = ["f","m"]
+
 validarGenero :: String -> Bool
-validarGenero genero = not (genero == "feminino" || genero == "masculino")
+validarGenero genero = map toLower genero `notElem` generos
+
+regioesBrasil :: [String]
+regioesBrasil = ["norte", "nordeste", "centro-oeste", "sudeste", "sul"]
+
+validaRegiao :: String -> Bool
+validaRegiao regiao = map toLower regiao `notElem` regioesBrasil

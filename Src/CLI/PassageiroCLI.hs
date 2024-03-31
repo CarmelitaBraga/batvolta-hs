@@ -65,11 +65,12 @@ module Src.CLI.PassageiroCLI where
         putStrLn "\nCadastrar Passageiro"
         nome <- inputString "Digite o nome: "
         cpf <- inputString "Digite o CPF: "
+        genero <- inputString "Digite o gênero (f ou m): "
         email <- inputString "Digite o e-mail: "
         telefone <- inputString "Digite o telefone: "
         cep <- inputString "Digite o CEP: "
         senha <- inputString "Digite a senha: "
-        resultado <- realizarCadastroPassageiro nome cpf email telefone cep senha
+        resultado <- realizarCadastroPassageiro nome cpf genero email telefone cep senha
         case resultado of
             Just passageiro -> putStrLn "Passageiro cadastrado com sucesso!"
             Nothing -> putStrLn "Erro ao cadastrar passageiro."
@@ -163,7 +164,7 @@ module Src.CLI.PassageiroCLI where
             "3" -> menuMostrarCaronas passageiroRef
             "4" -> menuEmbarcarCaronas passageiroRef
             "5" -> menuDesembarcarCaronas passageiroRef
-           {-  "6" -> menuAvaliarMotorista passageiroRef -}
+            "6" -> menuAvaliarMotorista passageiroRef
             "0" -> menuOpcoesPassageiro passageiroRef
             _   -> do
                 putStrLn "Opção inválida!"
@@ -248,18 +249,18 @@ module Src.CLI.PassageiroCLI where
         embarcarPassageiro idCarona passageiroCpf
         menuPrincipalPassageiroCarona passageiroRef
     
- {-    menuAvaliarMotorista :: PassageiroRef -> IO()
+    menuAvaliarMotorista :: PassageiroRef -> IO()
     menuAvaliarMotorista passageiroRef = do
         passageiroMaybe <- readIORef passageiroRef
         let passageiroCpf = getCLICpf passageiroMaybe
         caronas <- getViagemSemAvaliacao passageiroCpf
-        print caronas
-        putStrLn "Digite o ID da carona que deseja avaliar:"
-        idCaronaAux <- getLine
-        --let idCarona = (read idCaronaAux :: Int)
-        putStrLn "Digite a avaliação do motorista:"
-        avaliacaoAux <- getLine
-        --let avaliacao = (read avaliacaoAux :: Int)
-        result <- avaliaMotorista idCarona passageiroCpf avaliacao
+        if caronas /= "" then do
+                putStrLn caronas
+                idCarona <- inputInt "Digite o ID da carona que deseja avaliar:"
+                avaliacao <- inputInt "Digite a avaliação do motorista:"
+                result <- avaliarMotorista idCarona passageiroCpf avaliacao
+                putStrLn result
+        else do
+                putStrLn "Nenhuma carona encontrada para avaliação!"
         menuPrincipalPassageiroCarona passageiroRef
- -}
+
