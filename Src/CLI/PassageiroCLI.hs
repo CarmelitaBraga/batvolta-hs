@@ -1,12 +1,12 @@
 module Src.CLI.PassageiroCLI where
 
     import System.IO
-    import Src.Schemas.Passageiro(Passageiro, getPassageiroByCpf, getCLICpf)  
+    import Src.Schemas.Passageiro(Passageiro, getPassageiroByCpf, getCLICpf)
     import Src.Controller.ControllerPassageiro(realizarCadastroPassageiro, cancelarCadastroPassageiro, atualizarCadastroPassageiro,visualizarInfoCadastroPassageiro,realizarLoginPassageiro, carregaNotificacoes)
     import Data.IORef
     import Control.Monad
     import Src.Controller.ControllerCarona as CONTROLLER
-    
+
     -- Passageiro
     type PassageiroRef = IORef (Maybe Passageiro)
 
@@ -29,15 +29,14 @@ module Src.CLI.PassageiroCLI where
         putStrLn "0 - Sair"
         opcao <- getLine
         case opcao of
-            "1" -> void $ menuCadastrarPassageiro
+            "1" -> void menuCadastrarPassageiro
             "2" -> do
-                passageiroRef <- newIORef Nothing               
+                passageiroRef <- newIORef Nothing
                 void $ menuRealizarLoginPassageiro passageiroRef
-            "0" -> do
-                putStrLn "Saindo..."
+            "0" -> putStrLn "Saindo..."
             _   -> do
                 putStrLn "Opção inválida!"
-                menuPrincipalPassageiro 
+                menuPrincipalPassageiro
 
     menuOpcoesPassageiro :: PassageiroRef -> IO ()
     menuOpcoesPassageiro passageiroRef = do
@@ -119,7 +118,7 @@ module Src.CLI.PassageiroCLI where
         putStrLn "Informações do passageiro: "
         print passageiro
         menuOpcoesPassageiro passageiroRef
-    
+
     menuRealizarLoginPassageiro :: PassageiroRef -> IO ()
     menuRealizarLoginPassageiro passageiroRef = do
         putStrLn "\nRealizar Login de Passageiro"
@@ -154,9 +153,9 @@ module Src.CLI.PassageiroCLI where
         putStrLn "3 - Ver minhas viagens"
         putStrLn "4 - Embarcar na Carona"
         putStrLn "5 - Desembarcar da Carona"
-        -- avaliarMotorista
-
+        putStrLn "6 - Avaliar Motorista"
         putStrLn "0 - Voltar"
+
         opcao <- getLine
         case opcao of
             "1" -> menuProcurarCarona passageiroRef
@@ -164,11 +163,11 @@ module Src.CLI.PassageiroCLI where
             "3" -> menuMostrarCaronas passageiroRef
             "4" -> menuEmbarcarCaronas passageiroRef
             "5" -> menuDesembarcarCaronas passageiroRef
-            "0" -> do
-                menuOpcoesPassageiro passageiroRef
+           {-  "6" -> menuAvaliarMotorista passageiroRef -}
+            "0" -> menuOpcoesPassageiro passageiroRef
             _   -> do
                 putStrLn "Opção inválida!"
-                menuPrincipalPassageiroCarona passageiroRef 
+                menuPrincipalPassageiroCarona passageiroRef
 
     menuProcurarCarona :: PassageiroRef -> IO ()
     menuProcurarCarona passageiroRef = do
@@ -183,7 +182,7 @@ module Src.CLI.PassageiroCLI where
             putStrLn caronas
 
             cId <- inputInt "Qual carona deseja solicitar (Digite o Id da carona) (Digite -1 para não escolher nenhuma): "
-            if cId == -1 then 
+            if cId == -1 then
                 menuPrincipalPassageiroCarona passageiroRef
             else do
                 maybeCaronaEscolhida <- CONTROLLER.solicitarCaronaPassageiro cId passageiroCpf origem destino
@@ -201,7 +200,7 @@ module Src.CLI.PassageiroCLI where
         caronas <- mostrarViagemPassageiro passageiroCpf
         putStrLn caronas
         cId <- inputInt "Qual carona deseja cancelar (Digite o Id da carona) (Digite -1 para não escolher nenhuma): "
-        if cId == -1 then 
+        if cId == -1 then
             menuPrincipalPassageiroCarona passageiroRef
         else do
             cancelarCaronaPassageiro cId passageiroCpf
@@ -230,7 +229,7 @@ module Src.CLI.PassageiroCLI where
             let idCarona = read idCaronaStr :: Int
             desembarcarPassageiro idCarona passageiroCpf
             menuPrincipalPassageiroCarona passageiroRef
-        else do 
+        else do
             putStrLn "Nenhuma carona disponivel para desembarcar"
             menuPrincipalPassageiroCarona passageiroRef
 
@@ -248,4 +247,19 @@ module Src.CLI.PassageiroCLI where
         let idCarona = read idCaronaStr :: Int
         embarcarPassageiro idCarona passageiroCpf
         menuPrincipalPassageiroCarona passageiroRef
-
+    
+ {-    menuAvaliarMotorista :: PassageiroRef -> IO()
+    menuAvaliarMotorista passageiroRef = do
+        passageiroMaybe <- readIORef passageiroRef
+        let passageiroCpf = getCLICpf passageiroMaybe
+        caronas <- getViagemSemAvaliacao passageiroCpf
+        print caronas
+        putStrLn "Digite o ID da carona que deseja avaliar:"
+        idCaronaAux <- getLine
+        --let idCarona = (read idCaronaAux :: Int)
+        putStrLn "Digite a avaliação do motorista:"
+        avaliacaoAux <- getLine
+        --let avaliacao = (read avaliacaoAux :: Int)
+        result <- avaliaMotorista idCarona passageiroCpf avaliacao
+        menuPrincipalPassageiroCarona passageiroRef
+ -}

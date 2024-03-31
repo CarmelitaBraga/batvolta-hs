@@ -9,6 +9,7 @@ main = do
     putStrLn "Escolha o tipo de usuário:"
     putStrLn "1 - Motorista"
     putStrLn "2 - Passageiro"
+    putStrLn "3 - Dashboard"
     putStrLn "0 - Sair"
     opcao <- getLine
     case opcao of

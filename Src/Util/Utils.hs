@@ -1,4 +1,4 @@
-module Src.Util.Utils (retornaSubLista, getCaronaAttribute, splitBy, validarData, validarHorario, stringToTimeOfDay, stringToDay, getViagemAttribute) where
+module Src.Util.Utils where
 
 import Src.Model.Carona
 import Src.Model.PassageiroViagem
@@ -9,6 +9,7 @@ import Data.Time.Calendar (Day)
 import Data.Time.Clock
 import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
+import Data.Char
 
 -- Função para converter String em TimeOfDay
 stringToTimeOfDay :: String -> TimeOfDay
@@ -22,8 +23,8 @@ validarHorario :: String -> Bool
 validarHorario horario = not (horario =~ "^([01]?[0-9]|2[0-3]):[0-5][0-9]$") :: Bool
 
 validarData :: String -> Bool
-validarData date = not (date =~ "^(0[1-9]|[12][0-9]|3[01])/(0[13578]|1[02])/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$" 
-                || date =~ "^(0[1-9]|[12][0-9]|30)/(0[469]|11)/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$" 
+validarData date = not (date =~ "^(0[1-9]|[12][0-9]|3[01])/(0[13578]|1[02])/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$"
+                || date =~ "^(0[1-9]|[12][0-9]|30)/(0[469]|11)/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$"
                 || date =~ "^(0[1-9]|1[0-9]|2[0-7])/02/((202[4-9])|20[3-9][0-9]|[2-9][1-9][0-9][0-9])$") :: Bool
 
 wordsWhen :: (Char -> Bool) -> String -> [String]
@@ -48,7 +49,7 @@ getCaronaAttribute carona attr
     | attr == "status" = show (status carona)
     | attr == "numPassageirosMaximos" = show (numPassageirosMaximos carona)
     | otherwise = error "Invalid attribute"
-    
+
 
 getViagemAttribute :: PassageiroViagem -> String -> String
 getViagemAttribute viagem attr
@@ -65,9 +66,12 @@ retornaSubLista [] _ _ = []
 retornaSubLista (h:t) comeco fim
     | h == comeco = criaSubListaFim t fim [h]
     | otherwise = retornaSubLista t comeco fim
+    where 
+        criaSubListaFim :: [String] -> String -> [String] -> [String]
+        criaSubListaFim [] _ _ = []
+        criaSubListaFim (h:t) fim subLista
+            | h == fim = subLista ++ [h]
+            | otherwise = criaSubListaFim t fim (subLista ++ [h])
 
-criaSubListaFim :: [String] -> String -> [String] -> [String]
-criaSubListaFim [] _ _ = []
-criaSubListaFim (h:t) fim subLista
-    | h == fim = subLista ++ [h]
-    | otherwise = criaSubListaFim t fim (subLista ++ [h])
+toLowerCase :: String -> String
+toLowerCase = map toLower

@@ -3,14 +3,12 @@
 module Src.Logic.CaronaLogic (
     gerarCarona,
     infoCarona,
-    infoPassageiroViagem,
     infoCaronaById,
     infoCaronaByPassageiro,
     infoCaronaByMotorista,
     infoCaronaNaoIniciadaByMotorista,
     infoCaronaEmAndamentoByMotorista,
     infoCaronaPassageirosViagemFalseByMotorista,
-    infoPassageiroViagemFalseByCarona,
     deletarCaronaPorId,
     adicionarPassageiro,
     removerPassageiro,
@@ -42,6 +40,7 @@ import GHC.IO (unsafePerformIO)
 import System.Posix.Internals (puts)
 import Control.Monad (filterM)
 import Debug.Trace
+import Data.Char
 
 infoCarona :: Int -> IO String
 infoCarona caronaId = do
@@ -57,20 +56,6 @@ infoCarona caronaId = do
             ", Valor: " ++ show valor ++
             ", Status: " ++ show status ++
             ", Limite de passageiros: " ++ show numPassageirosMaximos
-
-infoPassageiroViagem :: Int -> IO String
-infoPassageiroViagem passageiroviagemId = do
-    passageirosViagem <- getAllViagens
-    let maybePassageiroViagem = find (\p -> passageiroviagemId == pid p) passageirosViagem
-    case maybePassageiroViagem of
-        Nothing -> return "Passageiro viagem not found"
-        Just PassageiroViagem{..} -> return $
-            "Id: " ++ show pid ++
-            ", Carona Id: " ++ show cId ++
-            ", aceita: " ++ show aceita ++
-            ", caminho: [" ++ intercalate ", " caminho ++ "]" ++
-            ", Avaliação motorista: " ++ show avaliacaoMtrst ++
-            ", Passageiro Id: " ++ passageiroId
 
 infoCaronaByMotorista::String->IO [String]
 infoCaronaByMotorista mId = do
@@ -121,13 +106,6 @@ infoCaronaPassageirosViagemFalseByMotorista motorista = do
     selectedCaronas <- filterM possuiPassageiroViagemFalse caronasMotorista
     mapM (infoCarona . cid) selectedCaronas
 
-infoPassageiroViagemFalseByCarona :: Int -> IO [String]
-infoPassageiroViagemFalseByCarona carona = do
-    carona <- getCaronaById [carona]
-    selectedPassageiros <- getPassageirosViagemFalse (head carona)
-    mapM (infoPassageiroViagem . pid) selectedPassageiros
-
-
 gerarCarona :: String -> String -> [String] -> String -> Double -> Int -> IO String
 gerarCarona hora date destinos motorista valor numPassageirosMaximos = if validarHorario hora then
     return "Horário fora do padrão requisitado!"
@@ -138,25 +116,43 @@ else do
         criarCarona (stringToTimeOfDay hora) (stringToDay date) destinos motorista [] valor NaoIniciada numPassageirosMaximos
         return "Carona criada com sucesso!"
 
-lugaresDisponiveis::Carona->Bool
-lugaresDisponiveis carona =
-    if null (passageiros carona)
-        then numPassageirosMaximos carona == 1
-        else numPassageirosMaximos carona > length (passageiros carona)
+-- Função principal para verificar a disponibilidade de lugares
+lugaresDisponiveis :: Carona -> IO Bool
+lugaresDisponiveis carona = do
+    let maximo = numPassageirosMaximos carona
+        passageirosAtuais = length (passageiros carona)
+        disponivel =
+            if maximo == 1
+                then if passageiros carona == [""] then
+                    return True
+                else
+                    return False
+            else
+                return (passageirosAtuais < maximo)
+    disponivel
 
 adicionarPassageiro :: Int -> String -> IO String
 adicionarPassageiro caronaId passageiro = do
     maybeCarona <- getCaronaById [caronaId]
-    if null maybeCarona then
-        return "Essa carona não existe!"
-    else do
-        let carona = head maybeCarona
-        if lugaresDisponiveis carona
-            then do
-                caronaAtualizada <- addPassageiro (head maybeCarona) passageiro
-                -- return (unsafePerformIO (infoCarona caronaId))
-                return "Passageiro adicionado com sucesso!"
-            else return "Carona sem vagas!"
+    case maybeCarona of
+        [] -> return "Essa carona não existe!"
+        [carona] -> do
+
+            if status carona == read "EmAndamento" then do
+                viagem <- getViagemByCaronaPassageiro caronaId passageiro
+                if aceita (head viagem) then do
+                    bool <- lugaresDisponiveis carona
+                    if bool then do
+                        caronaAtualizada <- addPassageiro carona passageiro
+                        return "Passageiro adicionado com sucesso!"
+
+                    else if numPassageirosMaximos carona == 1
+                        then return "Carona sem vagas!"
+                        else return "Carona já está cheia!"
+                else do
+                    return "Você não foi aceito nesta carona!"
+            else do
+                return "Carona nao iniciada ou ja finalizada!"
 
 removerPassageiro :: Int -> String -> IO String
 removerPassageiro caronaId passageiro = do

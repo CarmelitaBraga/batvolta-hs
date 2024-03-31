@@ -142,11 +142,14 @@ aceitarOuRecusarPassageiro = recusarOuAceitarPassageiro
 
 checarCaronaDeMotorista::Int->String->IO Bool
 checarCaronaDeMotorista idCarona idMotorista = do
-    result <- caronaPertenceMotorista idCarona idMotorista
-    return result
+    caronaPertenceMotorista idCarona idMotorista
 
 mostrarViagemPassageiro :: String-> IO String
 mostrarViagemPassageiro passageiroId = do
     viagemToStr <- infoViagemByPassageiro passageiroId
     return $ unlines viagemToStr
-    
+
+getViagemSemAvaliacao :: String -> IO String
+getViagemSemAvaliacao cpf = do
+    viagemToStr <- getCaronasSemAvaliacao cpf
+    return $ unlines viagemToStr

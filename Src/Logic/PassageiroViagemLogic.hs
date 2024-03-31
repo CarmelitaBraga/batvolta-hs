@@ -1,16 +1,9 @@
-module Src.Logic.PassageiroViagemLogic (
-    alterarStatusViagem,
-    avaliaMotorista,
-    solicitaParticiparCarona,
-    infoTrechoByCaronaPassageiro,
-    cancelaViagemPassageiro,
-    infoViagemByPassageiro
-) where
+module Src.Logic.PassageiroViagemLogic  where
 
 import Src.Model.PassageiroViagem
 import Src.Schemas.PassageiroViagemSchema
 import Src.Schemas.CaronaSchema
-import Src.Logic.CaronaLogic (existeRota, lugaresDisponiveis, infoPassageiroViagem)
+import Src.Logic.CaronaLogic (existeRota, lugaresDisponiveis)
 import Data.List (find, intercalate)
 import Src.Model.Carona (Carona(status, motorista))
 import Src.Schemas.Notificacao
@@ -27,7 +20,7 @@ infoViagem viagemId = do
             ", Carona Id: " ++ show (cId viagem) ++
             ", Aceita: " ++ show (aceita viagem) ++
             ", caminho: [" ++ intercalate ", " (caminho viagem) ++ "]" ++
-            ", Avaliação Motorista: " ++ show (avaliacaoMtrst viagem) ++
+            ", Avaliacao Motorista: " ++ show (avaliacaoMtrst viagem) ++
             ", Passageiro: " ++ passageiroId viagem
 
 alterarStatusViagem::String->Int->String->IO String
@@ -95,4 +88,16 @@ possuiPassageiroViagemFalse idCarona idPassageiroViagem = do
 infoViagemByPassageiro::String-> IO [String]
 infoViagemByPassageiro pId = do
     viagens <- getViagemByColumn "passageiroId" pId
-    mapM (infoPassageiroViagem . pid) viagens
+    mapM (infoViagem . pid) viagens
+
+infoPassageiroViagemFalseByCarona :: Int -> IO [String]
+infoPassageiroViagemFalseByCarona carona = do
+    carona <- getCaronaById [carona]
+    selectedPassageiros <- getPassageirosViagemFalse (head carona)
+    mapM (infoViagem . pid) selectedPassageiros
+    
+getCaronasSemAvaliacao :: String -> IO [String]
+getCaronasSemAvaliacao cpf = do
+    viagens <- getViagemByColumn "avaliacao" "0"
+    let filtrados = filter(\v -> passageiroId v == cpf) viagens
+    mapM (infoViagem . pid) filtrados
