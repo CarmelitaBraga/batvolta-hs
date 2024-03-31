@@ -1,12 +1,13 @@
 module Src.Schemas.CaronaSchema (
-    criarCarona, 
-    deleteCaronaById, 
-    getCaronaById, 
-    getAllCaronas, 
-    getCaronaByDestino, 
-    getCaronaByColumn, 
+    criarCarona,
+    deleteCaronaById,
+    getCaronaById,
+    getOneCaronaById,
+    getAllCaronas,
+    getCaronaByDestino,
+    getCaronaByColumn,
     getCaminho,
-    addPassageiro, 
+    addPassageiro,
     rmPassageiro,
     getCaronaByOrigem,
     getCaronaByMotoristaEStatus,
@@ -15,8 +16,6 @@ module Src.Schemas.CaronaSchema (
     updateStatusCarona,
     updateLimitePassageirosCarona
 ) where
-
-import Debug.Trace (traceShow)
 import Data.Time.Calendar (Day)
 import Data.Time.LocalTime (TimeOfDay)
 import Data.Time.Format
@@ -27,7 +26,6 @@ import qualified Data.ByteString.Lazy as BL
 import Data.List.Split (splitOn)
 import Src.Util.CsvHandler as Csv
 import GHC.IO (unsafePerformIO)
-import Debug.Trace (traceShow)
 import Src.Util.Utils (retornaSubLista, getCaronaAttribute, getViagemAttribute)
 import Src.Model.Carona
 import Src.Model.PassageiroViagem
@@ -49,7 +47,7 @@ instance ToField StatusCarona where
       NaoIniciada -> toField ("NaoIniciada" :: String)
       EmAndamento -> toField ("EmAndamento" :: String)
       Finalizada -> toField ("Finalizada" :: String)
-            
+
 -- Definição do estado do contador para IDs de carona
 type CounterState = Int
 
@@ -90,6 +88,14 @@ getCaronaById targets = do
   let result = filter (\u -> cid u `elem` targets) caronasList
   return result
 
+getOneCaronaById :: Int -> IO (Maybe Carona)
+getOneCaronaById caronaId = do
+    caronasList <- Csv.get strToCarona caronaCsvPath
+    let usuarioEncontrado = filter (\u -> cid u == caronaId) caronasList
+    case usuarioEncontrado of
+        [u] -> return (Just u)
+        _ -> return Nothing
+
 getCaronaByColumn :: String -> String -> IO [Carona]
 getCaronaByColumn att value = do
     caronas <- getAllCaronas
@@ -102,7 +108,7 @@ getCaronaByColumn att value = do
 getCaronaByMotoristaEStatus :: String -> String -> IO [Carona]
 getCaronaByMotoristaEStatus motorista statusBuscado = do
     caronasMotorista <- getCaronaByColumn "motorista" motorista
-    let selectedCaronas = filter (\c -> (read statusBuscado) == status c) caronasMotorista
+    let selectedCaronas = filter (\c -> read statusBuscado == status c) caronasMotorista
     return selectedCaronas
 
 deleteCaronaById :: Int -> IO ()
@@ -145,9 +151,9 @@ addPassageiro carona passageiro = do
     let novosPassageiros = case passageiros carona of
                             [""] -> [passageiro]
                             _ -> passageiros carona ++ [passageiro]
-    
+
         caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (destinos carona) (motorista carona) novosPassageiros (valor carona) (status carona) (numPassageirosMaximos carona)
-    
+
     updateCarona carona caronaAtualizada
     return caronaAtualizada
 
@@ -155,16 +161,16 @@ rmPassageiro :: Carona -> String -> IO Carona
 rmPassageiro carona passageiro = do
     let passageirosCarona = passageiros carona
         novosPassageiros =  filter (/= passageiro) passageirosCarona
-    
+
         caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (destinos carona) (motorista carona) novosPassageiros (valor carona) (status carona) (numPassageirosMaximos carona)
-    
+
     updateCarona carona caronaAtualizada
     return caronaAtualizada
 
 getCaronaByOrigem::String->IO [Carona]
 getCaronaByOrigem orig = do
     allCaronas <- get parseCarona caronaCsvPath
-    let result = filter (\c -> (head (destinos c)) == orig) allCaronas
+    let result = filter (\c -> head (destinos c) == orig) allCaronas
     return result
 
 getCaronaByDestino::String->IO [Carona]
@@ -175,7 +181,7 @@ getCaronaByDestino dest = do
 
 -- Function to determine the new status
 determineStatus :: String -> StatusCarona -> StatusCarona
-determineStatus status oldStatus = 
+determineStatus status oldStatus =
     case status of
         "NaoIniciada" -> NaoIniciada
         "EmAndamento" -> EmAndamento
@@ -185,7 +191,7 @@ determineStatus status oldStatus =
 possuiCaronaByMotorista :: String -> IO Bool
 possuiCaronaByMotorista motorista = do
     caronas <- getCaronaByColumn "motorista" motorista
-    return (not (null caronas)) 
+    return (not (null caronas))
 
 possuiCaronaByMotoristaEStatus :: String -> String -> IO Bool
 possuiCaronaByMotoristaEStatus motorista statusStr = do
@@ -207,6 +213,6 @@ updateLimitePassageirosCarona carona novoLimitePss = do
     return novaCarona
 
 getCaminho :: Carona -> String -> String -> [String]
-getCaminho carona origem destino = do 
+getCaminho carona origem destino = do
    let caminho = destinos carona
    retornaSubLista caminho origem destino

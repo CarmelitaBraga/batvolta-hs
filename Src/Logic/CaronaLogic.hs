@@ -94,14 +94,15 @@ infoCaronaByPassageiro pId = do
 
 deletarCaronaPorId::String ->Int -> IO String
 deletarCaronaPorId mId caronaId = do
-    maybeCarona <- getCaronaById [caronaId]
-    if motorista (head maybeCarona) == mId then
-        if null maybeCarona then
-            return "Essa carona não existe!"
-        else do
-            deleteCaronaById caronaId
-            return "Carona cancelada com sucesso!"
-    else return "Essa carona não está disponivel"
+    maybeCarona <- getOneCaronaById caronaId
+    case maybeCarona of
+        Just carona -> do
+            if motorista carona == mId then do
+                deleteCaronaById caronaId
+                return "Carona cancelada com sucesso!"
+            else
+                return "Essa carona não está disponível para você"
+        Nothing -> return "Essa carona não existe!"
 
 infoCaronaNaoIniciadaByMotorista :: String -> IO [String]
 infoCaronaNaoIniciadaByMotorista motorista = do
@@ -254,7 +255,7 @@ recusarOuAceitarPassageiro :: Int -> Bool -> IO String
 recusarOuAceitarPassageiro pvId aceitarOuRecusar = do
     updateAceitaOuRecusaPassageiro pvId aceitarOuRecusar
     if aceitarOuRecusar then
-        return "Passageiro aceito com sucesso!"
+        return "Passageiro aceito!"
     else do
         return "Passageiro recusado com sucesso!"
 
@@ -265,3 +266,4 @@ caronaPertenceMotorista idCarona idMotorista = do
     if null selectedCaronas || null caronaMotorista
         then return False
         else return True
+        return "Passageiro recusado!"

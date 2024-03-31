@@ -16,12 +16,13 @@ data Motorista = Motorista{
     email :: String,
     telefone :: String,
     senha :: String,
-    cnh :: String
+    cnh :: String,
+    genero :: String
 } deriving(Eq)
 
 
 instance ToRecord Motorista where
-    toRecord (Motorista cpf cep nome email telefone senha cnh) = record
+    toRecord (Motorista cpf cep nome email telefone senha cnh genero) = record
         [ toField cpf
         , toField cep
         , toField nome
@@ -29,12 +30,13 @@ instance ToRecord Motorista where
         , toField telefone
         , toField senha
         , toField cnh
+        , toField genero
         ]
 
 
 instance FromRecord Motorista where
     parseRecord v
-        | length v == 7 = Motorista
+        | length v == 8 = Motorista
             <$> v .! 0
             <*> v .! 1
             <*> v .! 2
@@ -42,18 +44,20 @@ instance FromRecord Motorista where
             <*> v .! 4
             <*> v .! 5
             <*> v .! 6
+            <*> v .! 7
         | otherwise = mzero
 
 
 --Funciona como ToString d
 instance Show Motorista where
-    show (Motorista cpf cep nome email telefone senha cnh) =
+    show (Motorista cpf cep nome email telefone senha cnh genero) =
         "Motorista { CPF: " ++ cpf ++
         ", CEP: " ++ cep ++
         ", Nome: " ++ nome ++
         ", E-mail: " ++ email ++
         ", Telefone: " ++ telefone ++
         ", CNH: " ++ cnh ++
+        ", Genero: " ++ genero ++
         " }"
 
 confereSenha :: Motorista -> String -> Bool

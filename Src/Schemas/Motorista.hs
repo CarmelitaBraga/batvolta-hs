@@ -32,8 +32,8 @@ csvPath :: FilePath
 csvPath = "./database/motorista.csv"
 
 
-cadastraMotorista :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
-cadastraMotorista cpf cep nome email telefone senha cnh = do
+cadastraMotorista :: String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
+cadastraMotorista cpf cep nome email telefone senha cnh genero = do
     motoristaCpfExist <- getBy "cpf" cpf
     case motoristaCpfExist of
         Just motorista -> do
@@ -52,7 +52,7 @@ cadastraMotorista cpf cep nome email telefone senha cnh = do
                             putStrLn "Já existe um motorista cadastrado com essa CNH"
                             return Nothing
                         Nothing -> do
-                            let novoMotorista = Motorista cpf cep nome email telefone senha cnh
+                            let novoMotorista = Motorista cpf cep nome email telefone senha cnh genero
                             insereMotorista novoMotorista
                             return (Just novoMotorista)
 
@@ -64,7 +64,7 @@ insereMotorista motorista = do
     if isEmpty
         then do
             let csvData = encode [motorista]
-                header = B8.pack "cpf,cep,nome,email,telefone,senha,cnh\n"
+                header = B8.pack "cpf,cep,nome,email,telefone,senha,cnh,genero\n"
                 final = BL.fromStrict header <> csvData
             withFile csvPath WriteMode $ \handle -> do
                 BL.hPutStr handle final
@@ -106,6 +106,7 @@ getBy coluna atributoDesejado = do
                 "telefone" -> telefone motorista
                 "senha" -> senha motorista
                 "cnh" -> cnh motorista
+                "genero" -> genero motorista
                 _ -> ""
 
 
