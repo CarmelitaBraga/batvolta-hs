@@ -144,14 +144,15 @@ module Src.CLI.PassageiroCLI where
         mapM_ print notificacoes
         menuOpcoesPassageiro passageiroRef
 
+    --Menu Carona Passageiro
+
     menuPrincipalPassageiroCarona :: PassageiroRef -> IO ()
     menuPrincipalPassageiroCarona passageiroRef = do
         putStrLn "\nSelecione uma opção:"
-        putStrLn "1 - Procurar Carona"-- origem e destino
-
-        -- solicitar carona
-        -- cancelar solitação
-        -- pegarMinhasCaronas
+        putStrLn "1 - Procurar Carona"
+        putStrLn "2 - Cancelar Carona"
+        putStrLn "3 - Ver minhas viagens"
+        -- Minhas viagens
         -- embarcar 
         -- desemabarcar
         -- avaliarMotorista
@@ -160,6 +161,8 @@ module Src.CLI.PassageiroCLI where
         opcao <- getLine
         case opcao of
             "1" -> menuProcurarCarona passageiroRef
+            "2" -> menuCancelarCarona passageiroRef
+            "3" -> menuMostrarCaronas passageiroRef
             "0" -> do
                 menuOpcoesPassageiro passageiroRef
             _   -> do
@@ -170,8 +173,8 @@ module Src.CLI.PassageiroCLI where
     menuProcurarCarona passageiroRef = do
         passageiroMaybe <- readIORef passageiroRef
         let passageiroCpf = getCLICpf passageiroMaybe
-        origem <- inputString "De onde a carona deve partir? "
-        destino <- inputString "Onde a carona deve chegar? "
+        origem <- inputString "De onde a carona deve partir?(Digite sem caracteres especiais, exemplo: ´,~,...) "
+        destino <- inputString "Onde a carona deve chegar?(Digite sem caracteres especiais, exemplo: ´,~,...) "
         existeCaronas <- CONTROLLER.possuiCaronasOrigemDestinoController origem destino
 
         if existeCaronas then do
@@ -189,4 +192,26 @@ module Src.CLI.PassageiroCLI where
         else do
             putStrLn "Não existem caronas para essa origem e destino!"
             menuPrincipalPassageiroCarona passageiroRef
+
+    menuCancelarCarona :: PassageiroRef -> IO ()
+    menuCancelarCarona passageiroRef = do
+        passageiroMaybe <- readIORef passageiroRef
+        let passageiroCpf = getCLICpf passageiroMaybe
+        caronas <- mostrarViagemPassageiro passageiroCpf
+        putStrLn caronas
+        cId <- inputInt "Qual carona deseja cancelar (Digite o Id da carona) (Digite -1 para não escolher nenhuma): "
+        if cId == -1 then 
+            menuPrincipalPassageiroCarona passageiroRef
+        else do
+            cancelarCaronaPassageiro cId passageiroCpf
+            menuPrincipalPassageiroCarona passageiroRef
+
+
+    menuMostrarCaronas :: PassageiroRef -> IO ()
+    menuMostrarCaronas passageiroRef = do
+        passageiroMaybe <- readIORef passageiroRef
+        let passageiroCpf = getCLICpf passageiroMaybe
+        resultado <- mostrarViagemPassageiro passageiroCpf
+        putStrLn resultado
+        menuPrincipalPassageiroCarona passageiroRef
 

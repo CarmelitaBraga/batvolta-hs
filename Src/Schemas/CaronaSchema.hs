@@ -163,7 +163,6 @@ rmPassageiro carona passageiro = do
         novosPassageiros =  filter (/= passageiro) passageirosCarona
 
         caronaAtualizada = Carona (cid carona) (hora carona) (date carona) (destinos carona) (motorista carona) novosPassageiros (valor carona) (status carona) (numPassageirosMaximos carona)
-
     updateCarona carona caronaAtualizada
     return caronaAtualizada
 

@@ -258,7 +258,7 @@ pedirDestinos = menuPedirDestinos []
 
 menuPedirDestinos :: [String] -> IO [String]
 menuPedirDestinos destinos = do
-    maybeDestino <- inputString $ "Digite a " ++ show (length destinos + 1) ++ "ª cidade (aperte apenas enter para terminar de inserir destinos): "
+    maybeDestino <- inputString $ "Digite a " ++ show (length destinos + 1) ++ "ª cidade (aperte apenas enter para terminar de inserir destinos)(Digite sem caracteres especiais, exemplo: ´,~,...): "
     if null maybeDestino
         then return destinos
         else menuPedirDestinos (destinos ++ [maybeDestino])

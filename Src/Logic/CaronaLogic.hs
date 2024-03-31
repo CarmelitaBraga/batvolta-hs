@@ -3,6 +3,7 @@
 module Src.Logic.CaronaLogic (
     gerarCarona,
     infoCarona,
+    infoPassageiroViagem,
     infoCaronaById,
     infoCaronaByPassageiro,
     infoCaronaByMotorista,
@@ -66,7 +67,7 @@ infoPassageiroViagem passageiroviagemId = do
         Nothing -> return "Passageiro viagem not found"
         Just PassageiroViagem{..} -> return $
             "Id: " ++ show pid ++
-            ", Carona Id: " ++ show pid ++
+            ", Carona Id: " ++ show cId ++
             ", aceita: " ++ show aceita ++
             ", caminho: [" ++ intercalate ", " caminho ++ "]" ++
             ", Avaliação motorista: " ++ show avaliacaoMtrst ++
@@ -265,5 +266,4 @@ caronaPertenceMotorista idCarona idMotorista = do
     let caronaMotorista = filter (\c -> cid c == idCarona) selectedCaronas
     if null selectedCaronas || null caronaMotorista
         then return False
-        else return True
-        return "Passageiro recusado!"
+    else return True

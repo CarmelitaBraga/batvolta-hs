@@ -3,14 +3,18 @@ module Src.Logic.PassageiroViagemLogic (
     avaliaMotorista,
     solicitaParticiparCarona,
     infoTrechoByCaronaPassageiro,
-    cancelaViagemPassageiro
+    cancelaViagemPassageiro,
+    infoViagemByPassageiro
 ) where
 
 import Src.Model.PassageiroViagem
 import Src.Schemas.PassageiroViagemSchema
 import Src.Schemas.CaronaSchema
-import Src.Logic.CaronaLogic (existeRota, lugaresDisponiveis)
+import Src.Logic.CaronaLogic (existeRota, lugaresDisponiveis, infoPassageiroViagem)
 import Data.List (find, intercalate)
+import Src.Model.Carona (Carona(status, motorista))
+import Src.Schemas.Notificacao
+
 
 infoViagem :: Int -> IO String
 infoViagem viagemId = do
@@ -34,12 +38,11 @@ alterarStatusViagem idPassageiro idCarona resp = do
     else updateSolicitacaoViagem idCarona idPassageiro resp
 
 avaliaMotorista::Int->String->Int->IO String
-avaliaMotorista idCarona idPassageiro aval = do
-    if aval <= 0 || aval > 5 then
-        return "Valor invalido!"
-    else do
-        updateAvaliacaoViagem idCarona idPassageiro aval
-        return "Motorista avaliado com sucesso!"
+avaliaMotorista idCarona idPassageiro aval = if aval <= 0 || aval > 5 then
+    return "Valor invalido!"
+else do
+    updateAvaliacaoViagem idCarona idPassageiro aval
+    return "Motorista avaliado com sucesso!"
 
 solicitaParticiparCarona :: Int -> String -> String -> String -> IO String
 solicitaParticiparCarona idCarona idPassageiro origem destino = do
@@ -56,6 +59,8 @@ solicitaParticiparCarona idCarona idPassageiro origem destino = do
             if null rota
                 then return "Essa carona não possui essa rota!"
                 else do
+                    let mensagem = "O Passageiro: " ++ idPassageiro ++ " solicitou entrar na corrida de id: " ++ show idCarona
+                    insereNotificacao (motorista carona) idPassageiro idCarona mensagem
                     criarViagemPassageiro idCarona False (getCaminho carona origem destino) 0 idPassageiro
                     return "Registro de Passageiro em Carona criado com sucesso!"
 
@@ -67,22 +72,27 @@ infoTrechoByCaronaPassageiro idCarona idPassageiro = do
         else do
             let viagem = head maybeViagem
                 viagemId = pid viagem
-            info <- infoViagem viagemId
-            return info
+            infoViagem viagemId
 
 cancelaViagemPassageiro :: Int -> String -> IO String
 cancelaViagemPassageiro idCarona idPassageiro = do
     maybeViagem <- getViagemByCaronaPassageiro idCarona idPassageiro
-    if null maybeViagem
-        then return "Trecho de carona inexistente para o passageiro informado!"
-        else do
-            let viagem = head maybeViagem
-                viagemId = pid viagem
-            deleteViagemById viagemId
-            -- TODO: checar se a carona ja foi inicializada e se passageiro ta no carro
-            return "Carona cancelada com sucesso!"
+    case maybeViagem of
+        [] -> return "Trecho de carona inexistente para o passageiro informado!"
+        [viagem] -> do
+            let viagemId = pid viagem
+            if aceita viagem then
+                return "O passageiro ja foi aceito, não podera mais cancelar."
+            else do
+                deleteViagemById viagemId
+                return "Carona cancelada com sucesso!"
 
 possuiPassageiroViagemFalse :: Int -> Int -> IO Bool
 possuiPassageiroViagemFalse idCarona idPassageiroViagem = do
     passageiroViagem <- getViagemById [idPassageiroViagem]
     return (cId (head passageiroViagem) == idCarona)
+
+infoViagemByPassageiro::String-> IO [String]
+infoViagemByPassageiro pId = do
+    viagens <- getViagemByColumn "passageiroId" pId
+    mapM (infoPassageiroViagem . pid) viagens

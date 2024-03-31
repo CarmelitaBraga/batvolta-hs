@@ -1,35 +1,4 @@
-module Src.Controller.ControllerCarona (
-    criarViagemPassageiro, --Motorista
-    mostrarCaronaPorId, -- ambos
-    mostrarCaronasPassageiro, -- Passageiro
-    mostrarCaronasMotorista, -- Motorista
-    deletarCaronaMotorista, -- Motorista
-    mostrarCaronasDisponiveisOrigemDestino, -- Passageiro
-    possuiCaronaNaoIniciadaController, -- Motorista
-    possuiCaronaEmAndamentoController, -- Motorista
-    possuiCaronasPassageirosViagemFalse,
-    possuiPassageiroViagemFalse,
-    possuiPassageiroViagem,
-    infoCaronasNaoIniciadas, -- Motorista
-    infoCaronasEmAndamento, -- Motorista
-    infoCaronaPassageirosViagemFalse, -- Passageiro viagem
-    infoPassageiroViagemFalse,
-    finalizarCaronaStatus, -- Motorista
-    inicializarCaronaStatus, -- Motorista
-    responderSolicitacaoCarona, -- Motorista
-    criarCaronaMotorista, -- Motorista
-    avaliarMotoristaCarona, -- Passageiro
-    modificarLimitePassageiros, -- Motorista
-    embarcarPassageiro, -- Passageiro
-    desembarcarPassageiro, -- Passageiro
-    solicitarCaronaPassageiro, -- Passageiro
-    mostrarTrechoViagemPassageiro, -- Passageiro
-    cancelarCaronaPassageiro, -- Passageiro
-    possuiCaronasOrigemDestinoController, -- Passageiro
-    motoristaPossuiCaronas, -- Motorista
-    aceitarOuRecusarPassageiro,
-    checarCaronaDeMotorista
-    ) where
+module Src.Controller.ControllerCarona where
 
 import Src.Logic.CaronaLogic
 import Src.Logic.PassageiroViagemLogic
@@ -39,6 +8,7 @@ import Control.Exception (catch)
 import Data.Bool (Bool)
 import Data.List (intercalate)
 import Src.Schemas.PassageiroViagemSchema (criarViagemPassageiro)
+import Src.Model.PassageiroViagem (PassageiroViagem(passageiroId), viagemToStr)
 
 mostrarCaronasPassageiro::String -> IO String
 mostrarCaronasPassageiro pId = do
@@ -174,3 +144,9 @@ checarCaronaDeMotorista::Int->String->IO Bool
 checarCaronaDeMotorista idCarona idMotorista = do
     result <- caronaPertenceMotorista idCarona idMotorista
     return result
+
+mostrarViagemPassageiro :: String-> IO String
+mostrarViagemPassageiro passageiroId = do
+    viagemToStr <- infoViagemByPassageiro passageiroId
+    return $ unlines viagemToStr
+    
