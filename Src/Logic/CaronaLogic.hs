@@ -42,7 +42,6 @@ import GHC.IO (unsafePerformIO)
 import System.Posix.Internals (puts)
 import Control.Monad (filterM)
 import Debug.Trace
-import Src.Model.PassageiroViagem (PassageiroViagem(pid))
 
 infoCarona :: Int -> IO String
 infoCarona caronaId = do
@@ -71,7 +70,7 @@ infoPassageiroViagem passageiroviagemId = do
             ", aceita: " ++ show aceita ++
             ", caminho: [" ++ intercalate ", " caminho ++ "]" ++
             ", Avaliação motorista: " ++ show avaliacaoMtrst ++
-            ", Passageiro Id: " ++ passageiroId 
+            ", Passageiro Id: " ++ passageiroId
 
 infoCaronaByMotorista::String->IO [String]
 infoCaronaByMotorista mId = do
@@ -91,7 +90,8 @@ infoCaronaByDestino dest = do
 infoCaronaByPassageiro::String->IO [String]
 infoCaronaByPassageiro pId = do
     selectedCaronas <- getCaronaByColumn "passageiros" pId
-    mapM (infoCarona . cid) selectedCaronas
+    if null selectedCaronas then return [""]
+    else mapM (infoCarona . cid) selectedCaronas
 
 deletarCaronaPorId::String ->Int -> IO String
 deletarCaronaPorId mId caronaId = do
@@ -140,7 +140,9 @@ else do
 
 lugaresDisponiveis::Carona->Bool
 lugaresDisponiveis carona =
-    numPassageirosMaximos carona > length (passageiros carona)
+    if null (passageiros carona)
+        then numPassageirosMaximos carona == 1
+        else numPassageirosMaximos carona > length (passageiros carona)
 
 adicionarPassageiro :: Int -> String -> IO String
 adicionarPassageiro caronaId passageiro = do
@@ -165,9 +167,7 @@ removerPassageiro caronaId passageiro = do
         carona <- rmPassageiro (head maybeCarona) passageiro
         if carona == head maybeCarona then
             return "Esse passageiro não está nessa carona!"
-        else do
-            -- return (unsafePerformIO (infoCarona caronaId))
-            return "Passageiro removido com sucesso!"
+        else return "Passageiro removido com sucesso!"
 
 existeRota :: Carona -> String -> String -> Bool
 existeRota carona o d =

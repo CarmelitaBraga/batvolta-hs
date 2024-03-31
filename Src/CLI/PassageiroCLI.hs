@@ -152,9 +152,8 @@ module Src.CLI.PassageiroCLI where
         putStrLn "1 - Procurar Carona"
         putStrLn "2 - Cancelar Carona"
         putStrLn "3 - Ver minhas viagens"
-        -- Minhas viagens
-        -- embarcar 
-        -- desemabarcar
+        putStrLn "4 - Embarcar na Carona"
+        putStrLn "5 - Desembarcar da Carona"
         -- avaliarMotorista
 
         putStrLn "0 - Voltar"
@@ -163,6 +162,8 @@ module Src.CLI.PassageiroCLI where
             "1" -> menuProcurarCarona passageiroRef
             "2" -> menuCancelarCarona passageiroRef
             "3" -> menuMostrarCaronas passageiroRef
+            "4" -> menuEmbarcarCaronas passageiroRef
+            "5" -> menuDesembarcarCaronas passageiroRef
             "0" -> do
                 menuOpcoesPassageiro passageiroRef
             _   -> do
@@ -213,5 +214,38 @@ module Src.CLI.PassageiroCLI where
         let passageiroCpf = getCLICpf passageiroMaybe
         resultado <- mostrarViagemPassageiro passageiroCpf
         putStrLn resultado
+        menuPrincipalPassageiroCarona passageiroRef
+
+    menuDesembarcarCaronas :: PassageiroRef -> IO()
+    menuDesembarcarCaronas passageiroRef = do
+        passageiroMaybe <- readIORef passageiroRef
+        let passageiroCpf = getCLICpf passageiroMaybe
+
+        let passageiroCpf = getCLICpf passageiroMaybe
+        resultado <- mostrarCaronasPassageiro passageiroCpf
+        if resultado /= "\n" then do
+            print resultado
+            putStrLn "Digite o ID da carona:"
+            idCaronaStr <- getLine
+            let idCarona = read idCaronaStr :: Int
+            desembarcarPassageiro idCarona passageiroCpf
+            menuPrincipalPassageiroCarona passageiroRef
+        else do 
+            putStrLn "Nenhuma carona disponivel para desembarcar"
+            menuPrincipalPassageiroCarona passageiroRef
+
+    menuEmbarcarCaronas :: PassageiroRef -> IO()
+    menuEmbarcarCaronas passageiroRef = do
+        passageiroMaybe <- readIORef passageiroRef
+        let passageiroCpf = getCLICpf passageiroMaybe
+
+        putStrLn "Escolha a carona para embarcar"
+        resultado <- mostrarViagemPassageiro passageiroCpf
+        putStrLn resultado
+
+        putStrLn "Digite o ID da carona:"
+        idCaronaStr <- getLine
+        let idCarona = read idCaronaStr :: Int
+        embarcarPassageiro idCarona passageiroCpf
         menuPrincipalPassageiroCarona passageiroRef
 
