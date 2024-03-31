@@ -258,6 +258,7 @@ recusarOuAceitarPassageiro pvId aceitarOuRecusar = do
     if aceitarOuRecusar then
         return "Passageiro aceito!"
     else do
+        deleteViagemById pvId
         return "Passageiro recusado com sucesso!"
 
 caronaPertenceMotorista::Int->String->IO Bool
@@ -266,4 +267,4 @@ caronaPertenceMotorista idCarona idMotorista = do
     let caronaMotorista = filter (\c -> cid c == idCarona) selectedCaronas
     if null selectedCaronas || null caronaMotorista
         then return False
-    else return True
+        else return True

@@ -15,6 +15,7 @@ import Data.Char (isDigit)
 import qualified Src.Logic.CaronaLogic as CONTROLLER
 import Src.Schemas.Notificacao(insereNotificacaoPassageiro)
 import Src.Model.Carona (Carona(cid))
+import Data.Char (toLower)
 
 
 -- Motorista Logado
@@ -50,10 +51,10 @@ inputDouble prompt = do
 inputBoolean :: String -> IO Bool
 inputBoolean prompt = do
     putStrLn prompt
-    input <- getLine
-    if input == "aceitar"
+    input <- map toLower <$> getLine
+    if input `elem` ["aceitar", "aceito", "aceita", "sim", "s", "yes", "y"]
         then return True
-    else if input == "recusar"
+    else if input `elem` ["recusar", "recuso", "rejeitar", "rejeito", "não", "nao", "n", "no"]
         then return False
     else do
             putStrLn "Entrada inválida! Tente novamente."
@@ -328,7 +329,7 @@ menuAceitarRecusarPassageiro motoristaRef = do
             temEssePassageiro <- possuiPassageiroViagem cId pvId
             if temEssePassageiro then do
                 aceitarOuRecusar <- inputBoolean "Você deseja aceitar ou recusar: "
-                response <- aceitarOuRecusarPassageiro pvId aceitarOuRecusar
+                response <- aceitarOuRecusarPassageiro pvId aceitarOuRecusar 
                 insereNotificacaoPassageiro motorista (show pvId) cId response
                 putStrLn response
                 menuPrincipalCaronaMotorista motoristaRef
