@@ -6,3 +6,5 @@
 5,14:20:00,2024-06-21,Campina;Gramado;Sao Paulo,12345678910,,12.00,EmAndamento,1,0,
 8,14:20:00,2024-06-21,Campina;Gramado;Sao Paulo,12345678910,,12.00,EmAndamento,1,0,
 6,20:00:00,2025-02-20,Cam;York;New,12345678911,,20.00,Finalizada,2,5,
+7,12:48:00,2024-04-01,Fagundes;Minas;Gramado;Alagoas,11177711177,09876543210,58.99,EmAndamento,2,0,
+9,17:55:00,2024-04-02,Sergipe;Campina,11177711177,,24.00,NaoIniciada,1,0,
