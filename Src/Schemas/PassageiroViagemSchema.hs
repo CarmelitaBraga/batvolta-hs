@@ -12,7 +12,8 @@ module Src.Schemas.PassageiroViagemSchema (
     possuiVagasDisponiveis,
     possuiPassageiroViagemFalse,
     possuiViagemByCaronaAndId,
-    getViagemByCaronaPassageiro
+    getViagemByCaronaPassageiro,
+    getViagensByCarona
 ) where
 
 import Data.Time.Format
@@ -96,6 +97,11 @@ getViagemByCaronaPassageiro idCarona idPassageiro = do
     maybeViagensPss <- getViagemByColumn "passageiroId" idPassageiro
     let selectedViagens = filter (\c -> cId c == idCarona) maybeViagensPss
     return selectedViagens
+
+getViagensByCarona::Int->IO [PassageiroViagem]
+getViagensByCarona idCarona = do
+    maybeViagens <- getViagemByColumn "cid" (show idCarona)
+    return maybeViagens
 
 updateViagem :: PassageiroViagem->PassageiroViagem->IO PassageiroViagem
 updateViagem viagem novaViagem = do

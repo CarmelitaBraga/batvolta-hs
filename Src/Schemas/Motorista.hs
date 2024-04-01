@@ -1,11 +1,4 @@
-module Src.Schemas.Motorista (
-    cadastraMotorista,
-    getBy,
-    insereMotorista,
-    checkIsEmpty,
-    removerMotorista,
-    atualizarMotorista,
-) where
+module Src.Schemas.Motorista where
 
 
 import Data.Csv
@@ -111,7 +104,12 @@ getBy coluna atributoDesejado = do
                 "genero" -> genero motorista
                 "regiao" -> regiao motorista
                 _ -> ""
-
+ 
+getAllMotoristasByRegiao :: String -> IO [Motorista]
+getAllMotoristasByRegiao regiaoStr = do
+    motoristas <- carregarMotoristas csvPath
+    let motoristasFiltrados = filter (\motorista -> regiao motorista == regiaoStr) motoristas
+    return motoristasFiltrados
 
 checkIsEmpty :: FilePath -> IO Bool
 checkIsEmpty path = do
@@ -171,3 +169,17 @@ atualizarMotorista atributo coluna novoValor = do
 
 confereSenha :: Motorista -> String -> Bool
 confereSenha motorista senhaPassada = senhaPassada == senha motorista
+
+{- convertTupla :: (String, Float) -> IO (String, Float)
+convertTupla (cpf, avaliacao) = do
+    motoristaMaybe <- getBy "cpf" cpf
+    case motoristaMaybe of
+        Just motorista -> do
+            let nomeMotorista = nome motorista
+            pure (nomeMotorista, avaliacao)
+        Nothing -> do
+            putStrLn ("Motorista não encontrado para CPF: " ++ cpf)
+            pure ("Motorista não encontrado", avaliacao)
+
+convertLista :: [(String, Float)] -> IO [(String, Float)]
+convertLista avaliacoes = mapM convertTupla avaliacoes -}

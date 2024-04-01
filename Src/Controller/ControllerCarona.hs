@@ -158,14 +158,26 @@ avaliarMotorista :: Int -> String -> Int -> IO String
 avaliarMotorista idCarona idPassageiro aval = do
     avaliaMotorista idCarona idPassageiro aval
 
+avaliarCarona :: String -> Int -> Int -> IO String 
+avaliarCarona idMotorista idCarona aval = do
+    avaliaCarona idMotorista idCarona aval
+
 imprimirMotoristasPorRegiao::String->IO String
 imprimirMotoristasPorRegiao regiao = do
+    result <- getTopMotoristasByRegiao regiao
+    return $ unlines result
+
+imprimirMelhoresMotorista :: IO String
+imprimirMelhoresMotorista = do
+    melhores <- getMelhoresMotoristas
+    return $ unlines melhores
 
 imprimirDestinosComMaisVisitas :: IO String
-imprimirLugaresComMaisVisitas = do
+imprimirDestinosComMaisVisitas = do
     lugaresMaisVisitados <- getLugaresMaisVisitados
     return $ unlines lugaresMaisVisitados
 
-imprimirDirijoes :: IO[(String, Int)]
-imprimirDirijoes = motoristaMaisBemAvaliados
-
+caronasSemAvaliacao :: String -> IO String
+caronasSemAvaliacao idMotorista = do
+    caronas <- caronasSemAvaliacaoByMotorista idMotorista
+    return $ unlines caronas
