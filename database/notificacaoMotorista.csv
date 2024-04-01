@@ -6,3 +6,4 @@ idNotificacao,idMotorista,idPassageiro,idCarona,conteudo
 4,11122233345,11111111111,2,O Passageiro: 11111111111 solicitou entrar na corrida de id: 2
 5,12345678910,11111111111,8,O Passageiro: 11111111111 solicitou entrar na corrida de id: 8
 6,17764217432,13347179234,10,O Passageiro: 13347179234 solicitou entrar na corrida de id: 10
+7,11122233345,000000,11,O Passageiro: 000000 solicitou entrar na corrida de id: 11
