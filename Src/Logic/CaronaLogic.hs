@@ -19,6 +19,7 @@ import Debug.Trace
 import Data.Char
 import Data.List (sortBy)
 import Data.Ord (comparing)
+import Src.Logic.PassageiroViagemLogic (infoTrechoByCaronaPassageiro)
 
 pesoNumCaronas::Float
 pesoNumCaronas = 0.7
@@ -122,22 +123,25 @@ adicionarPassageiro caronaId passageiro = do
     case maybeCarona of
         [] -> return "Essa carona não existe!"
         [carona] -> do
+            teste <- infoTrechoByCaronaPassageiro caronaId passageiro
+            if teste /= "Trecho de carona inexistente para o passageiro informado!" then do
+                if status carona == read "EmAndamento" then do
+                    viagem <- getViagemByCaronaPassageiro caronaId passageiro
+                    if aceita (head viagem) then do
+                        bool <- lugaresDisponiveis carona
+                        if bool then do
+                            caronaAtualizada <- addPassageiro carona passageiro
+                            return "Passageiro adicionado com sucesso!"
 
-            if status carona == read "EmAndamento" then do
-                viagem <- getViagemByCaronaPassageiro caronaId passageiro
-                if aceita (head viagem) then do
-                    bool <- lugaresDisponiveis carona
-                    if bool then do
-                        caronaAtualizada <- addPassageiro carona passageiro
-                        return "Passageiro adicionado com sucesso!"
-
-                    else if numPassageirosMaximos carona == 1
-                        then return "Carona sem vagas!"
-                        else return "Carona já está cheia!"
+                        else if numPassageirosMaximos carona == 1
+                            then return "Carona sem vagas!"
+                            else return "Carona já está cheia!"
+                    else do
+                        return "Você não foi aceito nesta carona!"
                 else do
-                    return "Você não foi aceito nesta carona!"
-            else do
-                return "Carona nao iniciada ou ja finalizada!"
+                    return "Carona nao iniciada ou ja finalizada!"
+            else do 
+                return "Passageiro não está nessa carona."
 
 removerPassageiro :: Int -> String -> IO String
 removerPassageiro caronaId passageiro = do

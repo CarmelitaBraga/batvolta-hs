@@ -3,10 +3,8 @@ module Src.Logic.PassageiroViagemLogic  where
 import Src.Model.PassageiroViagem
 import Src.Schemas.PassageiroViagemSchema
 import Src.Schemas.CaronaSchema
-import Src.Logic.CaronaLogic (lugaresDisponiveis)
 import Data.List
 import Data.Function (on)
-import Data.List (sort)
 import Data.Ord (comparing)
 import Src.Model.Carona (Carona(status, motorista))
 import Src.Schemas.Notificacao
