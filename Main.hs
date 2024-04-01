@@ -1,5 +1,23 @@
 module Main where
-import Data.Csv
+
+import Src.CLI.MotoristaCLI(menuPrincipal)
+import Src.CLI.PassageiroCLI(menuPrincipalPassageiro)
+import Src.CLI.DashboardCLI(menuPrincipalDashboard)
 
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = do
+    putStrLn "Bem-vindo ao Batvolta!"
+    putStrLn "Escolha o tipo de usuário:"
+    putStrLn "1 - Motorista"
+    putStrLn "2 - Passageiro"
+    putStrLn "3 - Dashboard"
+    putStrLn "0 - Sair"
+    opcao <- getLine
+    case opcao of
+        "1" -> menuPrincipal
+        "2" -> menuPrincipalPassageiro
+        "3" -> menuPrincipalDashboard
+        "0" -> putStrLn "Saindo do sistema..."
+        _   -> do
+            putStrLn "Opção inválida!"
+            main
