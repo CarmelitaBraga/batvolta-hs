@@ -1,10 +1,4 @@
-module Src.Model.MotoristaModel(
-    Motorista(..),
-    confereSenha,
-    toRecord,
-    parseRecord,
-    getCpf
-) where
+module Src.Model.MotoristaModel where
 
 import Control.Monad (MonadPlus(mzero))
 import Data.Csv

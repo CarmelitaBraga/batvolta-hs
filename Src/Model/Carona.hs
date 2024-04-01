@@ -20,7 +20,8 @@ data Carona = Carona
     passageiros :: [String],
     valor :: Double,
     status :: StatusCarona,
-    numPassageirosMaximos :: Int
+    numPassageirosMaximos :: Int,
+    avaliacaoPassageiros :: Int
   }
   deriving (Show, Eq)
 
@@ -29,7 +30,7 @@ instance Read Carona where
 
 -- Function to convert a Carona to a string
 caronaToStr :: Carona -> String
-caronaToStr (Carona c h d dest m ps v st numps) =
+caronaToStr (Carona c h d dest m ps v st numps aval) =
   show c ++ "," ++
   show h ++ "," ++
   show d ++ "," ++
@@ -38,7 +39,8 @@ caronaToStr (Carona c h d dest m ps v st numps) =
   intercalate ";" ps ++ "," ++
   formatDecimal v ++ "," ++
   show st ++ "," ++
-  show numps ++ ","
+  show numps ++ "," ++
+  show aval ++ ","
   where
     formatDecimal :: Double -> String
     formatDecimal x = showFFloat (Just 2) x ""
@@ -48,7 +50,7 @@ strToCarona str =
   let cleanedStr = reverse $ dropWhile (== ',') $ reverse str
       parts = splitOn "," cleanedStr
   in case parts of
-    [c, h, d, dest, m, ps, v, st, numps] ->
+    [c, h, d, dest, m, ps, v, st, numps, aval] ->
       Carona
         { cid = read c,
           hora = read h,
@@ -58,6 +60,7 @@ strToCarona str =
           passageiros = splitOn ";" ps,
           valor = read v,
           status = read st,
-          numPassageirosMaximos = read numps
+          numPassageirosMaximos = read numps,
+          avaliacaoPassageiros = read aval
         }
     _ -> error "Invalid input format for Carona string"
