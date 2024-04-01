@@ -15,48 +15,10 @@ import Src.Schemas.Notificacao(insereNotificacaoPassageiro)
 import Src.Model.Carona (Carona(cid))
 import Data.Char (toLower)
 import Src.Util.Utils
+import Data.IORef 
 
 -- Motorista Logado
 type MotoristaRef = IORef (Maybe Motorista)
-
--- Funções auxiliares para interação com o usuário
-inputString :: String -> IO String
-inputString prompt = do
-    putStr prompt
-    hFlush stdout
-    getLine
-
-inputInt :: String -> IO Int
-inputInt prompt = do
-    putStrLn prompt
-    input <- getLine
-    if all isDigit input  -- Verifica se todos os caracteres da entrada são dígitos
-        then return (read input)  -- Converte a entrada para Int se for válida
-        else do
-            putStrLn "Entrada inválida! Tente novamente."
-            inputInt prompt
-
-inputDouble :: String -> IO Double
-inputDouble prompt = do
-    putStrLn prompt
-    input <- getLine
-    if all isDigit input || (not (null input) && length (filter (`elem` ".") input) == 1 && all (\c -> isDigit c || c == '.') input)
-        then return (read input)
-        else do
-            putStrLn "Entrada inválida! Tente novamente."
-            inputDouble prompt
-
-inputBoolean :: String -> IO Bool
-inputBoolean prompt = do
-    putStrLn prompt
-    input <- map toLower <$> getLine
-    if input `elem` ["aceitar", "aceito", "aceita", "sim", "s", "yes", "y"]
-        then return True
-    else if input `elem` ["recusar", "recuso", "rejeitar", "rejeito", "não", "nao", "n", "no"]
-        then return False
-    else do
-            putStrLn "Entrada inválida! Tente novamente."
-            inputBoolean prompt
             
 -- Implementação dos menus
 menuPrincipal :: IO ()
@@ -111,7 +73,7 @@ menuCadastrarMotorista = do
     cnh <- inputString "Digite a CNH: "
     regiao <- inputString "Digite a regiao: "
     genero <- inputString "Digite o gênero(F/M/NB): "
-    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh genero
+    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh genero regiao
     case resultado of
         Just motorista -> putStrLn "Motorista cadastrado com sucesso!"
         Nothing -> putStrLn "Erro ao cadastrar motorista."
@@ -199,6 +161,7 @@ menuPrincipalCaronaMotorista motoristaRef = do
     putStrLn "4 - Aceitar/Recusar passageiro"
     putStrLn "5 - Cancelar uma Carona"
     putStrLn "6 - Visualizar caronas"
+    putStrLn "7 - Avaliar carona finalizada"
     putStrLn "0 - Sair"
     opcao <- getLine
     case opcao of
@@ -208,6 +171,7 @@ menuPrincipalCaronaMotorista motoristaRef = do
         "4" -> menuAceitarRecusarPassageiro motoristaRef
         "5" -> menuCancelarCarona motoristaRef
         "6" -> menuVisualizarCarona motoristaRef
+        "7" -> menuAvaliarCarona motoristaRef
         "0" -> do
             putStrLn "Saindo..."
             menuOpcoesMotorista motoristaRef
@@ -348,10 +312,26 @@ menuVisualizarCarona motoristaRef = do
     let motorista = getCpf motoristaMaybe
     possuiCaronas <- motoristaPossuiCaronas motorista
     if possuiCaronas then do
-        putStrLn "Qual carona você deseja visualizar:"
+        putStrLn "Suas caronas disponiveis: "
         caronas <- CONTROLLER.mostrarCaronasMotorista motorista
         putStrLn caronas     
     else do
         putStrLn "Não existem caronas disponíveis para aceitar ou recusar passageiros!"
 
+    menuPrincipalCaronaMotorista motoristaRef
+
+menuAvaliarCarona :: MotoristaRef -> IO()
+menuAvaliarCarona motoristaRef = do
+    motoristaMaybe <- readIORef motoristaRef 
+    let motoristaCpf = getCpf motoristaMaybe
+    caronas <- caronasSemAvaliacao motoristaCpf
+    if not (null caronas) then do
+        putStrLn caronas
+        caronaId <- inputInt "Digite o Id da carona: "
+        avaliacao <- inputInt "Digite a avaliação"
+        resultado <- avaliarCarona motoristaCpf caronaId avaliacao
+        putStrLn resultado
+    else do
+        putStrLn "Não existem caronas disponíveis para avaliar!"
+    
     menuPrincipalCaronaMotorista motoristaRef

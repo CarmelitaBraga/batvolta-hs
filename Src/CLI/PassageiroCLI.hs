@@ -6,21 +6,10 @@ module Src.CLI.PassageiroCLI where
     import Data.IORef
     import Control.Monad
     import Src.Controller.ControllerCarona as CONTROLLER
-
+    import Src.Util.Utils
     -- Passageiro
     type PassageiroRef = IORef (Maybe Passageiro)
-
-    inputString :: String -> IO String
-    inputString prompt = do
-        putStr prompt
-        hFlush stdout
-        getLine
-
-    inputInt :: String -> IO Int
-    inputInt prompt = do
-        str <- inputString prompt
-        return (read str)
-
+    
     menuPrincipalPassageiro :: IO ()
     menuPrincipalPassageiro = do
         putStrLn "\nSelecione uma opção: "
