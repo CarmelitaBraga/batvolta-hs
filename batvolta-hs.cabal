@@ -44,7 +44,6 @@ executable batvolta-hs
       Src.Controller.ControllerMotorista
       Src.Controller.ControllerPassageiro
       Src.Controller.ControllerCarona
-      Src.Util.Util
       Src.Util.Utils
       Src.Util.CsvHandler
       Src.Util.ValidationCarona
