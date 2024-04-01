@@ -187,7 +187,7 @@ menuCriarCarona motoristaRef = do
     date <- inputString "Digite a data (no formato DD/MM/AAAA): "
     origem <- inputString "Digite a origem da viagem: "
     destinos <- pedirDestinos
-    valor <- inputDouble "Digite o valor: "
+    valor <- inputDouble "Digite o valor (use '.' para casa decimal): "
     numPassageirosMaximos <- inputInt "Digite a quantidade máximas de passageiros: "
     motoristaMaybe <- readIORef motoristaRef
     let motorista = getCpf motoristaMaybe
