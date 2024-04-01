@@ -4,7 +4,10 @@ import Src.Model.PassageiroViagem
 import Src.Schemas.PassageiroViagemSchema
 import Src.Schemas.CaronaSchema
 import Src.Logic.CaronaLogic (lugaresDisponiveis)
-import Data.List (find, intercalate)
+import Data.List
+import Data.Function (on)
+import Data.List (sort)
+import Data.Ord (comparing)
 import Src.Model.Carona (Carona(status, motorista))
 import Src.Schemas.Notificacao
 
@@ -103,7 +106,17 @@ getCaronasSemAvaliacao cpf = do
     mapM (infoViagem . pid) filtrados
 
 getLugaresMaisVisitados :: IO [String]
-getLugaresMaisVisitados = 
+getLugaresMaisVisitados = do
     viagens <- getAllViagens
-    destinosFi <- map ()delastr (caminho .)
-    '
+    let destinosFinais = map (\viagem -> last (caminho viagem)) viagens
+        contagemDeDestinos = contarOcorrencias destinosFinais
+        destinosMaisVisitados = retornaCincoMaiores contagemDeDestinos
+    return destinosMaisVisitados
+
+-- Função para contar as ocorrências de cada elemento em uma lista
+contarOcorrencias :: (Eq a) => [a] -> [(a, Int)]
+contarOcorrencias [] = []
+contarOcorrencias (x:xs) = (x, 1 + length (filter (== x) xs)) : contarOcorrencias (filter (/= x) xs)
+
+retornaCincoMaiores :: [(a, Int)] -> [a]
+retornaCincoMaiores tupla = map fst (take 5 $ sortBy (flip $ comparing snd) tupla)

@@ -1,39 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Src.Logic.CaronaLogic (
-    gerarCarona,
-    infoCarona,
-    infoCaronaById,
-    infoCaronaByPassageiro,
-    infoCaronaByMotorista,
-    infoCaronaNaoIniciadaByMotorista,
-    infoCaronaEmAndamentoByMotorista,
-    infoCaronaPassageirosViagemFalseByMotorista,
-    deletarCaronaPorId,
-    adicionarPassageiro,
-    removerPassageiro,
-    infoCaronaByDestino,
-    existeRota,
-    lugaresDisponiveis,
-    infoCaronaDisponivelOriDest,
-    possuiCaronaNaoIniciada,
-    possuiCaronaEmAndamento,
-    possuiCaronaOrigemDestino,
-    possuiPassageiroViagemFalseByCarona,
-    possuiPassageiroByCarona,
-    iniciarCarona,
-    finalizarCarona,
-    mudaLimitePassageirosCarona,
-    motoristaPossuiCarona,
-    recusarOuAceitarPassageiro,
-    caronaPertenceMotorista,
-    motoristaMaisBemAvaliados
-    ) where
+module Src.Logic.CaronaLogic where
 
 import Src.Schemas.CaronaSchema
 -- Retirar daqui posteriormente (pensar na comunicação entre Schemas)
 import Src.Schemas.PassageiroViagemSchema
 import Src.Model.Carona
+import Src.Schemas.Motorista
+import Src.Model.MotoristaModel
 import Src.Model.PassageiroViagem
 import Src.Util.Utils
 import Data.List (intercalate, find, elemIndex, elemIndices,sortOn, reverse)
@@ -42,7 +16,14 @@ import System.Posix.Internals (puts)
 import Control.Monad (filterM)
 import Debug.Trace
 import Data.Char
+import Data.List (sortBy)
+import Data.Ord (comparing)
 
+pesoNumCaronas::Float
+pesoNumCaronas = 0.7
+
+pesoAvalMotoristas::Float
+pesoAvalMotoristas = 0.3
 
 infoCarona :: Int -> IO String
 infoCarona caronaId = do
@@ -57,7 +38,8 @@ infoCarona caronaId = do
             ", Passageiros: [" ++ intercalate ", " passageiros ++ "]" ++
             ", Valor: " ++ show valor ++
             ", Status: " ++ show status ++
-            ", Limite de passageiros: " ++ show numPassageirosMaximos
+            ", Limite de passageiros: " ++ show numPassageirosMaximos ++
+            ", Avaliacao da Carona: " ++ show avaliacaoPassageiros
 
 infoCaronaByMotorista::String->IO [String]
 infoCaronaByMotorista mId = do
@@ -115,7 +97,7 @@ else do
     if validarData date then
         return "Data fora do padrão requisitado!"
     else do
-        criarCarona (stringToTimeOfDay hora) (stringToDay date) destinos motorista [] valor NaoIniciada numPassageirosMaximos
+        criarCarona (stringToTimeOfDay hora) (stringToDay date) destinos motorista [] valor NaoIniciada numPassageirosMaximos 0
         return "Carona criada com sucesso!"
 
 -- Função principal para verificar a disponibilidade de lugares
@@ -246,7 +228,6 @@ mudaLimitePassageirosCarona idCarona idMotorista novoLimite = do
                     updateLimitePassageirosCarona carona novoLimite
                     return "Carona atualizada com sucesso!"
 
-
 motoristaPossuiCarona :: String -> IO Bool
 motoristaPossuiCarona = possuiCaronaByMotorista
 
@@ -267,94 +248,83 @@ caronaPertenceMotorista idCarona idMotorista = do
         then return False
         else return True
 
-{- PassageirosMaisBemAvaliados :: IO[]
-PassageirosMaisBemAvaliados = do
-    viagens <- getAllViagens
-    --- caronas <- getAllCaronas
-    passageiroMaiorAvaliacao <- getCaronaByColumn 
- -}
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-combinarViagensCaronas :: [Viagem] -> [Carona] -> [(String, Int)]
-combinarViagensCaronas viagens caronas =
-    [(cid c, cId v) | v <- viagens, c <- caronas, cId v == cid c]
-
-motoristaMaisBemAvaliados :: IO[(String,Int)]
-motoristaMaisBemAvaliados = do
-    viagens <- getAllViagens
-    caronas <- getAllCaronas
-    let dadosCombinados = combinarViagensCaronas viagens caronas
-        motoristasComAvaliacoes = sortOn (negate . snd) dadosCombinados
-        top5Motoristas = take 5 motoristasComAvaliacoes
-    return top5Motoristas
+cpfToName :: String -> IO String
+cpfToName cpf = do
+    maybeMotorista <- getBy "cpf" cpf
+    case maybeMotorista of
+        Nothing -> return "Unknown Motorista"
+        Just motorista -> return (nome motorista)
+
+getTopMotoristasByRegiao :: String -> IO [String]
+getTopMotoristasByRegiao regiao = do
+    motoristasRegiao <- getAllMotoristasByRegiao regiao
+    motoristasAvaliacoes <- mapAvaliacoesMotoristas motoristasRegiao
+    topMotoristasRegiao <- takeAvaliationsDecrescent 3 motoristasAvaliacoes
+    mapM tupleToString topMotoristasRegiao
+
+tupleToString :: (String, Float) -> IO String
+tupleToString (cpf, avaliacao) = do
+    name <- cpfToName cpf
+    return $ name ++ ": " ++ show avaliacao
+
+joinCaronaViagemByMotorista :: String -> IO [PassageiroViagem]
+joinCaronaViagemByMotorista idMotorista = do
+    caronasByMotorista <- getCaronaByColumn "motorista" idMotorista
+    viagensMotorista <- mapM (getViagensByCarona . cid) caronasByMotorista
+    return (concat viagensMotorista)
+
+avaliacaoMotorista :: String -> IO Float
+avaliacaoMotorista idMotorista = do
+    viagensMotorista <- joinCaronaViagemByMotorista idMotorista
+    let viagensAvaliadas = filter (\a -> avaliacaoMtrst a /= 0) viagensMotorista
+        numViagens = fromIntegral $ length viagensAvaliadas
+        somatorioAvaliacoes = sum $ map avaliacaoMtrst viagensAvaliadas
+        mediaAvaliacao = if numViagens == 0 then fromIntegral 0 else fromIntegral somatorioAvaliacoes / numViagens
+    return mediaAvaliacao
+
+avaliaCarona :: String -> Int -> Int -> IO String
+avaliaCarona idMotorista idCarona aval = if aval < 1 || aval > 5 then 
+        return "Avaliação deve ser de 1 a 5."
+    else do
+        maybeCarona <- getCaronaById [idCarona]
+        if null maybeCarona then
+            return "Carona não encontrada"
+        else do
+            let carona = head maybeCarona
+            if (motorista carona) /= idMotorista then
+                return "Essa carona está indisponível!"
+            else if status carona /= Finalizada then
+                return "Essa carona não está finalizada!"
+                else do
+                    if avaliacaoPassageiros carona /= 0 then
+                        return "Essa carona não pode ser avaliada!"
+                    else do
+                        updateAvaliacaoCarona carona aval
+                        return "Carona avaliada com sucesso!"
+
+mapAvaliacoesMotoristas :: [Motorista] -> IO [(String, Float)]
+mapAvaliacoesMotoristas motoristas = do
+    let listaMotoristas = map cpf motoristas
+    result <- mapM avaliacaoMotorista listaMotoristas
+    return $ zip listaMotoristas result
+
+takeAvaliationsDecrescent :: Int -> [(String, Float)] -> IO [(String, Float)]
+takeAvaliationsDecrescent numAvaliacoes avaliacoesMotoristas = do
+    let sortedAvaliacoes = sortBy (comparing snd) avaliacoesMotoristas
+        reversedAvaliacoes = reverse sortedAvaliacoes
+        topAvaliacoes = take numAvaliacoes reversedAvaliacoes
+    return topAvaliacoes
+
+getMelhoresMotoristas :: IO [String]
+getMelhoresMotoristas = do 
+    motoristas <- carregarMotoristas "./database/motorista.csv"
+    avaliacoes <- mapAvaliacoesMotoristas motoristas
+    melhores <- takeAvaliationsDecrescent 5 avaliacoes
+    mapM tupleToString melhores
+
+caronasSemAvaliacaoByMotorista :: String -> IO [String]
+caronasSemAvaliacaoByMotorista idMotorista = do
+    caronasMotorista <- getCaronaByColumn "motorista" idMotorista
+    let caronasFinalizadas = filter (\c -> read "Finalizada" == status c) caronasMotorista
+        selectedCaronas = filter (\c -> avaliacaoPassageiros c == 0) caronasMotorista
+    mapM (infoCarona . cid) selectedCaronas
