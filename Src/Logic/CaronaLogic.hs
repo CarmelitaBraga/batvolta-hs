@@ -236,9 +236,9 @@ mudaLimitePassageirosCarona idCarona idMotorista novoLimite = do
 motoristaPossuiCarona :: String -> IO Bool
 motoristaPossuiCarona = possuiCaronaByMotorista
 
-recusarOuAceitarPassageiro :: Int -> Bool -> IO String
-recusarOuAceitarPassageiro pvId aceitarOuRecusar = do
-    updateAceitaOuRecusaPassageiro pvId aceitarOuRecusar
+recusarOuAceitarPassageiro :: String -> Int -> Bool -> IO String
+recusarOuAceitarPassageiro idMotorista pvId aceitarOuRecusar = do
+    updateAceitaOuRecusaPassageiro idMotorista pvId aceitarOuRecusar
     if aceitarOuRecusar then
         return "Passageiro aceito"
     else do

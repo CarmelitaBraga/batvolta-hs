@@ -1,3 +1,8 @@
 idNotificacao,idMotorista,idPassageiro,idCarona,conteudo
-0,11177711177,2,7,Passageiro aceitona carona de Id:7
+1,11177711177,2,7,Passageiro aceitona carona de Id:7
 2,11177711177,3,7,Passageiro aceitona carona de Id:7
+4,12345678910,4,0,Passageiro aceitona carona de Id:0
+4,12345678910,000000,0,Passageiro aceito na carona de Id: 0
+4,12345678910,4,0,Passageiro aceitona carona de Id:0
+6,12345678910,11111111111,8,Passageiro aceito na carona de Id: 8
+6,12345678910,1,8,Passageiro aceitona carona de Id:8

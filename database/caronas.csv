@@ -1,10 +1,10 @@
-0,14:20:00,2024-06-21,Parana;Sao Paulo;Rio,12345678910,,12.00,NaoIniciada,4,5,
-1,23:59:00,2024-05-02,Patos;Cancun;Ottawa;Quebec,11122233345,,250.00,EmAndamento,1,4,
-2,23:59:00,2024-05-02,Patos;Cancun;Ottawa;Quebec,11122233345,121212,50.00,EmAndamento,1,0,
-3,23:59:00,2024-05-02,Patos;Cancun;Ottawa;Quebec,11122233345,,100.00,Finalizada,1,0,
-4,23:59:00,2024-05-02,Ottawa;Quebec,11122233345,121212,25.99,NaoIniciada,2,0,
-5,14:20:00,2024-06-21,Campina;Gramado;Sao Paulo,12345678910,,12.00,EmAndamento,1,0,
-8,14:20:00,2024-06-21,Campina;Gramado;Sao Paulo,12345678910,,12.00,EmAndamento,1,0,
-6,20:00:00,2025-02-20,Cam;York;New,12345678911,,20.00,Finalizada,2,5,
-7,12:48:00,2024-04-01,Fagundes;Minas;Gramado;Alagoas,11177711177,09876543210,58.99,EmAndamento,2,0,
-9,17:55:00,2024-04-02,Sergipe;Campina,11177711177,,24.00,NaoIniciada,1,0,
+0,14:20:00,2024-06-21,Parana;Sao Paulo;Rio,12345678910,,12.00,NaoIniciada,4,5
+1,23:59:00,2024-05-02,Patos;Cancun;Ottawa;Quebec,11122233345,,250.00,EmAndamento,1,4
+2,23:59:00,2024-05-02,Patos;Cancun;Ottawa;Quebec,11122233345,,50.00,EmAndamento,1,0
+3,23:59:00,2024-05-02,Patos;Cancun;Ottawa;Quebec,11122233345,,100.00,Finalizada,1,0
+4,23:59:00,2024-05-02,Ottawa;Quebec,11122233345,121212,25.99,NaoIniciada,2,0
+5,14:20:00,2024-06-21,Campina;Gramado;Sao Paulo,12345678910,,12.00,Finalizada,1,3
+8,14:20:00,2024-06-21,Campina;Gramado;Sao Paulo,12345678910,,12.00,EmAndamento,1,0
+6,20:00:00,2025-02-20,Cam;York;New,12345678911,,20.00,Finalizada,2,5
+7,12:48:00,2024-04-01,Fagundes;Minas;Gramado;Alagoas,11177711177,09876543210,58.99,Finalizada,2,0
+9,17:55:00,2024-04-02,Sergipe;Campina,11177711177,,24.00,EmAndamento,1,0

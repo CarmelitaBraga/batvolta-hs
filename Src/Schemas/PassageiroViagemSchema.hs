@@ -2,6 +2,7 @@ module Src.Schemas.PassageiroViagemSchema where
 
 import Data.Time.Format
 import Data.Csv (ToRecord, ToField, toRecord, record, toField, encode)
+import Src.Schemas.Notificacao
 import System.IO (openFile, readFile, hClose, IOMode(AppendMode))
 import Data.Time
 import qualified Data.ByteString.Lazy as BL
@@ -16,7 +17,7 @@ import Data.Csv.Incremental (Parser(Fail))
 import Control.Monad (when)
 
 stringToBool :: String -> Bool
-stringToBool s 
+stringToBool s
    | b == "true"  = True
    | b == "false" = False
    | otherwise    = False
@@ -63,7 +64,7 @@ deleteViagemById :: Int -> IO ()
 deleteViagemById pidToDelete = do
     viagens <- getViagemById [pidToDelete]
     if null viagens
-        then putStrLn "Viagem inexistente!" 
+        then putStrLn "Viagem inexistente!"
     else do
         delete (\c -> pid c == pidToDelete) strToViagem viagemToStr viagemCsvPath
         putStrLn "Viagem deletada com sucesso!"
@@ -84,13 +85,11 @@ getViagemByCaronaPassageiro idCarona idPassageiro = do
 
 getViagensByCarona::Int->IO [PassageiroViagem]
 getViagensByCarona idCarona = do
-    maybeViagens <- getViagemByColumn "cid" (show idCarona)
-    return maybeViagens
+    getViagemByColumn "cid" (show idCarona)
 
 getViagensByPassageiro::String->IO [PassageiroViagem]
 getViagensByPassageiro cpf = do
-    maybeViagens <- getViagemByColumn "passageiroId" cpf
-    return maybeViagens
+    getViagemByColumn "passageiroId" cpf
 
 updateViagem :: PassageiroViagem->PassageiroViagem->IO PassageiroViagem
 updateViagem viagem novaViagem = do
@@ -127,8 +126,8 @@ updateAvaliacaoViagem idCarona idPassageiro nota = do
         updateViagem viagem novaViagem
         return "Motorista avaliado com sucesso!"
 
-updateAceitaOuRecusaPassageiro :: Int -> Bool -> IO()
-updateAceitaOuRecusaPassageiro pvId aceitaOuRecusa = do
+updateAceitaOuRecusaPassageiro :: String -> Int -> Bool -> IO()
+updateAceitaOuRecusaPassageiro idMotorista pvId aceitaOuRecusa = do
     maybeViagem <- getViagemById [pvId]
     if null maybeViagem then
         putStrLn "Esse passageiro não está presente em nenhuma carona!"
@@ -136,10 +135,15 @@ updateAceitaOuRecusaPassageiro pvId aceitaOuRecusa = do
         let viagem = head maybeViagem
         let novaViagem = PassageiroViagem (pid viagem) (cId viagem) aceitaOuRecusa (caminho viagem) (avaliacaoMtrst viagem) (passageiroId viagem)
         updateViagem viagem novaViagem
-        putStr ""
+        if aceitaOuRecusa then do
+            let mensagem = "Passageiro aceito na carona de Id: " ++ show (cId viagem)
+            insereNotificacaoPassageiro idMotorista (passageiroId viagem) (cId viagem) mensagem
+            putStr ""
+        else do 
+            putStr ""
 
 possuiVagasDisponiveis :: Carona -> [String] -> IO Bool
-possuiVagasDisponiveis carona caminho = do 
+possuiVagasDisponiveis carona caminho = do
     passageirosNoCaminho <- getPassageirosNoCaminho (cid carona) caminho
     return (length passageirosNoCaminho < numPassageirosMaximos carona)
 

@@ -40,7 +40,7 @@ caronaToStr (Carona c h d dest m ps v st numps aval) =
   formatDecimal v ++ "," ++
   show st ++ "," ++
   show numps ++ "," ++
-  show aval ++ ","
+  show aval
   where
     formatDecimal :: Double -> String
     formatDecimal x = showFFloat (Just 2) x ""

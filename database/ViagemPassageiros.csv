@@ -1,7 +1,8 @@
 0,2,False,Ottawa;Quebec,0,000000
 7,1,False,Patos;Cancun,5,121212
-1,5,True,Campina;Gramado,5,11111111111
 5,2,False,Paris;Gramado,1,121212
-6,3,True,Ottawa;Quebec,5,11111111111
 2,7,True,Fagundes;Minas;Gramado,0,09876543210
 3,7,True,Gramado;Alagoas,1,08579631425
+4,0,True,Parana;Sao Paulo;Rio,0,000000
+8,2,True,Patos;Cancun,0,11111111111
+1,8,True,Campina;Gramado;Sao Paulo,0,11111111111

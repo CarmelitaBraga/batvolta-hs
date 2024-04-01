@@ -123,11 +123,16 @@ inputInt :: String -> IO Int
 inputInt prompt = do
     putStrLn prompt
     input <- getLine
-    if all isDigit input  -- Verifica se todos os caracteres da entrada são dígitos
-        then return (read input)  -- Converte a entrada para Int se for válida
+    if isValidInt input
+        then return (read input)
         else do
             putStrLn "Entrada inválida! Tente novamente."
             inputInt prompt
+    where
+    isValidInt :: String -> Bool
+    isValidInt [] = False
+    isValidInt ('-':xs) = all isDigit xs
+    isValidInt xs = all isDigit xs
 
 inputDouble :: String -> IO Double
 inputDouble prompt = do

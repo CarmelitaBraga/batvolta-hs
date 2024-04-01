@@ -132,7 +132,7 @@ cancelarCaronaPassageiro idCarona idPassageiro = do
 motoristaPossuiCaronas :: String -> IO Bool
 motoristaPossuiCaronas = motoristaPossuiCarona
 
-aceitarOuRecusarPassageiro :: Int -> Bool -> IO String
+aceitarOuRecusarPassageiro :: String -> Int -> Bool -> IO String
 aceitarOuRecusarPassageiro = recusarOuAceitarPassageiro
 
 checarCaronaDeMotorista::Int->String->IO Bool

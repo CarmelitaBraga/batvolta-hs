@@ -213,7 +213,7 @@ module Src.CLI.PassageiroCLI where
         let passageiroCpf = getCLICpf passageiroMaybe
         resultado <- mostrarCaronasPassageiro passageiroCpf
         if resultado /= "\n" then do
-            print resultado
+            putStrLn resultado
             putStrLn "Digite o ID da carona:"
             idCaronaStr <- getLine
             let idCarona = read idCaronaStr :: Int
