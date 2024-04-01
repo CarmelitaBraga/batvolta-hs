@@ -1,5 +1,4 @@
-nome,cpf,genero,email,telefone,cep,senha
 filipe,11111111111,m,filipe@gmail.com,1232323232,7688788,123
 Andre,121212,f,deco@gmail.com,111,555,123
-Luc,000000,f,luc@gmail.com,158,333,123
-filipe,66666666666,m,fil@gmail.com,123456,321313131,123
+Luc,000000,NB,luc@gmail.com,158,333,000
+CAS,09876543210,f,a@gmail.com,987323333,6868668,123
