@@ -101,3 +101,9 @@ getCaronasSemAvaliacao cpf = do
     viagens <- getViagemByColumn "avaliacao" "0"
     let filtrados = filter(\v -> passageiroId v == cpf) viagens
     mapM (infoViagem . pid) filtrados
+
+getLugaresMaisVisitados :: IO [String]
+getLugaresMaisVisitados = 
+    viagens <- getAllViagens
+    destinosFi <- map ()delastr (caminho .)
+    '

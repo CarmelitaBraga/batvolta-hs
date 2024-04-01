@@ -34,9 +34,11 @@ executable batvolta-hs
       Src.Model.NotificacaoModel
       Src.Model.Carona
       Src.Model.PassageiroViagem
+      Src.Model.Dashboard
       Src.CLI.MotoristaCLI
       Src.CLI.PassageiroCLI
       Src.CLI.CaronaCLI
+      Src.CLI.DashboardCLI
       Src.Logic.MotoristaLogic 
       Src.Logic.LogicPassageiro
       Src.Logic.CaronaLogic

@@ -7,8 +7,6 @@ import Src.Controller.ControllerCarona as CONTROLLER
 --Models
 import Src.Model.MotoristaModel(Motorista (..), getCpf)
 --Bibliotecas
-import System.IO
-import Data.IORef
 import Control.Monad
 import Data.Maybe (fromMaybe)
 import Data.Char (isDigit)
@@ -16,7 +14,7 @@ import qualified Src.Logic.CaronaLogic as CONTROLLER
 import Src.Schemas.Notificacao(insereNotificacaoPassageiro)
 import Src.Model.Carona (Carona(cid))
 import Data.Char (toLower)
-
+import Src.Util.Utils
 
 -- Motorista Logado
 type MotoristaRef = IORef (Maybe Motorista)
@@ -112,8 +110,8 @@ menuCadastrarMotorista = do
     senha <- inputString "Digite a senha: "
     cnh <- inputString "Digite a CNH: "
     regiao <- inputString "Digite a regiao: "
-    genero <- inputString "Digite o genero (M ou F): "
-    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh genero regiao
+    genero <- inputString "Digite o gênero(F/M/NB): "
+    resultado <- realizarCadastroMotorista cpf cep nome email telefone senha cnh genero
     case resultado of
         Just motorista -> putStrLn "Motorista cadastrado com sucesso!"
         Nothing -> putStrLn "Erro ao cadastrar motorista."

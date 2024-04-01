@@ -2,6 +2,7 @@ module Main where
 
 import Src.CLI.MotoristaCLI(menuPrincipal)
 import Src.CLI.PassageiroCLI(menuPrincipalPassageiro)
+import Src.CLI.DashboardCLI(menuPrincipalDashboard)
 
 main :: IO ()
 main = do
@@ -15,6 +16,7 @@ main = do
     case opcao of
         "1" -> menuPrincipal
         "2" -> menuPrincipalPassageiro
+        "3" -> menuPrincipalDashboard
         "0" -> putStrLn "Saindo do sistema..."
         _   -> do
             putStrLn "Opção inválida!"

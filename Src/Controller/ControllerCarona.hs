@@ -157,3 +157,15 @@ getViagemSemAvaliacao cpf = do
 avaliarMotorista :: Int -> String -> Int -> IO String
 avaliarMotorista idCarona idPassageiro aval = do
     avaliaMotorista idCarona idPassageiro aval
+
+imprimirMotoristasPorRegiao::String->IO String
+imprimirMotoristasPorRegiao regiao = do
+
+imprimirDestinosComMaisVisitas :: IO String
+imprimirLugaresComMaisVisitas = do
+    lugaresMaisVisitados <- getLugaresMaisVisitados
+    return $ unlines lugaresMaisVisitados
+
+imprimirDirijoes :: IO[(String, Int)]
+imprimirDirijoes = motoristaMaisBemAvaliados
+

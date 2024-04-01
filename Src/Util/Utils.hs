@@ -10,6 +10,42 @@ import Data.Time.Clock
 import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
 import Data.Char
+import System.IO
+import Data.IORef
+
+validarCPF :: String -> Bool
+validarCPF cpf
+    | length cpf /= 11 = True
+    | not (all isDigit cpf) = True
+    | otherwise = False
+
+nullOrEmpty :: String -> Bool
+nullOrEmpty str = null (dropWhile (== ' ') str)
+
+-- Função para validar um email sem usar expressões regulares
+validarEmail :: String -> Bool
+validarEmail email = not (email =~ "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+
+-- Função auxiliar para dividir uma string em partes com base em um caractere
+splitOn :: Eq a => a -> [a] -> [[a]]
+splitOn _ [] = []
+splitOn delim str =
+    let (first, rest) = break (== delim) str
+    in first : case rest of
+        [] -> []
+        (_:xs) -> splitOn delim xs
+
+generos :: [String]
+generos = ["f","m","nb"]
+
+validarGenero :: String -> Bool
+validarGenero genero = map toLower genero `notElem` generos
+
+regioesBrasil :: [String]
+regioesBrasil = ["norte", "nordeste", "centro-oeste", "sudeste", "sul"]
+
+validaRegiao :: String -> Bool
+validaRegiao regiao = map toLower regiao `notElem` regioesBrasil
 
 -- Função para converter String em TimeOfDay
 stringToTimeOfDay :: String -> TimeOfDay
@@ -75,3 +111,42 @@ retornaSubLista (h:t) comeco fim
 
 toLowerCase :: String -> String
 toLowerCase = map toLower
+
+-- Funções auxiliares para interação com o usuário
+inputString :: String -> IO String
+inputString prompt = do
+    putStr prompt
+    hFlush stdout
+    getLine
+
+inputInt :: String -> IO Int
+inputInt prompt = do
+    putStrLn prompt
+    input <- getLine
+    if all isDigit input  -- Verifica se todos os caracteres da entrada são dígitos
+        then return (read input)  -- Converte a entrada para Int se for válida
+        else do
+            putStrLn "Entrada inválida! Tente novamente."
+            inputInt prompt
+
+inputDouble :: String -> IO Double
+inputDouble prompt = do
+    putStrLn prompt
+    input <- getLine
+    if all isDigit input || (not (null input) && length (filter (`elem` ".") input) == 1 && all (\c -> isDigit c || c == '.') input)
+        then return (read input)
+        else do
+            putStrLn "Entrada inválida! Tente novamente."
+            inputDouble prompt
+
+inputBoolean :: String -> IO Bool
+inputBoolean prompt = do
+    putStrLn prompt
+    input <- map toLower <$> getLine
+    if input `elem` ["aceitar", "aceito", "aceita", "sim", "s", "yes", "y"]
+        then return True
+    else if input `elem` ["recusar", "recuso", "rejeitar", "rejeito", "não", "nao", "n", "no"]
+        then return False
+    else do
+            putStrLn "Entrada inválida! Tente novamente."
+            inputBoolean prompt

@@ -26,7 +26,8 @@ module Src.Logic.CaronaLogic (
     mudaLimitePassageirosCarona,
     motoristaPossuiCarona,
     recusarOuAceitarPassageiro,
-    caronaPertenceMotorista
+    caronaPertenceMotorista,
+    motoristaMaisBemAvaliados
     ) where
 
 import Src.Schemas.CaronaSchema
@@ -35,12 +36,13 @@ import Src.Schemas.PassageiroViagemSchema
 import Src.Model.Carona
 import Src.Model.PassageiroViagem
 import Src.Util.Utils
-import Data.List (intercalate, find, elemIndex, elemIndices)
+import Data.List (intercalate, find, elemIndex, elemIndices,sortOn, reverse)
 import GHC.IO (unsafePerformIO)
 import System.Posix.Internals (puts)
 import Control.Monad (filterM)
 import Debug.Trace
 import Data.Char
+
 
 infoCarona :: Int -> IO String
 infoCarona caronaId = do
@@ -264,3 +266,95 @@ caronaPertenceMotorista idCarona idMotorista = do
     if null selectedCaronas || null caronaMotorista
         then return False
         else return True
+
+{- PassageirosMaisBemAvaliados :: IO[]
+PassageirosMaisBemAvaliados = do
+    viagens <- getAllViagens
+    --- caronas <- getAllCaronas
+    passageiroMaiorAvaliacao <- getCaronaByColumn 
+ -}
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+combinarViagensCaronas :: [Viagem] -> [Carona] -> [(String, Int)]
+combinarViagensCaronas viagens caronas =
+    [(cid c, cId v) | v <- viagens, c <- caronas, cId v == cid c]
+
+motoristaMaisBemAvaliados :: IO[(String,Int)]
+motoristaMaisBemAvaliados = do
+    viagens <- getAllViagens
+    caronas <- getAllCaronas
+    let dadosCombinados = combinarViagensCaronas viagens caronas
+        motoristasComAvaliacoes = sortOn (negate . snd) dadosCombinados
+        top5Motoristas = take 5 motoristasComAvaliacoes
+    return top5Motoristas
