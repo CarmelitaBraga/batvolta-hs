@@ -169,17 +169,3 @@ atualizarMotorista atributo coluna novoValor = do
 
 confereSenha :: Motorista -> String -> Bool
 confereSenha motorista senhaPassada = senhaPassada == senha motorista
-
-{- convertTupla :: (String, Float) -> IO (String, Float)
-convertTupla (cpf, avaliacao) = do
-    motoristaMaybe <- getBy "cpf" cpf
-    case motoristaMaybe of
-        Just motorista -> do
-            let nomeMotorista = nome motorista
-            pure (nomeMotorista, avaliacao)
-        Nothing -> do
-            putStrLn ("Motorista não encontrado para CPF: " ++ cpf)
-            pure ("Motorista não encontrado", avaliacao)
-
-convertLista :: [(String, Float)] -> IO [(String, Float)]
-convertLista avaliacoes = mapM convertTupla avaliacoes -}

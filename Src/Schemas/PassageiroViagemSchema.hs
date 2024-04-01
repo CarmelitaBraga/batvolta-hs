@@ -1,20 +1,4 @@
-module Src.Schemas.PassageiroViagemSchema (
-    criarViagemPassageiro, 
-    getAllViagens, 
-    getViagemById, 
-    deleteViagemById, 
-    getViagemByColumn,
-    getPassageirosViagemFalse,
-    updateViagem,
-    updateAceitaOuRecusaPassageiro,
-    updateSolicitacaoViagem,
-    updateAvaliacaoViagem,
-    possuiVagasDisponiveis,
-    possuiPassageiroViagemFalse,
-    possuiViagemByCaronaAndId,
-    getViagemByCaronaPassageiro,
-    getViagensByCarona
-) where
+module Src.Schemas.PassageiroViagemSchema where
 
 import Data.Time.Format
 import Data.Csv (ToRecord, ToField, toRecord, record, toField, encode)
@@ -101,6 +85,11 @@ getViagemByCaronaPassageiro idCarona idPassageiro = do
 getViagensByCarona::Int->IO [PassageiroViagem]
 getViagensByCarona idCarona = do
     maybeViagens <- getViagemByColumn "cid" (show idCarona)
+    return maybeViagens
+
+getViagensByPassageiro::String->IO [PassageiroViagem]
+getViagensByPassageiro cpf = do
+    maybeViagens <- getViagemByColumn "passageiroId" cpf
     return maybeViagens
 
 updateViagem :: PassageiroViagem->PassageiroViagem->IO PassageiroViagem

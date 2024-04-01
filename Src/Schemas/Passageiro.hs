@@ -1,14 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
-module Src.Schemas.Passageiro (
-    Passageiro(..)
-    , getPassageiroByCpf
-    , getPassageiroByEmail
-    , cadastraPassageiro
-    , confereSenha
-    , removePassageiroByCpf
-    , editPassageiroCSV
-    , getCLICpf) where
+module Src.Schemas.Passageiro where
 
     import Text.CSV
     import qualified Data.ByteString.Lazy as B
@@ -80,12 +72,14 @@ module Src.Schemas.Passageiro (
 
     carregarPassageiros :: IO [Passageiro]
     carregarPassageiros = do
-        csvData <- B.readFile csvFilePath
-        case decode NoHeader csvData of
-            Left err -> do
-                putStrLn $ "Erro ao ler o arquivo CSV: " ++ err
-                return []  -- Retorna uma lista vazia em caso de erro
-            Right passageiros -> return (V.toList passageiros)  -- Converte para lista
+        withFile csvFilePath ReadMode $ \handle -> do
+            csvData <- BC.hGetContents handle
+            case decode NoHeader csvData of
+                Left err -> do
+                    putStrLn $ "error: " ++ err
+                    return []
+                Right passageiro -> do
+                    return $ V.toList passageiro
 
     getPassageiroByCpf :: String -> IO (Maybe Passageiro)
     getPassageiroByCpf cpfBuscado = do
@@ -127,18 +121,9 @@ module Src.Schemas.Passageiro (
     savePassageiroCSV :: Passageiro -> IO ()
     savePassageiroCSV  passageiro = do
         let fileName = csvFilePath
-        isEmpty <- checkIsEmpty
-        if isEmpty then do
-            let csvData = encode [passageiro]
-                header = BC.pack "nome,cpf,genero,email,telefone,cep,senha\n"
-            withFile fileName WriteMode $ \arq -> do
-                B.hPutStr arq header
-                B.hPutStr arq csvData
-                putStrLn "Passageiro inserido com sucesso!"
-        else do
-            withFile fileName AppendMode $ \arq -> do
-                B.hPutStr arq $ encode [passageiro]
-                putStrLn "Passageiro inserido com sucesso!"
+        withFile fileName AppendMode $ \arq -> do
+            B.hPutStr arq $ encode [passageiro]
+            --putStrLn "Passageiro inserido com sucesso!"
 
     -- Busca por cpf e permite edição de cep, telefone e senha
     editPassageiroCSV :: String ->  String -> String -> IO (Maybe Passageiro)

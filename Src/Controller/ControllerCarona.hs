@@ -81,8 +81,6 @@ finalizarCaronaStatus  = finalizarCarona
 inicializarCaronaStatus::Int -> IO String
 inicializarCaronaStatus  = iniciarCarona
 
--- Função para aceitar ou negar solicitação de carona
--- resp aceita True e False
 responderSolicitacaoCarona::String->Int->String->IO()
 responderSolicitacaoCarona idPassageiro idCarona resp = do
     status <- alterarStatusViagem idPassageiro idCarona resp
@@ -107,7 +105,6 @@ modificarLimitePassageiros idCarona idMotorista novoLimite = do
     result <- mudaLimitePassageirosCarona idCarona idMotorista novoLimite
     putStrLn result
 
--- verificar se tem espaço
 embarcarPassageiro::Int->String->IO()
 embarcarPassageiro idCarona idPassageiro = do
     result <- adicionarPassageiro idCarona idPassageiro
@@ -118,11 +115,9 @@ desembarcarPassageiro idCarona idPassageiro = do
     result <- removerPassageiro idCarona idPassageiro
     putStrLn result
 
--- TODO: alguma integração com notificação de motorista
 solicitarCaronaPassageiro::Int -> String -> String -> String -> IO String
 solicitarCaronaPassageiro idCarona idPassageiro origem destino = do
     solicitaParticiparCarona idCarona idPassageiro origem destino
-
 
 mostrarTrechoViagemPassageiro::Int->String->IO()
 mostrarTrechoViagemPassageiro idCarona idPassageiro = do
@@ -176,6 +171,11 @@ imprimirDestinosComMaisVisitas :: IO String
 imprimirDestinosComMaisVisitas = do
     lugaresMaisVisitados <- getLugaresMaisVisitados
     return $ unlines lugaresMaisVisitados
+
+imprimirMelhoresPassageiros :: IO String
+imprimirMelhoresPassageiros = do
+    melhoresPassageiros <- getMelhoresPassageiros
+    return $ unlines melhoresPassageiros
 
 caronasSemAvaliacao :: String -> IO String
 caronasSemAvaliacao idMotorista = do
