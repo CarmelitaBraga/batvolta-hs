@@ -17,7 +17,7 @@ menuPrincipalDashboard = do
         case opcao of
             "1" -> imprimirMotoristasDirijoes
             "2" -> imprimirTopMotoristasPorRegiao
-            -- "3" -> putStrLn imprimirTopPassageiros
+            "3" -> imprimirTopPassageiros
             "4" -> imprimirDestinosMaisVisitados
             "0" -> putStrLn "Fim da interação!"
             _   -> do
@@ -31,10 +31,11 @@ imprimirDestinosMaisVisitados = do
     putStrLn result
     menuPrincipalDashboard
     
--- imprimirTopPassageiros::IO()
--- imprimirTopPassageiros = do
---     response <- imprimirTopPassageiros
---     return response
+imprimirTopPassageiros::IO()
+imprimirTopPassageiros = do
+    response <- imprimirMelhoresPassageiros
+    putStrLn response
+    menuPrincipalDashboard
 
 imprimirTopMotoristasPorRegiao:: IO()
 imprimirTopMotoristasPorRegiao = do

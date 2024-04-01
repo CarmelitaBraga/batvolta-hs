@@ -1,44 +1,44 @@
 module Src.Logic.LogicPassageiro where
     
-    import Src.Schemas.Passageiro (Passageiro , getPassageiroByCpf, getPassageiroByEmail, cadastraPassageiro, confereSenha, removePassageiroByCpf, editPassageiroCSV)
+    import Src.Schemas.Passageiro
     import Control.Monad (when, Monad (return))
-    import Src.Util.Util(validarCPF, nullOrEmpty, validarEmail, validarGenero)
+    import Src.Util.Utils
 
     cadastraPassageiroLogic :: String -> String -> String -> String -> String -> String -> String -> IO (Maybe Passageiro)
     cadastraPassageiroLogic nome cpf genero email telefone cep senha
         | nullOrEmpty nome = do
-            putStrLn "Nome não pode ser vazio"
+            putStrLn "Nome não pode ser vazio!"
             return Nothing
         | validarCPF cpf = do
-            putStrLn "CPF não atende aos requisitos"
+            putStrLn "CPF não atende aos requisitos!"
             return Nothing
         | validarGenero genero = do
-            putStrLn "Gênero deve ser masculino ou feminino"
+            putStrLn "Gênero deve ser masculino ou feminino!"
             return Nothing
         | validarEmail email = do
-            putStrLn "E-mail não atende aos requisitos"
+            putStrLn "E-mail não atende aos requisitos!"
             return Nothing
         | nullOrEmpty telefone = do
-            putStrLn "Telefone não pode ser vazio"
+            putStrLn "Telefone não pode ser vazio!"
             return Nothing
         | nullOrEmpty cep = do
-            putStrLn "CEP não pode ser vazio"
+            putStrLn "CEP não pode ser vazio!"
             return Nothing
         | nullOrEmpty senha = do
-            putStrLn "Senha não pode ser vazio"
+            putStrLn "Senha não pode ser vazio!"
             return Nothing
         | otherwise = cadastraPassageiro nome cpf genero email telefone cep senha
 
     editPassageiroCSVLogic :: String -> String -> String -> String -> IO (Maybe Passageiro)
     editPassageiroCSVLogic cpf senhaPassada coluna novoValor
         | validarCPF cpf = do
-            putStrLn "CPF não atende aos requisitos"
+            putStrLn "CPF não atende aos requisitos!"
             return Nothing
         | coluna `notElem` ["Telefone", "Cep", "Senha"] = do
-            putStrLn "Escolha uma coluna válida para editar: Telefone, Cep ou Senha"
+            putStrLn "Escolha uma coluna válida para editar: Telefone, Cep ou Senha."
             return Nothing
         | nullOrEmpty novoValor = do
-            putStrLn "O novo valor não pode ser vazio"
+            putStrLn "O novo valor não pode ser vazio!"
             return Nothing
         | otherwise = do
             resultado <- getPassageiroByCpf cpf
@@ -58,7 +58,7 @@ module Src.Logic.LogicPassageiro where
     removePassageiroByCpfLogic :: String -> String -> IO (Maybe Passageiro)
     removePassageiroByCpfLogic cpf senhaPassada
         | validarCPF cpf = do
-            putStrLn "CPF não atende aos requisitos"
+            putStrLn "CPF não atende aos requisitos!"
             return Nothing
         | otherwise = do
             resultado <- getPassageiroByCpf cpf
@@ -78,7 +78,7 @@ module Src.Logic.LogicPassageiro where
     getPassageiroByCpfLogic :: String -> String -> IO (Maybe Passageiro)
     getPassageiroByCpfLogic cpf senhaPassada
         | validarCPF cpf = do
-            putStrLn "CPF não atende aos requisitos"
+            putStrLn "CPF não atende aos requisitos!"
             return Nothing
         | otherwise = do
             resultado <- getPassageiroByCpf cpf
@@ -97,7 +97,7 @@ module Src.Logic.LogicPassageiro where
     realizarLoginPassageiroLogic :: String -> String -> IO (Maybe Passageiro)
     realizarLoginPassageiroLogic email senha = do
         if validarEmail email then do
-            putStrLn "Email não atende aos requisitos"
+            putStrLn "Email não atende aos requisitos!"
             return Nothing
         else do
             resultado <- getPassageiroByEmail email
@@ -113,3 +113,7 @@ module Src.Logic.LogicPassageiro where
                     putStrLn "Email não cadastrado!"
                     return Nothing
                     
+    carregarPassageirosLogic :: IO [Passageiro]
+    carregarPassageirosLogic = do
+        passageiros <- carregarPassageiros
+        return passageiros

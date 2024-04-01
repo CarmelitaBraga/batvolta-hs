@@ -54,7 +54,7 @@ module Src.CLI.PassageiroCLI where
         putStrLn "\nCadastrar Passageiro"
         nome <- inputString "Digite o nome: "
         cpf <- inputString "Digite o CPF: "
-        genero <- inputString "Digite o gênero (f ou m): "
+        genero <- inputString "Digite o gênero (F/M/NB): "
         email <- inputString "Digite o e-mail: "
         telefone <- inputString "Digite o telefone: "
         cep <- inputString "Digite o CEP: "
@@ -252,4 +252,3 @@ module Src.CLI.PassageiroCLI where
         else do
                 putStrLn "Nenhuma carona encontrada para avaliação!"
         menuPrincipalPassageiroCarona passageiroRef
-

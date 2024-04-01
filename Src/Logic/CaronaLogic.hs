@@ -3,12 +3,13 @@
 module Src.Logic.CaronaLogic where
 
 import Src.Schemas.CaronaSchema
--- Retirar daqui posteriormente (pensar na comunicação entre Schemas)
 import Src.Schemas.PassageiroViagemSchema
 import Src.Model.Carona
 import Src.Schemas.Motorista
-import Src.Model.MotoristaModel
+import Src.Logic.LogicPassageiro
+import Src.Model.MotoristaModel as MotoristaModel
 import Src.Model.PassageiroViagem
+import Src.Schemas.Passageiro as PassageiroModel
 import Src.Util.Utils
 import Data.List (intercalate, find, elemIndex, elemIndices,sortOn, reverse)
 import GHC.IO (unsafePerformIO)
@@ -248,31 +249,6 @@ caronaPertenceMotorista idCarona idMotorista = do
         then return False
         else return True
 
-cpfToName :: String -> IO String
-cpfToName cpf = do
-    maybeMotorista <- getBy "cpf" cpf
-    case maybeMotorista of
-        Nothing -> return "Unknown Motorista"
-        Just motorista -> return (nome motorista)
-
-getTopMotoristasByRegiao :: String -> IO [String]
-getTopMotoristasByRegiao regiao = do
-    motoristasRegiao <- getAllMotoristasByRegiao regiao
-    motoristasAvaliacoes <- mapAvaliacoesMotoristas motoristasRegiao
-    topMotoristasRegiao <- takeAvaliationsDecrescent 3 motoristasAvaliacoes
-    mapM tupleToString topMotoristasRegiao
-
-tupleToString :: (String, Float) -> IO String
-tupleToString (cpf, avaliacao) = do
-    name <- cpfToName cpf
-    return $ name ++ ": " ++ show avaliacao
-
-joinCaronaViagemByMotorista :: String -> IO [PassageiroViagem]
-joinCaronaViagemByMotorista idMotorista = do
-    caronasByMotorista <- getCaronaByColumn "motorista" idMotorista
-    viagensMotorista <- mapM (getViagensByCarona . cid) caronasByMotorista
-    return (concat viagensMotorista)
-
 avaliacaoMotorista :: String -> IO Float
 avaliacaoMotorista idMotorista = do
     viagensMotorista <- joinCaronaViagemByMotorista idMotorista
@@ -302,17 +278,42 @@ avaliaCarona idMotorista idCarona aval = if aval < 1 || aval > 5 then
                         updateAvaliacaoCarona carona aval
                         return "Carona avaliada com sucesso!"
 
+cpfToName :: String -> IO String
+cpfToName cpf = do
+    maybeMotorista <- getBy "cpf" cpf
+    case maybeMotorista of
+        Nothing -> return "Unknown Motorista"
+        Just motorista -> return (MotoristaModel.nome motorista)
+
+getTopMotoristasByRegiao :: String -> IO [String]
+getTopMotoristasByRegiao regiao = do
+    motoristasRegiao <- getAllMotoristasByRegiao regiao
+    motoristasAvaliacoes <- mapAvaliacoesMotoristas motoristasRegiao
+    topMotoristasRegiao <- takeAvaliationsDecrescent 3 motoristasAvaliacoes
+    mapM tupleToString topMotoristasRegiao
+
+tupleToString :: (String, Float) -> IO String
+tupleToString (cpf, avaliacao) = do
+    name <- cpfToName cpf
+    return $ name ++ ": " ++ show avaliacao
+
+joinCaronaViagemByMotorista :: String -> IO [PassageiroViagem]
+joinCaronaViagemByMotorista idMotorista = do
+    caronasByMotorista <- getCaronaByColumn "motorista" idMotorista
+    viagensMotorista <- mapM (getViagensByCarona . cid) caronasByMotorista
+    return (concat viagensMotorista)
+
 mapAvaliacoesMotoristas :: [Motorista] -> IO [(String, Float)]
 mapAvaliacoesMotoristas motoristas = do
-    let listaMotoristas = map cpf motoristas
+    let listaMotoristas = map MotoristaModel.cpf motoristas
     result <- mapM avaliacaoMotorista listaMotoristas
     return $ zip listaMotoristas result
 
 takeAvaliationsDecrescent :: Int -> [(String, Float)] -> IO [(String, Float)]
-takeAvaliationsDecrescent numAvaliacoes avaliacoesMotoristas = do
-    let sortedAvaliacoes = sortBy (comparing snd) avaliacoesMotoristas
+takeAvaliationsDecrescent amostra avaliacoesEntidade = do
+    let sortedAvaliacoes = sortBy (comparing snd) avaliacoesEntidade
         reversedAvaliacoes = reverse sortedAvaliacoes
-        topAvaliacoes = take numAvaliacoes reversedAvaliacoes
+        topAvaliacoes = take amostra reversedAvaliacoes
     return topAvaliacoes
 
 getMelhoresMotoristas :: IO [String]
@@ -328,3 +329,24 @@ caronasSemAvaliacaoByMotorista idMotorista = do
     let caronasFinalizadas = filter (\c -> read "Finalizada" == status c) caronasMotorista
         selectedCaronas = filter (\c -> avaliacaoPassageiros c == 0) caronasMotorista
     mapM (infoCarona . cid) selectedCaronas
+
+getMelhoresPassageiros :: IO [String]
+getMelhoresPassageiros = do
+    passageiros <- carregarPassageirosLogic
+    medias <- mapM (\p -> calcularMedia (PassageiroModel.cpf p)) passageiros
+    melhores <- takeAvaliationsDecrescent 5 medias
+    let passageirosMelhores = map (\(nome, media) -> nome ++ ": " ++ show media) melhores
+    return passageirosMelhores
+
+calcularMedia :: String -> IO (String, Float)
+calcularMedia cpfPassageiro = do
+    viagens <- getViagensByPassageiro cpfPassageiro
+    caronas <- mapM (\v -> fmap head (getCaronaById [cId v])) viagens
+    let caronasAvaliadas = filter (\a -> avaliacaoPassageiros a /= 0) caronas
+        numCaronas = fromIntegral $ length caronasAvaliadas
+        somatorioAvaliacoes = sum $ map avaliacaoPassageiros caronasAvaliadas
+        mediaAvaliacao = if numCaronas == 0 then fromIntegral 0 else fromIntegral somatorioAvaliacoes / numCaronas
+    passageiro <- getPassageiroByCpf cpfPassageiro
+    case passageiro of
+        Just p -> return (PassageiroModel.nome p, mediaAvaliacao)
+        Nothing -> return ("", mediaAvaliacao) 

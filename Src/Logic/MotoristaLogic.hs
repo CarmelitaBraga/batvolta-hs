@@ -3,7 +3,7 @@ module Src.Logic.MotoristaLogic where
 import Src.Model.MotoristaModel (Motorista (genero, regiao), confereSenha)
 import Src.Schemas.Motorista (cadastraMotorista, getBy, removerMotorista, atualizarMotorista)
 import Control.Monad (when)
-import Src.Util.Util(validarCPF, nullOrEmpty,validarEmail,validarGenero, validaRegiao)
+import Src.Util.Utils
 
 cadastrarMotoristaLogic :: String -> String -> String -> String -> String -> String -> String -> String -> String -> IO (Maybe Motorista)
 cadastrarMotoristaLogic cpf cep nome email telefone senha cnh genero regiao
