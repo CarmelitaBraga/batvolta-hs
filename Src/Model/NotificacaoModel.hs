@@ -38,9 +38,9 @@ instance ToRecord Notificacao where
 
 instance Show Notificacao where
   show (Notificacao idNotif idMot idPass idCar conteudo') =
-    "Notificação { idNotificacao = " ++ show idNotif ++
+    "Info: \n idNotificacao = " ++ show idNotif ++
     ", idMotorista = " ++ show idMot ++
     ", idPassageiro = " ++ show idPass ++
     ", idCarona = " ++ show idCar ++
     ", conteudo = " ++ show conteudo' ++
-    " }"
+    "."
