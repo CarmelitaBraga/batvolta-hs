@@ -31,6 +31,7 @@ Isso deve exibir a versão do compilador GHC instalada e do cabal, sistema de co
 3. Atualização: atualize o cabal com os pacotes mais atuais.
 ```sh
 cabal update
+cabal install
 ```
 Isso garantirá que você tenha a versão mais recente do Cabal instalada em seu sistema.
 
@@ -48,7 +49,10 @@ cabal run
 ```
 
 ###  Executando o Projeto com Docker
-Alternativamente, o uso do sistema pode ser feito utilizando Docker. Para isso, navegue até o diretório do projeto e execute os seguintes comandos:
+Alternativamente, o uso do sistema pode ser feito utilizando Docker de duas formas: A partir do build do dockerfile ou utilizando uma imagem pré-pronta do projeto no DockerHub
+
+#### Utilizando Docker build
+Para isso, navegue até o diretório do projeto e execute os seguintes comandos:
 ```sh
 docker build -t batvolta-hs:1.0 . && docker run -it batvolta-hs:1.0
 ```
@@ -62,8 +66,22 @@ Escolha o tipo de usuário:
 3 - Dashboard
 0 - Sair
 ```
-
 Digite o número correspondente à opção desejada e pressione Enter para prosseguir.
+
+#### Utilizando imagem do DockerHub
+Também é possível executar o sistema a partir da realização do pull da imagem do projeto. Isso pode ser feito seguindo os seguintes passos:
+1. Realize o pull da imagem do dockerhub utilizando o seguinte comando:
+```bash
+docker pull filipe1417/batvolta-projeto
+```
+2. Execute o container
+```bash
+docker run -it batvolta-projeto
+```
+3. Dentro do container, acesse o diretório do projeto e o execute com os seguintes comandos:
+```bash
+cd batvolta-hs && cabal run
+```
 
 ## Contribuição
 
