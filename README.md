@@ -47,6 +47,12 @@ Para começar, execute o arquivo principal do programa:
 cabal run
 ```
 
+###  Executando o Projeto com Docker
+Alternativamente, o uso do sistema pode ser feito utilizando Docker. Para isso, navegue até o diretório do projeto e execute os seguintes comandos:
+```sh
+docker build -t batvolta-hs:1.0 . && docker run -it batvolta-hs:1.0
+```
+
 Isso iniciará o aplicativo e você será recebido com o menu principal.
 
 ```Bem-vindo ao Batvolta!
