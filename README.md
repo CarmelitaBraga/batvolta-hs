@@ -76,7 +76,7 @@ docker pull filipe1417/batvolta-projeto
 ```
 2. Execute o container
 ```bash
-docker run -it batvolta-projeto
+docker run -it filipe1417/batvolta-projeto
 ```
 3. Dentro do container, acesse o diretório do projeto e o execute com os seguintes comandos:
 ```bash
