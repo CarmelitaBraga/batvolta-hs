@@ -19,18 +19,18 @@ O escopo deste projeto inclui as seguintes funcionalidades:
 ## Uso
 
 ### Instalação do Haskell e Cabal
-1. Instale o Haskell Platform: O Haskell Platform é uma distribuição oficial de pacotes Haskell. Você pode baixar e instalar a versão mais recente do Haskell Platform no site oficial.
+1. Requerimentos: É necessário ter o `ghc` e o `cabal` instalados. Você pode baixar e instalar a versão mais recente do Haskell Platform no site oficial.
 
 2. Verifique a instalação: Após a instalação, abra um terminal e verifique se o Haskell está instalado corretamente executando o seguinte comando:
 ```sh
 ghc --version
+cabal --version
 ```
-Isso deve exibir a versão do compilador GHC instalada.
+Isso deve exibir a versão do compilador GHC instalada e do cabal, sistema de construção e empacotamento para Haskell.
 
-3. Instale o Cabal: O Cabal é um sistema de construção e empacotamento para Haskell. Ele geralmente é instalado junto com o Haskell Platform, mas você pode verificar se está instalado e, se não estiver, instale-o usando o seguinte comando:
+3. Atualização: atualize o cabal com os pacotes mais atuais.
 ```sh
 cabal update
-cabal install cabal-install
 ```
 Isso garantirá que você tenha a versão mais recente do Cabal instalada em seu sistema.
 
@@ -44,7 +44,7 @@ Isso irá compilar o projeto e executá-lo. Siga as instruções no terminal par
 
 Para começar, execute o arquivo principal do programa:
 ```sh
-cabal build && cabal run
+cabal run
 ```
 
 Isso iniciará o aplicativo e você será recebido com o menu principal.
